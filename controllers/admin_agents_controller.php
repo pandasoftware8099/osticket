@@ -19,7 +19,7 @@ class admin_agents_controller extends CI_Controller {
 
 
     public function agents_agents()
-    {      
+    {      /* testing */
         if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
         {   
             $deparment_info = $this->db->query("SELECT id FROM ost_department_test");
