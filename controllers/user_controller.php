@@ -102,10 +102,10 @@ class user_controller extends CI_Controller {
 
         $this->load->library('email');
 
-        $result = $this->db->query("SELECT * FROM ost_user_test WHERE user_email = '$user_email'");
+        $subject = 'Panda Ticketing System Activation Email';
 
         $data = array(
-            'body' => $this->db->query("SELECT REPLACE(REPLACE(REPLACE(body, '%user_name%', '".$result->row('user_name')."'), 'activateuserguest', 'activateuser'), '%user_id%', '".$result->row('user_id')."') AS email, subject FROM ost_email_template_test WHERE id = '22'"),
+            'result' => $this->db->query("SELECT * FROM ost_user_test WHERE user_email = '$user_email'"),
             'template' => $this->db->query("SELECT * FROM ost_company_test"),
         );
 
@@ -120,14 +120,14 @@ class user_controller extends CI_Controller {
             'smtp_port' => $sender_email->smtp_port,
                             
         );
-        $bodyContent = $this->load->view('email_template', $data, TRUE);
+        $bodyContent = $this->load->view('activateemail', $data, TRUE);
         
         $result = $this->email
             ->initialize($config)
             ->from($sender_email->userid)
             ->reply_to($sender_email->userid)    // Optional, an account where a human being reads.
             ->to($user_email)
-            ->subject($data['body']->row('subject'))
+            ->subject($subject)
             ->message($bodyContent)
             ->send();
 
@@ -153,16 +153,18 @@ class user_controller extends CI_Controller {
         echo "<script>
                 document.location='" . base_url() . "/index.php/user_controller/login'
               </script>";
+
     }
 
     public function activateuserguest()
     {
         $user_id = $_REQUEST['id'];
         $data = array(
-            'result' => $this->db->query("SELECT * FROM ost_user_test WHERE user_id = '$user_id'")
+            'result' => $this->db->query("SELECT * FROM ost_user_test WHERE user_id = '$user_id'")        
         );
 
-        $this->load->view('user/guestuseractivate', $data); 
+                $this->load->view('user/guestuseractivate', $data); 
+
     }
 
     public function activateuserguestconfirm()
