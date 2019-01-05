@@ -1,5 +1,5 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+gfy,gjcjcgiyfiif
 
 class user_controller extends CI_Controller {
     
