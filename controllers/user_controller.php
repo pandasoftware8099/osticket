@@ -690,7 +690,8 @@ class user_controller extends CI_Controller {
                     }
                 else
                     {
-                        $this->load->view('user/pwreset');
+                        echo $this->load->view('user/pwreset','',TRUE);
+                        die();
                         /*$this->load->view('footer');*/
                     }
                 }
