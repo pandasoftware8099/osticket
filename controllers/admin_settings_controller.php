@@ -332,6 +332,33 @@ class admin_settings_controller extends CI_Controller {
         }
     }
 
+    public function ticket_seq_update()
+    {   
+        $name = $this->input->post('name');
+        $next = $this->input->post('next');
+        $increment = $this->input->post('increment');
+        $padding = $this->input->post('padding');
+        $id = $this->input->post('id');
+        $namecheck = end($name);
+        $all_id = $this->db->query("SELECT id FROM ost_sequence_test")->result();
+        
+
+            foreach($id as $key=>$value){
+                if($value != ''){
+                $this->db->query("UPDATE ost_sequence_test SET name='$name[$key]',next='$next[$key]',increment='$increment[$key]',padding='$padding[$key]' WHERE id='$value'");
+                }
+                else if($value == '' && $name[$key] != $namecheck)
+                {
+                    $this->db->query("INSERT INTO ost_sequence_test (name,next,increment,padding) VALUES('$name[$key]','$next[$key]','$increment[$key]','$padding[$key]')");
+                }else if($value != )
+            }
+
+        echo "<script> alert('Successfully Update settings');</script>";
+        
+        echo "<script> document.location='" . base_url() . "/index.php/admin_settings_controller/settings_ticket' </script>";
+
+    }
+
     public function ticket_update()
     {   
         $ticket_number_format = $this->input->post('ticket_number_format');
