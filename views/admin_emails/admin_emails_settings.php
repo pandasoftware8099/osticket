@@ -16,7 +16,7 @@
             }else{
                 echo '<option value="'.$template->tpl_id.'">'.$template->name.'</option>';
             }}?>
-                        </select>&nbsp;<font class="error"></font>
+        </select>&nbsp;<font class="error"></font>
     </div>
 </div>
 <div class="form-group">
