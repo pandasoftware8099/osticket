@@ -492,21 +492,15 @@ class admin_emails_controller extends CI_Controller {
     }
 
     public function emails_banlist_add_process()
-
-    {  
+    {
         $isactive = $this->input->post('isactive');
         $val = $this->input->post('val');
         $notes = $this->input->post('notes');
 
+        $this->db->query("INSERT INTO ost_filter_rule_test (what, isactive, val, notes, created, updated) VALUES ('email', '$isactive', '$val', '$notes', NOW(), NOW() )");
 
-   
-          
-            $this->db->query("INSERT INTO ost_filter_rule_test (what, isactive, val, notes, created, updated) VALUES ('email', '$isactive', '$val', '$notes', NOW(), NOW() )");
-
-            echo "<script> alert('Ban email added into list.');</script>";
-            echo "<script> document.location='" . base_url() . "/index.php/admin_emails_controller/emails_banlist' </script>";
-
-
+        echo "<script> alert('Ban email added into list.');</script>";
+        echo "<script> document.location='" . base_url() . "/index.php/admin_emails_controller/emails_banlist' </script>";
     }
 
     public function emails_banlist_info()
@@ -550,20 +544,15 @@ class admin_emails_controller extends CI_Controller {
         $notes = $this->input->post('notes');
         $banid = $_REQUEST['id'];
 
+        $this->db->query("UPDATE ost_filter_rule_test SET 
+            isactive = '$isactive', 
+            val = '$val',
+            notes = '$notes', 
+            updated = NOW()
+            WHERE id = '$banid'");
 
-            
-          
-            $this->db->query("UPDATE ost_filter_rule_test SET 
-                isactive = '$isactive', 
-                val = '$val',
-                notes = '$notes', 
-                updated = NOW()
-                WHERE id = '$banid'");
-
-            echo "<script> alert('Ban email edited.');</script>";
-            echo "<script> document.location='" . base_url() . "/index.php/admin_emails_controller/emails_banlist_info?id=$banid' </script>";
-
-
+        echo "<script> alert('Ban email edited.');</script>";
+        echo "<script> document.location='" . base_url() . "/index.php/admin_emails_controller/emails_banlist_info?id=$banid' </script>";
     }
 
     public function emails_templates()
@@ -573,18 +562,19 @@ class admin_emails_controller extends CI_Controller {
             $data = array(
 
                 'templategroup' => $this->db->query("SELECT * FROM ost_email_template_group_test"),
+                'default_template_id' => $this->db->query("SELECT * FROM ost_config_test WHERE id = '87'"),
                 'max_page_size' => $this->db->query("SELECT value FROM ost_config_test WHERE id = '21'")->row('value'),
 
             );
-        $browser_id = $_SERVER["HTTP_USER_AGENT"];
-        if(strpos($browser_id,"Windows CE") || strpos($browser_id,"Windows NT 5.1") )
+            $browser_id = $_SERVER["HTTP_USER_AGENT"];
+            if(strpos($browser_id,"Windows CE") || strpos($browser_id,"Windows NT 5.1") )
             {
 
                 /*$this->load->view('WinCe/header');
                 $this->load->view('WinCe/po/po_main',$data);*/
                 
             }
-        else
+            else
             {
                 $this->load->view('headeradmin');
                 $this->load->view('admin_emails/admin_emails_templates', $data);
@@ -596,6 +586,192 @@ class admin_emails_controller extends CI_Controller {
         {
            redirect('user_controller/superlogin');
         }
+    }
+
+    public function emails_templates_process()
+    {  
+        $status = $this->input->post('status');
+        $tids = $this->input->post('tids[]');
+
+        foreach ($tids as $check)
+        {
+            if ($status == 1)
+            {
+                $this->db->query("UPDATE ost_email_template_group_test SET isactive = 1 WHERE tpl_id = '$check'");
+            }
+            else if ($status == 0)
+            {
+                $this->db->query("UPDATE ost_email_template_group_test SET isactive = 0 WHERE tpl_id = '$check'");
+            }
+            else if ($status == 2)
+            {
+                $this->db->query("DELETE FROM ost_email_template_group_test WHERE tpl_id = '$check'");
+            }
+        }
+
+        redirect('admin_emails_controller/emails_templates');
+    }
+
+    public function emails_templates_add()
+    {      
+        if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
+        {   
+            $data = array(
+                'email_template_group' => $this->db->query("SELECT * FROM ost_email_template_group_test"),
+            );
+
+            $browser_id = $_SERVER["HTTP_USER_AGENT"];
+            if(strpos($browser_id,"Windows CE") || strpos($browser_id,"Windows NT 5.1") )
+            {
+
+                /*$this->load->view('WinCe/header');
+                $this->load->view('WinCe/po/po_main',$data);*/
+                
+            }
+            else
+            {
+                $this->load->view('headeradmin');
+                $this->load->view('admin_emails/admin_emails_templates_add', $data);
+                $this->load->view('footeradmin');
+            }    
+        }
+
+        else       
+        {
+           redirect('user_controller/superlogin');
+        }
+    }
+
+    public function emails_templates_add_process()
+    {  
+        $template_name = addslashes($this->input->post('name'));
+        $template_status = $this->input->post('isactive');
+        $template_clone = $this->input->post('tpl_id');
+        $template_notes = addslashes($this->input->post('notes'));
+
+        $check_template_name = $this->db->query("SELECT * FROM ost_email_template_group_test WHERE name = '$template_name'");
+
+        if (empty($check_template_name->num_rows()))
+        {
+            $this->db->query("INSERT INTO ost_email_template_group_test (isactive, name, lang, notes, created, updated) VALUES ('$template_status', '$template_name', 'en_US', '$template_notes', now(), now())");
+
+            $tpl_id = $this->db->query("SELECT * FROM ost_email_template_group_test WHERE name = '$template_name'")->row('tpl_id');
+
+            if (!empty($template_clone))
+            {
+                $this->db->query("INSERT INTO ost_email_template_test (tpl_id, code_name, subject, body, notes, created, updated) SELECT '$tpl_id', code_name, subject, body, notes, now(), now() FROM ost_email_template_test WHERE tpl_id = '$template_clone'");
+            }
+        }
+        else
+        {
+            echo "<script> alert('Duplicate email template group name.');</script>";
+            echo "<script> document.location='" . base_url() . "/index.php/admin_emails_controller/emails_templates_add' </script>";
+        }
+
+        echo "<script> document.location='" . base_url() . "/index.php/admin_emails_controller/emails_templates' </script>";
+    }
+
+    public function emails_templates_info()
+    {      
+        if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
+        {   
+            $template_group_id = $_REQUEST['id'];
+
+            $data = array(
+                
+                'emails_templates_group_info' => $this->db->query("SELECT * FROM ost_email_template_group_test WHERE tpl_id = '$template_group_id'"),
+                'emails_templates' => $this->db->query("SELECT * FROM ost_email_template_test WHERE tpl_id = '$template_group_id' ORDER BY code_name"),
+
+            );
+
+            $browser_id = $_SERVER["HTTP_USER_AGENT"];
+            if(strpos($browser_id,"Windows CE") || strpos($browser_id,"Windows NT 5.1") )
+            {
+
+                /*$this->load->view('WinCe/header');
+                $this->load->view('WinCe/po/po_main',$data);*/
+                
+            }
+            else
+            {
+                $this->load->view('headeradmin');
+                $this->load->view('admin_emails/admin_emails_templates_info', $data);
+                $this->load->view('footeradmin');
+            }    
+        }
+
+        else       
+        {
+           redirect('user_controller/superlogin');
+        }
+    }
+
+    public function emails_templates_info_process()
+    {  
+        $template_name = addslashes($this->input->post('name'));
+        $template_status = $this->input->post('isactive');
+        $template_notes = addslashes($this->input->post('notes'));
+        $template_id = $_REQUEST['id'];
+
+        $check_template_name = $this->db->query("SELECT * FROM ost_email_template_group_test WHERE name = '$template_name'");
+
+        if (empty($check_template_name->num_rows()) || $template_id == $check_template_name->row('tpl_id'))
+        {
+            $this->db->query("UPDATE ost_email_template_group_test SET isactive = '$template_status', name = '$template_name', notes = '$template_notes', updated = now() WHERE tpl_id = '$template_id'");
+        }
+        else
+        {
+            echo "<script> alert('Duplicate email template group name.');</script>";
+            echo "<script> document.location='" . base_url() . "/index.php/admin_emails_controller/emails_templates_info?id=$template_id' </script>";
+        }
+
+        echo "<script> document.location='" . base_url() . "/index.php/admin_emails_controller/emails_templates' </script>";
+    }
+
+    public function emails_templates_edit()
+    {      
+        if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
+        {   
+            $template_id = $_REQUEST['id'];
+
+            $data = array(
+                'email_template' => $this->db->query("SELECT * FROM ost_email_template_test ORDER BY code_name"),
+                'email_template_info' => $this->db->query("SELECT * FROM ost_email_template_test WHERE id = '$template_id'"),
+                'company' => $this->db->query("SELECT * FROM ost_company_test"),
+            );
+
+            $browser_id = $_SERVER["HTTP_USER_AGENT"];
+            if(strpos($browser_id,"Windows CE") || strpos($browser_id,"Windows NT 5.1") )
+            {
+
+                /*$this->load->view('WinCe/header');
+                $this->load->view('WinCe/po/po_main',$data);*/
+                
+            }
+            else
+            {
+                $this->load->view('headeradmin');
+                $this->load->view('admin_emails/admin_emails_templates_edit', $data);
+                $this->load->view('footeradmin');
+            }    
+        }
+
+        else       
+        {
+           redirect('user_controller/superlogin');
+        }
+    }
+
+    public function emails_templates_edit_process()
+    {   
+        $template_id = $_REQUEST['id'];
+        $email_subject = addslashes($this->input->post('subject'));
+        $email_body = addslashes($this->input->post('body'));
+        $template_group_id = $this->db->query("SELECT * FROM ost_email_template_test WHERE id = '$template_id'")->row('tpl_id');
+
+        $this->db->query("UPDATE ost_email_template_test SET subject = '$email_subject', body = '$email_body', updated = now() WHERE id = '$template_id'");
+
+        redirect('admin_emails_controller/emails_templates_info?id='.$template_group_id.'');
     }
 
     public function emails_diagnostic()
