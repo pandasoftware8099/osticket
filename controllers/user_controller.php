@@ -15,9 +15,7 @@ class user_controller extends CI_Controller {
         $this->load->helper('html');
         $this->load->database();
         $this->load->library('form_validation');
- 
     }
-
 
     public function login()
     {
@@ -654,67 +652,60 @@ class user_controller extends CI_Controller {
     {
         $email = $this->input->post('useremail');
         
-        if(!isset($email)){
-
+        if(!isset($email))
+        {
             $browser_id = $_SERVER["HTTP_USER_AGENT"];
             if(strpos($browser_id,"Windows CE") || strpos($browser_id,"Windows NT 5.1") )
+            {
+
+                $this->load->view('WinCe/header');
+                $this->load->view('WinCe/index',$data);
+            
+            }
+                
+            else
+            {
+                $this->load->view('user/pwreset');
+                /*$this->load->view('footer');*/
+            }
+        }
+        else
+        {
+            $useremail = $this->db->query("SELECT * FROM osticket.ost_staff_test WHERE email='$email'");
+            $username = $this->db->query("SELECT * FROM osticket.ost_staff_test WHERE username='$email'");
+
+            if($useremail->num_rows() < 1 && $username->num_rows() < 1)
+            {     
+                echo "<script> alert('Incorrect username or email');</script>"; 
+                $browser_id = $_SERVER["HTTP_USER_AGENT"];
+                if(strpos($browser_id,"Windows CE") || strpos($browser_id,"Windows NT 5.1") )
                 {
 
                     $this->load->view('WinCe/header');
                     $this->load->view('WinCe/index',$data);
                 
-                }   
-                
-            else
+                }
+                else
                 {
-
-                        $this->load->view('user/pwreset');
-                        /*$this->load->view('footer');*/
+                    $this->load->view('user/pwreset');
+                    /*$this->load->view('footer');*/
                 }
             }
-            else
-            {
-                $useremail = $this->db->query("SELECT * FROM osticket.ost_staff_test WHERE email='$email'");
-                $username = $this->db->query("SELECT * FROM osticket.ost_staff_test WHERE username='$email'");
-
-                if($useremail->num_rows() < 1 && $username->num_rows() < 1){
-                     
-                    echo "<script> alert('Incorrect username or email');</script>"; 
-                    $browser_id = $_SERVER["HTTP_USER_AGENT"];
-                    if(strpos($browser_id,"Windows CE") || strpos($browser_id,"Windows NT 5.1") )
-                    {
-
-                        $this->load->view('WinCe/header');
-                        $this->load->view('WinCe/index',$data);
-                    
-                    }
-                else
-                    {
-                        echo $this->load->view('user/pwreset','',TRUE);
-                        die();
-                        /*$this->load->view('footer');*/
-                    }
-                }
-                else if($useremail->num_rows() < 1 && $username->num_rows() > 0)
-                {
-                    $getemail = $this->db->query("SELECT email FROM osticket.ost_staff_test WHERE username='$email'");
-                    $email = $getemail->row('email');
-
-                }
-                
+            else if($useremail->num_rows() > 0 || $username->num_rows() > 0)
+            {            
                 $token_life = $this->db->query("SELECT value FROM osticket.ost_config_test WHERE id='107'")->row('value');
                 $expiretime = date("Y-m-d H:i:s",strtotime(date("Y-m-d H:i:s")." +$token_life minutes"));
 
                 $token = bin2hex(openssl_random_pseudo_bytes(16));
                 $this->db->query("UPDATE osticket.ost_staff_test SET token='$token',token_expire='$expiretime' WHERE email='$email'");
 
-                    $data = array(
-                        'result' => $this->db->query("SELECT * FROM ost_staff_test WHERE email = '$email'"),
-                        'template' => $this->db->query("SELECT * FROM ost_company_test"),
-                        'token' => $token,
-                    );
+                $result = $this->db->query("SELECT * FROM ost_staff_test WHERE email = '$email'");
 
-                $subject = 'Panda Ticketing System Agent Reset Password';
+                $email_data = array(
+                    'body' => $this->db->query("SELECT REPLACE(REPLACE(REPLACE(REPLACE(body, '%firstname%', '".$result->row('firstname')."'), '%lastname%', '".$result->row('lastname')."'), '%token%', '$token'), '%staff_id%', '".$result->row('staff_id')."') AS email, subject FROM ost_email_template_test WHERE id = '23'"),
+                    'template' => $this->db->query("SELECT * FROM ost_company_test"),
+                );
+
                 $default_email = $this->db->query("SELECT value FROM ost_config_test WHERE id='83'")->row('value');
                 $sender_email = $this->db->query("SELECT * FROM ost_email_test WHERE email_id='$default_email'")->row();
 
@@ -726,48 +717,44 @@ class user_controller extends CI_Controller {
                     'smtp_port' => $sender_email->smtp_port,
                                     
                 );
-                
-                $bodyContent = $this->load->view('resetforgotpw', $data, TRUE);
+
+                $bodyContent = $this->load->view('email_template', $email_data, TRUE);
+
                 $result = $this->email
                     ->initialize($config)
                     ->from($sender_email->userid)
                     ->reply_to($sender_email->userid)    // Optional, an account where a human being reads.
                     ->to($email)
-                    ->subject($subject)
+                    ->subject($email_data['body']->row('subject'))
                     ->message($bodyContent)
                     ->send();
 
-                $data = array(
+                $view_data = array(
                     'offline' => $this->db->query("SELECT value FROM ost_config_test WHERE id = '12'"),
                     'allow_pw_reset' => $this->db->query("SELECT value FROM osticket.ost_config_test WHERE id = '106'")->row('value'),
                     'block_period' => '',
                 );
 
-             
                 $browser_id = $_SERVER["HTTP_USER_AGENT"];
                 if(strpos($browser_id,"Windows CE") || strpos($browser_id,"Windows NT 5.1") )
-                    {
+                {
 
-                        $this->load->view('WinCe/header');
-                        $this->load->view('WinCe/index',$data);
-                    
-                    }   
+                    $this->load->view('WinCe/header');
+                    $this->load->view('WinCe/index',$view_data);
+                
+                }   
                     
                 else
-                    {
-                        unset($_SESSION['loginsecond']);
-                        echo "<script> alert('Password reset email has been sent,please check your email.');</script>";
-                       /* $this->load->view('header');*/
-                        $this->load->view('user/superlogin', $data);
-                        /*$this->load->view('footer');*/
-                    }
-
-
-
+                {
+                    unset($_SESSION['loginsecond']);
+                    echo "<script> alert('Password reset email has been sent,please check your email.');</script>";
+                   /* $this->load->view('header');*/
+                    $this->load->view('user/superlogin', $view_data);
+                    /*$this->load->view('footer');*/
+                }
             }
-            
-
         }
+    }
 
     public function resetforgotpassword()
     {
