@@ -1,7 +1,6 @@
     <div id="content">
         <h2>Ticket Settings and Options</h2>
 <form class="form-horizontal" action="<?php echo site_url('admin_settings_controller/ticket_update')?>" method="post">
-<input type="hidden" name="__CSRFToken__" value="f61ac3db3cd3959b52c9ce7f1d35989579aaa449"><input type="hidden" name="t" value="tickets">
 
 <div class="tab">
     <ul class="clean tabs">
@@ -32,9 +31,13 @@
         <label class="col-lg-4 control-label"> Default Ticket Number Sequence :</label>
         <div class="col-lg-6">
             <select name="ticket_sequence_id" class="form-control">
-                <option value="0" selected="">— Random —</option>
-                                    <option value="1">General Tickets</option>
-                                    <option value="2">Tasks Sequence</option>
+                <option value="0" <?php if($ticket_seq=='0'){echo 'selected';}?>>— Random —</option>
+                <?php foreach($ticket_seq_list->result() as $value){
+                    if($ticket_seq==$value->id){
+                        echo '<option value="'.$value->id.'" selected>'.$value->name.'</option>';
+                    }else{
+                    echo '<option value="'.$value->id.'">'.$value->name.'</option>';
+                               }}?>
                             </select>
         </div>
         <div class="col-lg-2">
@@ -145,58 +148,8 @@
             <input type="checkbox" name="show_answered_tickets" value="1" <?php echo $show_answered_tickets->row('value') == 1?"checked":"";?>>
                 Exclude answered tickets from open queue.        </div>
     </div>
-    <!-- <div class="section-break" style="margin-bottom:10px;">
-        <em><b>Attachments</b>:  Size and maximum uploads setting mainly apply to web tickets.</em>
-    </div>
-    <div class="form-group">
-        <label class="col-lg-4 control-label"><i class="help-tip icon-question-sign" href="#ticket_attachment_settings"></i> Ticket Attachment Settings :</label>
-        <div class="col-lg-8">
-                            <a class="action-button field-config" style="overflow:inherit" href="#ajax.php/form/field-config/21" onclick="javascript:
-                        $.dialog($(this).attr('href').substr(1), [201]);
-                        return false;
-                    "><i class="icon-edit"></i> Config                </a>
-        </div>
-    </div> -->
+
 </div>
-<!-- <div class="hiddens tab_content" id="autoresp" data-tip-namespace="settings.autoresponder">
-    <div class="section-break" style="margin-bottom:10px;">
-    <em>Global setting - can be disabled at department or email level.</em>
-</div>
-<div class="form-group" style="overflow:auto;margin-bottom:0px;">
-    <label class="col-lg-3 control-label"><i class="help-tip icon-question-sign" href="#new_ticket"></i> New Ticket :</label>
-    <div class="col-lg-9">
-        <input type="checkbox" name="ticket_autoresponder" checked="checked">
-            Ticket Owner&nbsp;
-    </div>
-</div>
-<div class="form-group" style="overflow:auto;margin-bottom:0px;">
-    <label class="col-lg-3 control-label"><i class="help-tip icon-question-sign" href="#new_ticket_by_staff"></i> New Ticket by Agent :</label>
-    <div class="col-lg-9">
-        <input type="checkbox" name="ticket_notice_active" checked="checked">
-                Ticket Owner&nbsp;
-    </div>
-</div>
-<div class="form-group" style="overflow:auto;margin-bottom:0px;">
-    <label class="col-lg-3 control-label"><i class="help-tip icon-question-sign" href="#new_message_for_submitter"></i> New Message :</label>
-    <div class="col-lg-9">
-        <input type="checkbox" name="message_autoresponder" checked="checked">
-            Submitter: Send receipt confirmation&nbsp;
-    </div>
-</div>
-<div class="form-group" style="overflow:auto;margin-bottom:0px;">
-    <label class="col-lg-3 control-label"><i class="help-tip icon-question-sign" href="#new_message_for_participants"></i>&nbsp;&nbsp;</label>
-    <div class="col-lg-9">
-        <input type="checkbox" name="message_autoresponder_collabs" checked="checked">
-                Participants: Send new activity notice&nbsp;
-    </div>
-</div>
-<div class="form-group" style="overflow:auto;margin-bottom:0px;">
-    <label class="col-lg-3 control-label"><i class="help-tip icon-question-sign" href="#overlimit_notice"></i> Overlimit Notice :</label>
-    <div class="col-lg-8">
-        <input type="checkbox" name="overlimit_notice_active" checked="checked">
-            Ticket Submitter&nbsp;
-    </div>
-</div></div> -->
 
 <p style="text-align:center;">
     <input class="button" type="submit" name="submit" value="Save Changes">
@@ -257,7 +210,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <b><a class="close" href="#" onclick="window.location.reload()"><i class="icon-remove-circle"></i></a></b>
+                <b><a class="close" href="#" data-dismiss="modal"><i class="icon-remove-circle"></i></a></b>
                 <div class="body"><h3 class="drag-handle"><i class="icon-wrench"></i> Manage Sequences</h3>
             </div>
             <div class="modal-body form">
@@ -265,23 +218,25 @@
 <hr>Sequences are used to generate sequential numbers. Various sequences can be
 used to generate sequences for different purposes.<br>
 <br>
-<form method="post" action="#sequence/manage">
+<form method="post" action="<?php echo site_url('admin_settings_controller/ticket_seq_update')?>">
 
+<div id="sequences">
 <?php foreach($ticket_seq_list->result() as $value){?>
-<div class="row-item" id="sequences">
+<div class="row-item">
     <div class="col-lg-10">
         <i class="icon-sort-by-order"></i>
         <div style="display:inline-block" class="name">
-            <input type="text" value="<?php echo $value->name?>" name="name"></input>
+            <input type="text" value="<?php echo $value->name?>" name="name[]"></input>
         </div>
+        <input type="hidden" value="<?php echo $value->id?>" name="id[]">
     </div>
         <div class="manage-buttons col-lg-2">
             <span class="faded">next</span>
-            <input type="number" value="<?php echo $value->next?>" name="next"></input>
+            <input type="number" value="<?php echo $value->next?>" name="next[]"></input>
         </div>
         <div class="button-group">
             <div class="delete new" style="border:none;">
-                <a href="#"><i class="icon-trash"></i></a>
+                <a href="#" class="new"><i class="icon-trash"></i></a>
             </div>
             <div class="manage">
             </div>
@@ -289,41 +244,75 @@ used to generate sequences for different purposes.<br>
         <div class="management" data-id="1">
             <table width="100%"><tbody>
                 <tr><td><label style="padding:0">Increment:
-                    <input class="-increment" type="number" size="4" value="<?php echo $value->increment?>" name="increment">
+                    <input class="-increment" type="number" size="4" value="<?php echo $value->increment?>" name="increment[]">
                     </label></td>
                     <td><label style="padding:0">Padding Character:
-                    <input class="-padding" maxlength="1" type="number" size="4" value="<?php echo $value->padding?>" name="padding">
+                    <input class="-padding" maxlength="1" type="number" size="4" value="<?php echo $value->padding?>" name="padding[]">
                     </label></td></tr>
             </tbody></table>
         </div>
     </div> <?php } ?>
+</div>
 
-<hr>
-<button ><i class="icon-plus"></i> Add New Sequence</button>
+<div class="row-item hiddens">
+    <div class="col-lg-10">
+        <i class="icon-sort-by-order"></i>
+        <div style="display:inline-block" class="name">
+            <input type="text" value="" name="name[]"></input>
+        </div>
+    </div>
+    <input type="hidden" value="" name="id[]">
+        <div class="manage-buttons col-lg-2">
+            <span class="faded">next</span>
+            <input type="number" value="" name="next[]" value="0"></input>
+        </div>
+        <div class="button-group">
+            <div class="delete new" style="border:none;">
+                <a href="#" class="new"><i class="icon-trash"></i></a>
+            </div>
+            <div class="manage">
+            </div>
+        </div>
+        <div class="management" data-id="1">
+            <table width="100%"><tbody>
+                <tr><td><label style="padding:0">Increment:
+                    <input class="-increment" type="number" size="4" value="" name="increment[]" value="0">
+                    </label></td>
+                    <td><label style="padding:0">Padding Character:
+                    <input class="-padding" maxlength="1" type="number" size="4" value="" name="padding[]" value="0">
+                    </label></td></tr>
+            </tbody></table>
+        </div>
+</div>
+
+<br>
+<a class="button" id="add_new"><i class="icon-plus"></i> Add New Sequence</a>
 <div id="delete-warning" style="display:none">
 <hr>
     <div id="msg_warning">Clicking <strong>Save Changes</strong> will permanently remove the
     deleted sequences.    </div>
 </div>
 <hr>
-<div>
-    <span class="buttons pull-right">
-        <input type="submit" value="Save Changes" onclick="javascript:
-$('#sequences .save a').each(function() { $(this).trigger('click'); });
-">
-    </span>
-</div>
+
 
 <script type="text/javascript">
-$("#moredetail").on('click',function(){
-                    $('#new_hardware_detail').clone()
+$("#add_new").on('click',function(){
+                    $('.row-item.hiddens').clone()
                         .find("input:text").val("").end()
-                        .appendTo('#insertlink');
+                        .appendTo('#sequences')
+                        .removeClass('hiddens')
+                        .alert("div.row-item");
                 });
+
+$(document).on('click','.new', function() {
+     $(this).closest('div.row-item').remove();
+});
 </script>
-</form></div>
+</div>
                 </div>
                   <div class="modal-footer">
+                    <button type="submit" class="btn btn-sm ">Save</button>
+                      <button type="button" class="btn btn-sm btn-default" data-dismiss="modal" >Cancel</button>
                   </div>
                 </form>
         </div><!-- /.modal-content -->
