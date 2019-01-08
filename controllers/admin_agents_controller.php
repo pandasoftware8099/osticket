@@ -19,7 +19,7 @@ class admin_agents_controller extends CI_Controller {
 
 
     public function agents_agents()
-    {      /* testing */
+    {      
         if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
         {   
             $deparment_info = $this->db->query("SELECT id FROM ost_department_test");
@@ -334,15 +334,27 @@ class admin_agents_controller extends CI_Controller {
                 'template' => $this->db->query("SELECT * FROM ost_company_test"),
             );
 
+            $default_email = $this->db->query("SELECT value FROM ost_config_test WHERE id='83'")->row('value');
+            $sender_email = $this->db->query("SELECT * FROM ost_email_test WHERE email_id='$default_email'")->row();
+
+            $config = array(
+                
+                'smtp_user' => $sender_email->userid,
+                'smtp_pass' => $sender_email->userpass,
+                'smtp_host' => $sender_email->smtp_host,
+                'smtp_port' => $sender_email->smtp_port,
+                                
+            );
+
             $bodyContent = $this->load->view('email_template', $data, TRUE);
             $result = $this->email
-            ->from('phppandasoftware@gmail.com') 
-            ->reply_to('phppandasoftware@gmail.com')
-            // Optional, an account where a human being reads.
-            ->to($email)
-            ->subject($data['body']->row('subject'))
-            ->message($bodyContent)
-            ->send();
+                ->initialize($config)
+                ->from($sender_email->userid)
+                ->reply_to($sender_email->userid)    // Optional, an account where a human being reads.
+                ->to($email)
+                ->subject($data['body']->row('subject'))
+                ->message($bodyContent)
+                ->send();
 
             $staff_id = $this->db->query("SELECT staff_id FROM ost_staff_test WHERE user_created = NOW()")->row('staff_id');
 
@@ -593,10 +605,23 @@ class admin_agents_controller extends CI_Controller {
             'template' => $this->db->query("SELECT * FROM ost_company_test"),
         );
 
+        $default_email = $this->db->query("SELECT value FROM ost_config_test WHERE id='83'")->row('value');
+        $sender_email = $this->db->query("SELECT * FROM ost_email_test WHERE email_id='$default_email'")->row();
+
+        $config = array(
+            
+            'smtp_user' => $sender_email->userid,
+            'smtp_pass' => $sender_email->userpass,
+            'smtp_host' => $sender_email->smtp_host,
+            'smtp_port' => $sender_email->smtp_port,
+                            
+        );
+
         $bodyContent = $this->load->view('email_template', $data, TRUE);
         $result = $this->email
-            ->from('jimjimjg1995@gmail.com')
-            ->reply_to('jimjimjg1995@gmail.com')    // Optional, an account where a human being reads.
+            ->initialize($config)
+            ->from($sender_email->userid)
+            ->reply_to($sender_email->userid)    // Optional, an account where a human being reads.
             ->to($email)
             ->subject($data['body']->row('subject'))
             ->message($bodyContent)
