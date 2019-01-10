@@ -23,7 +23,7 @@ class Welcome extends CI_Controller {
 		$offline = $this->db->query("SELECT * FROM ost_config_test WHERE id = '12'");
 
 		$data = array(
-			'landpages' => $this->db->query("SELECT * FROM ost_content_test WHERE type = 'landing' AND in_use = '1' AND pages = '1'"),
+			'landpages' => $this->db->query("SELECT * FROM ost_content_test WHERE type = 'landing' AND in_use = '1' AND field = 'pages'"),
 			
 		);
 
