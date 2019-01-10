@@ -72,7 +72,7 @@ input[type="button"], input[type="reset"], input[type="submit"] {
 <body>
     <?php
         $data = array(
-            'offpages' => $this->db->query("SELECT body FROM ost_content_test WHERE type = 'offline' AND in_use = '1' AND pages = '1'"),
+            'offpages' => $this->db->query("SELECT body FROM ost_content_test WHERE type = 'offline' AND in_use = '1' AND field = 'pages'"),
         );
         $offline = $this->db->query("SELECT value FROM ost_config_test WHERE id = '12'");
         
