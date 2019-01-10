@@ -32,7 +32,7 @@
     <a href="<?php echo site_url('user_controller/login')?>" style="float:right;margin-right:5px;">
                         <i class="icon-signout" style="color:#4380B8;text-decoration: none;font-size: 26px;"></i></a>
     <h1 id="logo">
-        <a href="index.php">
+        <a href="<?php echo site_url('user_controller/superlogin')?>">
             <span class="valign-helper"></span>
             <img src="/helpme/uploads/<?php echo $logostaff->row('name');?>" alt="osTicket :: Staff Control Panel">
         </a>
@@ -42,15 +42,18 @@
         { ?>
             <h3>System Offline</h3>
         <?php }
-         else if ($offline->row('value') == '1' && isset($_SESSION['blocked']))
+        else if ($offline->row('value') == '1' && isset($_SESSION['blocked']))
         { ?>
             <h3>Access Denied for <?php echo $block_period?> minutes after several wrong login attempts.</h3>
-    <?php } 
+        <?php } 
         else if ($offline->row('value') == '1')
         { ?>
             <h3>Authentication Required</h3>
-         <?php }; ?>
-       
+    <?php } ?>
+
+    <div class="banner">
+        <small><?php echo $this->db->query("SELECT * FROM ost_content_test WHERE type = 'banner-staff'")->row('body');?></small>
+    </div>
 
     <form action="<?php echo site_url('user_controller/super_login_form')?>" method="post" id="login">
         <fieldset>

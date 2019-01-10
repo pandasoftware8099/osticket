@@ -12,43 +12,33 @@
     <h3>Contact Information</h3>
     <div></div>
     </div>
-            
-            
-            <div class="form-group">
-                <label for="56690b6e57d97f25" class="col-sm-3 control-label">
-                    <span class="required">Email Address<span class="error">*</span></span>     
-                </label>
-                <div class="col-sm-9">
-                    <input type="email" class="form-control" id="_56690b6e57d97f25" size="40" maxlength="64" placeholder="" name="email" value="" required>
-                </div>            
-            </div>
-            
-        
-                
-            
-            <div class="form-group">
-                <label for="450fc361286915b9" class="col-sm-3 control-label">
-                    <span class="required">Full Name<span class="error">*</span></span>        
-                </label>
-                <div class="col-sm-9">
-                    <input type="text" class="form-control" id="_450fc361286915b9" size="40" maxlength="64" placeholder="" name="fullname" value="" required input pattern=".{5,}"   required title="5 characters minimum">
-                </div>           
-            </div>
-            
-        
-                
-            
-            <div class="form-group">
-                <label for="304374eaeea4c808" class="col-sm-3 control-label">
-                    <span class="">Phone Numbers</span></label>
-                <div class="col-sm-9">
-                    <input id="_304374eaeea4c808" type="tel" name="phone" value=""> 
-                    Ext:<input type="text" name="phoneext" value="" size="5">
-                </div>            
-            </div>
-            
-        
+        <div class="form-group">
+            <label for="56690b6e57d97f25" class="col-sm-3 control-label">
+                <span class="required">Email Address<span class="error">*</span></span>     
+            </label>
+            <div class="col-sm-9">
+                <input type="email" class="form-control" id="_56690b6e57d97f25" size="40" maxlength="64" placeholder="" name="email" value="" required>
+            </div>            
         </div>
+        
+        <div class="form-group">
+            <label for="450fc361286915b9" class="col-sm-3 control-label">
+                <span class="required">Full Name<span class="error">*</span></span>        
+            </label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" id="_450fc361286915b9" size="40" maxlength="64" placeholder="" name="fullname" value="" required input pattern=".{5,}"   required title="5 characters minimum">
+            </div>           
+        </div>
+        
+        <div class="form-group">
+            <label for="304374eaeea4c808" class="col-sm-3 control-label">
+                <span class="">Phone Numbers</span></label>
+            <div class="col-sm-9">
+                <input id="_304374eaeea4c808" type="tel" name="phone" value=""> 
+                Ext:<input type="text" name="phoneext" value="" size="5">
+            </div>            
+        </div>
+    </div>
 <div class="col-lg-12">
     <div class="form-header" style="padding-bottom:10px;"><hr><h3>Access Credentials</h3></div>
         <div class="form-group" style="margin-bottom:0px;">
