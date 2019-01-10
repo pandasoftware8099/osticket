@@ -122,7 +122,10 @@ function checkedAll () {
      
     for (var i =0; i < aa.length; i++) 
     {
-        aa[i].checked = checked;
+        if (aa[i].value != <?php echo $default_template_id->row('value');?>)
+        {
+            aa[i].checked = checked;
+        }
     }
  }
 
