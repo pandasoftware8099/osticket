@@ -218,7 +218,7 @@
 <hr>Sequences are used to generate sequential numbers. Various sequences can be
 used to generate sequences for different purposes.<br>
 <br>
-<form method="post" action="<?php echo site_url('admin_settings_controller/ticket_seq_update')?>">
+<form method="post" action="admin_settings_controller/ticket_seq_update">
 
 <div id="sequences">
 <?php foreach($ticket_seq_list->result() as $value){?>
@@ -228,7 +228,6 @@ used to generate sequences for different purposes.<br>
         <div style="display:inline-block" class="name">
             <input type="text" value="<?php echo $value->name?>" name="name[]"></input>
         </div>
-        <input type="hidden" value="<?php echo $value->id?>" name="id[]">
     </div>
         <div class="manage-buttons col-lg-2">
             <span class="faded">next</span>
@@ -261,28 +260,27 @@ used to generate sequences for different purposes.<br>
             <input type="text" value="" name="name[]"></input>
         </div>
     </div>
-    <input type="hidden" value="" name="id[]">
-        <div class="manage-buttons col-lg-2">
-            <span class="faded">next</span>
-            <input type="number" value="" name="next[]" value="0"></input>
+    <div class="manage-buttons col-lg-2">
+        <span class="faded">next</span>
+        <input type="number" value="" name="next[]"></input>
+    </div>
+    <div class="button-group">
+        <div class="delete new" style="border:none;">
+            <a href="#" class="new"><i class="icon-trash"></i></a>
         </div>
-        <div class="button-group">
-            <div class="delete new" style="border:none;">
-                <a href="#" class="new"><i class="icon-trash"></i></a>
-            </div>
-            <div class="manage">
-            </div>
+        <div class="manage">
         </div>
-        <div class="management" data-id="1">
-            <table width="100%"><tbody>
-                <tr><td><label style="padding:0">Increment:
-                    <input class="-increment" type="number" size="4" value="" name="increment[]" value="0">
-                    </label></td>
-                    <td><label style="padding:0">Padding Character:
-                    <input class="-padding" maxlength="1" type="number" size="4" value="" name="padding[]" value="0">
-                    </label></td></tr>
-            </tbody></table>
-        </div>
+    </div>
+    <div class="management" data-id="1">
+        <table width="100%"><tbody>
+            <tr><td><label style="padding:0">Increment:
+                <input class="-increment" type="number" size="4" value="" name="increment[]">
+                </label></td>
+                <td><label style="padding:0">Padding Character:
+                <input class="-padding" maxlength="1" type="number" size="4" value="" name="padding[]">
+                </label></td></tr>
+        </tbody></table>
+    </div>
 </div>
 
 <br>
@@ -297,24 +295,24 @@ used to generate sequences for different purposes.<br>
 
 <script type="text/javascript">
 $("#add_new").on('click',function(){
-                    $('.row-item.hiddens').clone()
-                        .find("input:text").val("").end()
-                        .appendTo('#sequences')
-                        .removeClass('hiddens')
-                        .alert("div.row-item");
-                });
+    $('.row-item.hiddens').clone()
+        .find("input:text").val("").end()
+        .appendTo('#sequences')
+        .removeClass('hiddens');
+});
 
-$(document).on('click','.new', function() {
-     $(this).closest('div.row-item').remove();
+$('.new').on('click', function() {
+    $(this).closest('div.row-item').remove();
 });
 </script>
+
 </div>
-                </div>
-                  <div class="modal-footer">
-                    <button type="submit" class="btn btn-sm ">Save</button>
-                      <button type="button" class="btn btn-sm btn-default" data-dismiss="modal" >Cancel</button>
-                  </div>
-                </form>
+</div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-sm ">Save</button>
+                <button type="button" class="btn btn-sm btn-default" data-dismiss="modal" >Cancel</button>
+            </div>
+        </form>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div>

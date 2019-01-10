@@ -71,7 +71,7 @@
                     > Enable use of authentication tokens to auto-login users            </div>
         </div>
    </div>
-   <div id="templates" class="tab_content hiddens">
+    <div id="templates" class="tab_content hiddens">
     <table class="form_table settings_table" width="100%" border="0" cellspacing="0" cellpadding="2">
     <tbody>
         <tr>
@@ -79,73 +79,24 @@
                 <em><b>Authentication and Registration Templates &amp; Pages</b></em>
             </th>
         </tr>
-        <tr><td colspan="2">
-    <div style="padding:2px 5px">
-    <a href="#ajax.php/content/12/manage" onclick="javascript:
-        $.dialog($(this).attr('href').substr(1), 201);
-    return false;" class="pull-left"><i class="icon-file-text icon-2x" style="color:#bbb;"></i> </a>
-    <span style="display:inline-block;width:90%;width:calc(100% - 32px);padding-left:10px;line-height:1.2em">
-    <a href="#ajax.php/content/12/manage" onclick="javascript:
-        $.dialog($(this).attr('href').substr(1), 201, null, {size:'large'});
-    return false;">Guest Ticket Access</a><br>
-        <span class="faded">This template defines the notification for Clients that an access link was sent to their email        <br><em>Last Updated </em></span>
-    </span></div></td></tr>        <tr><td colspan="2">
-    <div style="padding:2px 5px">
-    <a href="#ajax.php/content/9/manage" onclick="javascript:
-        $.dialog($(this).attr('href').substr(1), 201);
-    return false;" class="pull-left"><i class="icon-file-text icon-2x" style="color:#bbb;"></i> </a>
-    <span style="display:inline-block;width:90%;width:calc(100% - 32px);padding-left:10px;line-height:1.2em">
-    <a href="#ajax.php/content/9/manage" onclick="javascript:
-        $.dialog($(this).attr('href').substr(1), 201, null, {size:'large'});
-    return false;">Sign-In Page</a><br>
-        <span class="faded">This composes the header on the Client Log In page        <br><em>Last Updated </em></span>
-    </span></div></td></tr>        <tr><td colspan="2">
-    <div style="padding:2px 5px">
-    <a href="#ajax.php/content/8/manage" onclick="javascript:
-        $.dialog($(this).attr('href').substr(1), 201);
-    return false;" class="pull-left"><i class="icon-file-text icon-2x" style="color:#bbb;"></i> </a>
-    <span style="display:inline-block;width:90%;width:calc(100% - 32px);padding-left:10px;line-height:1.2em">
-    <a href="#ajax.php/content/8/manage" onclick="javascript:
-        $.dialog($(this).attr('href').substr(1), 201, null, {size:'large'});
-    return false;">Password Reset Email</a><br>
-        <span class="faded">This template defines the email sent to Clients who select the <strong>Forgot My Password</strong> link on the Client Log In page.        <br><em>Last Updated </em></span>
-    </span></div></td></tr>        <tr><td colspan="2">
-    <div style="padding:2px 5px">
-    <a href="#ajax.php/content/10/manage" onclick="javascript:
-        $.dialog($(this).attr('href').substr(1), 201);
-    return false;" class="pull-left"><i class="icon-file-text icon-2x" style="color:#bbb;"></i> </a>
-    <span style="display:inline-block;width:90%;width:calc(100% - 32px);padding-left:10px;line-height:1.2em">
-    <a href="#ajax.php/content/10/manage" onclick="javascript:
-        $.dialog($(this).attr('href').substr(1), 201, null, {size:'large'});
-    return false;">Please Confirm Email Address Page</a><br>
-        <span class="faded">This templates defines the page shown to Clients after completing the registration form        <br><em>Last Updated </em></span>
-    </span></div></td></tr>        <tr><td colspan="2">
-    <div style="padding:2px 5px">
-    <a href="#ajax.php/content/7/manage" onclick="javascript:
-        $.dialog($(this).attr('href').substr(1), 201);
-    return false;" class="pull-left"><i class="icon-file-text icon-2x" style="color:#bbb;"></i> </a>
-    <span style="display:inline-block;width:90%;width:calc(100% - 32px);padding-left:10px;line-height:1.2em">
-    <a href="#ajax.php/content/7/manage" onclick="javascript:
-        $.dialog($(this).attr('href').substr(1), 201, null, {size:'large'});
-    return false;">Account Confirmation Email</a><br>
-        <span class="faded">This template defines the email sent to Clients when their account has been created in the Client Portal or by an Agent on their behalf        <br><em>Last Updated </em></span>
-    </span></div></td></tr>        <tr><td colspan="2">
-    <div style="padding:2px 5px">
-    <a href="#ajax.php/content/11/manage" onclick="javascript:
-        $.dialog($(this).attr('href').substr(1), 201);
-    return false;" class="pull-left"><i class="icon-file-text icon-2x" style="color:#bbb;"></i> </a>
-    <span style="display:inline-block;width:90%;width:calc(100% - 32px);padding-left:10px;line-height:1.2em">
-    <a href="#ajax.php/content/11/manage" onclick="javascript:
-        $.dialog($(this).attr('href').substr(1), 201, null, {size:'large'});
-    return false;">Account Confirmed Page</a><br>
-        <span class="faded">This template defines the content displayed after Clients successfully register by confirming their account        <br><em>Last Updated </em></span>
-    </span></div></td></tr></tbody>
+        <?php foreach($user_template->result() as $usertemplate) { ?>
+        <tr>
+            <td colspan="2">
+                <div style="padding:2px 5px">
+                    <a data-toggle="modal" data-target="#<?php echo $usertemplate->type;?>">
+                        <i class="icon-file-text icon-2x" style="color:#bbb;"></i>
+                    </a>
+                    <span style="display:inline-block;width:90%;width:calc(100% - 32px);padding-left:10px;line-height:1.2em">
+                        <a data-toggle="modal" data-target="#<?php echo $usertemplate->type;?>"><?php echo $usertemplate->title;?></a><br>
+                    </span>
+                    <span class="faded"><?php echo $usertemplate->notes;?></span><br><br>
+                </div>
+            </td>
+        </tr>
+        <?php } ?>
+    </tbody>
 </table>
 </div>
-<p style="text-align:center">
-    <input class="button" type="submit" name="submit" value="Save Changes">
-    <input class="button" type="reset" name="reset" value="Reset Changes">
-</p>
 </div>
 </form>
 </div>
@@ -157,6 +108,46 @@
         <!-- Do not remove <img src="autocron.php" alt="" width="1" height="1" border="0" /> or your auto cron will cease to function -->
     </div>
 </div>
+
+<?php foreach ($user_template->result() as $usertemplate) { ?>
+<div class="modal fade" id="<?php echo $usertemplate->type;?>" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <h3 class="modal-title">Manage Content — <?php echo $usertemplate->name;?></h3>
+            </div>
+            <div class="modal-body form">
+                <!-- <div class="col-md-12"> -->
+                <form action="<?php echo site_url('admin_settings_controller/templates_update');?>?id=<?php echo $usertemplate->id;?>&direct=user" method="POST" id="form" class="form-horizontal">
+                    <input name="topic" class="form-control" type="text" style="width:100%;font-size: 20px"  value="<?php echo $usertemplate->name;?>">
+                    <div>
+                        <span class="help-block"></span>
+                    </div>
+                    <!-- tools box -->
+                    <div class="box-tools"></div>
+                    <!-- /. tools -->
+                    <div class="pad">
+                        <textarea name="body" class="textarea" placeholder="Start writing your note here" style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"><?php echo $usertemplate->body;?></textarea>
+                        <span class="help-block"></span>
+                    </div>
+                    <div class="info-banner" style="line-height: 20px">
+                        <?php echo $usertemplate->notes;?>
+                        <!-- </div> -->
+                    </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-sm btn-default">Save</button>
+                <button type="button" class="btn btn-sm btn-default" data-dismiss="modal" >Cancel</button>
+            </div>
+                </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+<?php } ?>
+
 <div id="overlay" style="opacity: 0.5; display: none;"></div>
 <div id="loading" style="top: 235.333px; left: 609.5px;">
     <i class="icon-spinner icon-spin icon-3x pull-left icon-light"></i>
