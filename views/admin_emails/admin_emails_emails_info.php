@@ -122,11 +122,11 @@
         <div class="col-lg-9">
             <select name="mail_proto" class="form-control">
                 <option value="">— Select protocol —</option>
-                                                <option <?php echo ($email->mail_protocol == 'IMAP' && $email->mail_encryption == 'SSL' )?"selected":""; ?> value="IMAP/SSL">IMAP + SSL</option>
-                                                <option <?php echo ($email->mail_protocol == 'IMAP' && $email->mail_encryption == 'NONE' )?"selected":""; ?> value="IMAP">IMAP</option>
-                                                <option <?php echo ($email->mail_protocol == 'POP' && $email->mail_encryption == 'SSL' )?"selected":""; ?> value="POP/SSL">POP + SSL</option>
-                                                <option <?php echo ($email->mail_protocol == 'POP' && $email->mail_encryption == 'NONE' )?"selected":""; ?> value="POP">POP</option>
-                            </select>
+                <option <?php echo ($email->mail_protocol == 'IMAP' && $email->mail_encryption == 'SSL' )?"selected":""; ?> value="IMAP/SSL">IMAP + SSL</option>
+                <option <?php echo ($email->mail_protocol == 'IMAP' && $email->mail_encryption == 'NONE' )?"selected":""; ?> value="IMAP">IMAP</option>
+                <option <?php echo ($email->mail_protocol == 'POP' && $email->mail_encryption == 'SSL' )?"selected":""; ?> value="POP/SSL">POP + SSL</option>
+                <option <?php echo ($email->mail_protocol == 'POP' && $email->mail_encryption == 'NONE' )?"selected":""; ?> value="POP">POP</option>
+             </select>
             <font class="error">&nbsp;</font>
         </div>
     </div>

@@ -16,9 +16,9 @@
 <div class="form-group">
     <label class="col-lg-3 control-label" style="padding-top:0px">Status <span class="error">*</span> :</label>
     <div class="col-lg-9">
-        <label><input type="radio" name="isactive" value="1" <?php echo $emails_templates_group_info->row('isactive') == 1?"checked":"";?>><strong>&nbsp;Enabled</strong></label>
+        <label><input type="radio" name="isactive" value="1" <?php echo $emails_templates_group_info->row('isactive') == 1?"checked":"";?> <?php echo $default_template_id->row('value') == $_REQUEST['id']?"disabled":"";?>><strong>&nbsp;Enabled</strong></label>
         &nbsp;
-        <label><input type="radio" name="isactive" value="0" <?php echo $emails_templates_group_info->row('isactive') == 0?"checked":"";?>>&nbsp;Disabled</label>
+        <label><input type="radio" name="isactive" value="0" <?php echo $emails_templates_group_info->row('isactive') == 0?"checked":"";?> <?php echo $default_template_id->row('value') == $_REQUEST['id']?"disabled":"";?>>&nbsp;Disabled</label>
         &nbsp;<span class="error"></span>
     </div>
 </div>
