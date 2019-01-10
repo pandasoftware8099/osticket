@@ -1,7 +1,8 @@
 <div id="content">
-
-         <h1>Sign in to Panda Ticketing System</h1>
-<p>To better serve you, we encourage our Clients to register for an account.</p>
+<?php $company_name = $this->db->query("SELECT * FROM ost_company_test")->row('name_template');
+$user_banner = $this->db->query("SELECT REPLACE(name, '%company_name%', '$company_name') AS subject, body FROM ost_content_test WHERE type = 'banner-client'");?>
+<h1><?php echo $user_banner->row('subject');?></h1>
+<p><?php echo $user_banner->row('body');?></p>
 <form action="<?php echo site_url('user_controller/login_form')?>" method="post"  id="clientlogin"  role="form">
     <div class="login-box col-lg-6">
     <strong><?php if (isset($_SESSION['blocked2']))
@@ -22,9 +23,9 @@
     <div style="margin-bottom: 5px">
     <?php $client_registration=$this->db->query("SELECT value FROM osticket.ost_config_test WHERE id='76'");
         if($client_registration->row('value') == '1'){?>
-    <h5>Not yet registered?<a href="<?php echo site_url('user_controller/register')?>">Create an account</a> </h5>
-    <?php } else { ?>
-        <h5>Not yet registered? Please Contact An Agent To Create An Account.</h5>
+            <h5>Not yet registered?<a href="<?php echo site_url('user_controller/register')?>">Create an account</a> </h5>
+        <?php } else { ?>
+            <h5>Not yet registered? Please Contact An Agent To Create An Account.</h5>
     <?php };?>
     </div>
     <div>
@@ -34,9 +35,6 @@
     </div>
 </div>
 </form>
-<br>
-<p>
-If this is your first time contacting us or you've lost the ticket number, please <a href="open.php"> open a new ticket </a></p>
         </div>
     </div>
     <div id="footer">
