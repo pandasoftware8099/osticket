@@ -536,20 +536,21 @@ class staff_ticket_controller extends CI_Controller {
                             INNER JOIN ost_help_topic_test AS c ON b.topic_id = c.topic_id
                             INNER JOIN ost_list_items_test AS d ON b.subtopic_id = d.id
                             WHERE ticket_id = '$result'");
+                        $default_template_id = $this->db->query("SELECT * FROM ost_config_test WHERE id = '87'")->row('value');
 
                         if ($allow_auth_tokens == '0')
                         {
-                            $login = 'http://localhost/helpme/index.php/user_controller/login';
+                            $login = 'http://[::1]/helpme/index.php/user_controller/login';
                         }
                         elseif ($allow_auth_tokens == '1')
                         {
-                            $login = 'http://localhost/helpme/index.php/user_controller/allow_auth?id='.$result.'';
+                            $login = 'http://[::1]/helpme/index.php/user_controller/allow_auth?id='.$result.'';
                         }
 
                         $data = array(
                             'body' => $this->db->query("SELECT REPLACE(REPLACE(subject, '%subject%', '".$emailinfo->row('value')."'), '%number%', '".$emailinfo->row('number')."') AS email_subject, 
-                                REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(body, '%user_name%', '$user_name'), '%login%', '$login'), '%number%', '".$emailinfo->row('number')."'), '%topic%', '".$emailinfo->row('topic')."'), '%subtopic%', '".$emailinfo->row('value')."'), '%signature%', '$signature') AS email
-                                FROM ost_email_template_test WHERE id = '4'"),
+                                REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(body, '%user_name%', '$user_name'), '%login%', '$login'), '%number%', '".$emailinfo->row('number')."'), '%topic%', '".$emailinfo->row('topic')."'), '%subtopic%', '".$emailinfo->row('value')."') AS email
+                                FROM ost_email_template_test WHERE code_name = 'ticket.notice' AND tpl_id = '$default_template_id'"),
                             'ticketsign' => $this->db->query("SELECT a.*, b.*, a.signature AS staffsign, b.signature AS deptsign FROM ost_staff_test AS a
                                 INNER JOIN ost_department_test AS b ON a.dept_id = b.id
                                 WHERE staff_id = '$poster_id'"),
@@ -603,20 +604,21 @@ class staff_ticket_controller extends CI_Controller {
                             INNER JOIN ost_help_topic_test AS c ON b.topic_id = c.topic_id
                             INNER JOIN ost_list_items_test AS d ON b.subtopic_id = d.id
                             WHERE ticket_id = '$result'");
+                        $default_template_id = $this->db->query("SELECT * FROM ost_config_test WHERE id = '87'")->row('value');
                         
                         if ($allow_auth_tokens == '0')
                         {
-                            $login = 'http://localhost/helpme/index.php/user_controller/login';
+                            $login = 'http://[::1]/helpme/index.php/user_controller/login';
                         }
                         elseif ($allow_auth_tokens == '1')
                         {
-                            $login = 'http://localhost/helpme/index.php/user_controller/allow_auth?id='.$result.'';
+                            $login = 'http://[::1]/helpme/index.php/user_controller/allow_auth?id='.$result.'';
                         }
 
                         $data = array(
                             'body' => $this->db->query("SELECT REPLACE(REPLACE(subject, '%subject%', '".$emailinfo->row('value')."'), '%number%', '".$emailinfo->row('number')."') AS email_subject, 
-                                REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(body, '%user_name%', '".$emailinfo->row('user_name')."'), '%login%', '$login'), '%number%', '".$emailinfo->row('number')."'), '%topic%', '".$emailinfo->row('topic')."'), '%subtopic%', '".$emailinfo->row('value')."'), '%signature%', '$signature') AS email
-                                FROM ost_email_template_test WHERE id = '4'"),
+                                REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(body, '%user_name%', '".$emailinfo->row('user_name')."'), '%login%', '$login'), '%number%', '".$emailinfo->row('number')."'), '%topic%', '".$emailinfo->row('topic')."'), '%subtopic%', '".$emailinfo->row('value')."') AS email
+                                FROM ost_email_template_test WHERE code_name = 'ticket.notice' AND tpl_id = '$default_template_id'"),
                             'signature' => $signature,
                             'ticketsign' => $this->db->query("SELECT a.*, b.*, a.signature AS staffsign, b.signature AS deptsign FROM ost_staff_test AS a
                                 INNER JOIN ost_department_test AS b ON a.dept_id = b.id
@@ -1387,13 +1389,14 @@ class staff_ticket_controller extends CI_Controller {
                 }
 
                 $autoresponseusercheck = $this->db->query("SELECT message_auto_response FROM ost_department_test WHERE NAME = (SELECT department FROM ost_ticket_test WHERE ticket_id = '$ticketid')")->row('message_auto_response');
+                $default_template_id = $this->db->query("SELECT * FROM ost_config_test WHERE id = '87'")->row('value');
 
                 if ($autoresponseusercheck == '1')
                 {
                     $data = array(
                         'body' => $this->db->query("SELECT REPLACE(REPLACE(subject, '%subject%', '".$ticket_info->row('value')."'), '%number%', '".$ticket_info->row('number')."') AS email_subject,
                             REPLACE(REPLACE(body, '%name%', '".$email->row('user_name')."'), '%response%', '$description') AS email
-                            FROM ost_email_template_test WHERE id = '6'"),
+                            FROM ost_email_template_test WHERE code_name = 'ticket.reply' AND tpl_id = '$default_template_id'"),
                         'signature' => $signature,
                         'ticketsign' => $this->db->query("SELECT a.*, b.*, a.signature AS staffsign, b.signature AS deptsign FROM ost_staff_test AS a
                             INNER JOIN ost_department_test AS b ON a.dept_id = b.id

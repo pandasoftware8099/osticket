@@ -330,7 +330,7 @@ class admin_agents_controller extends CI_Controller {
             $result = $this->db->query("SELECT * FROM ost_staff_test WHERE email = '$email'");
 
             $data = array(
-                'body' => $this->db->query("SELECT REPLACE(REPLACE(REPLACE(body, '%firstname%', '".$result->row('firstname')."'), '%lastname%', '".$result->row('lastname')."'), '%staff_id%', '".$result->row('staff_id')."') AS email, subject FROM ost_email_template_test WHERE id = '21'"),
+                'body' => $this->db->query("SELECT REPLACE(REPLACE(body, '%firstname%', '".$result->row('firstname')."'), '%staff_id%', '".$result->row('staff_id')."') AS email, name FROM ost_content_test WHERE type = 'pwreset-staff'"),
                 'template' => $this->db->query("SELECT * FROM ost_company_test"),
             );
 
@@ -352,7 +352,7 @@ class admin_agents_controller extends CI_Controller {
                 ->from($sender_email->userid)
                 ->reply_to($sender_email->userid)    // Optional, an account where a human being reads.
                 ->to($email)
-                ->subject($data['body']->row('subject'))
+                ->subject($data['body']->row('name'))
                 ->message($bodyContent)
                 ->send();
 
@@ -601,7 +601,7 @@ class admin_agents_controller extends CI_Controller {
         $result = $this->db->query("SELECT * FROM ost_staff_test WHERE email = '$email'");
 
         $data = array(
-            'body' => $this->db->query("SELECT REPLACE(REPLACE(REPLACE(body, '%firstname%', '".$result->row('firstname')."'), '%lastname%', '".$result->row('lastname')."'), '%staff_id%', '".$result->row('staff_id')."') AS email, subject FROM ost_email_template_test WHERE id = '21'"),
+            'body' => $this->db->query("SELECT REPLACE(REPLACE(body, '%firstname%', '".$result->row('firstname')."'), '%staff_id%', '".$result->row('staff_id')."') AS email, name FROM ost_content_test WHERE type = 'pwreset-staff'"),
             'template' => $this->db->query("SELECT * FROM ost_company_test"),
         );
 
@@ -623,7 +623,7 @@ class admin_agents_controller extends CI_Controller {
             ->from($sender_email->userid)
             ->reply_to($sender_email->userid)    // Optional, an account where a human being reads.
             ->to($email)
-            ->subject($data['body']->row('subject'))
+            ->subject($data['body']->row('name'))
             ->message($bodyContent)
             ->send();
 
