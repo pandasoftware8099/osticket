@@ -81,7 +81,7 @@ class user_controller extends CI_Controller {
         else
         {
             /*$this->load->view('header');*/
-            $this->load->view('user/superlogin.php', $data);
+            $this->load->view('user/superlogin', $data);
             /*$this->load->view('footer');*/
         }    
     }
@@ -100,10 +100,12 @@ class user_controller extends CI_Controller {
 
         $this->load->library('email');
 
+        $company_name = $this->db->query("SELECT * FROM ost_company_test")->row('name_template');
         $result = $this->db->query("SELECT * FROM ost_user_test WHERE user_email = '$user_email'");
 
         $data = array(
-            'body' => $this->db->query("SELECT REPLACE(REPLACE(REPLACE(body, '%user_name%', '".$result->row('user_name')."'), 'activateuserguest', 'activateuser'), '%user_id%', '".$result->row('user_id')."') AS email, subject FROM ost_email_template_test WHERE id = '22'"),
+            'body' => $this->db->query("SELECT REPLACE(name, '%company_name%', '$company_name') AS subject,
+                REPLACE(REPLACE(REPLACE(body, '%user_name%', '".$result->row('user_name')."'), 'activateuserguest', 'activateuser'), '%user_id%', '".$result->row('user_id')."') AS email FROM ost_content_test WHERE type = 'registration-client'"),
             'template' => $this->db->query("SELECT * FROM ost_company_test"),
         );
 
@@ -129,24 +131,28 @@ class user_controller extends CI_Controller {
             ->message($bodyContent)
             ->send();
 
-/*        var_dump($result);
+/*      var_dump($result);
         echo '<br />';
         echo $this->email->print_debugger();
 
         exit;*/
-        echo "<script> alert('Account activation link had sent to your registered email.');</script>";
-        echo "<script>
-                document.location='" . base_url() . "/index.php/welcome/index'
-              </script>";
+        $view_data = array(
+            'confirm_email_page' => $this->db->query("SELECT * FROM ost_content_test WHERE type ='registration-confirm'"),
+        );
 
+        $this->load->view('header');
+        $this->load->view('user/email_confirmation', $view_data);
 
-
+        /*echo "<script>
+            document.location='" . base_url() . "/index.php/welcome/index'
+        </script>";*/
     }
 
     public function activateuser()
     {
         $user_id = $_REQUEST['id'];
-        $this->db->query("UPDATE ost_user_test SET status = '1', active = '1', user_updated_at = now() WHERE user_id = $user_id ");
+        $this->db->query("UPDATE ost_user_test SET status = '1', active = '1', user_updated_at = now() WHERE user_id = '$user_id' ");
+
         echo "<script> alert('Your account had been activate.');</script>";
         echo "<script>
                 document.location='" . base_url() . "/index.php/user_controller/login'
@@ -470,11 +476,9 @@ class user_controller extends CI_Controller {
                         /*$this->load->view('footer');*/
                     }    
                 }
-            
-            
+            }
         }
     }
-}
 
 
 
@@ -493,71 +497,61 @@ class user_controller extends CI_Controller {
 
         if(isset($_SESSION['block_period']) && $current_time < $_SESSION['block_period'])
         {
-            
-           
-                $_SESSION['blocked'] = 'on';
-                $browser_id = $_SERVER["HTTP_USER_AGENT"];
-                if(strpos($browser_id,"Windows CE") || strpos($browser_id,"Windows NT 5.1") )
-                    {
-
-                        $this->load->view('WinCe/header');
-                        $this->load->view('WinCe/index',$data);
-                    
-                    }   
-                    
-                else
-                    {
-                        echo "<script> alert('Access Blocked for certain period for excessive logging in');</script>";
-                       /* $this->load->view('header');*/
-                        $this->load->view('user/superlogin', $data);
-                        //$this->load->view('footer');
-                    }
-            }
-            else
-            {
-                unset($_SESSION['block_period']);
-                unset($_SESSION['blocked']);
-
-                
-
-        if($this->form_validation->run() == FALSE)
-        {
-
+            $_SESSION['blocked'] = 'on';
             $browser_id = $_SERVER["HTTP_USER_AGENT"];
             if(strpos($browser_id,"Windows CE") || strpos($browser_id,"Windows NT 5.1") )
+            {
+
+                $this->load->view('WinCe/header');
+                $this->load->view('WinCe/index',$data);
+            
+            }   
+                
+            else
+            {
+                echo "<script> alert('Access Blocked for certain period for excessive logging in');</script>";
+               /* $this->load->view('header');*/
+                $this->load->view('user/superlogin', $data);
+                //$this->load->view('footer');
+            }
+        }
+        else
+        {
+            unset($_SESSION['block_period']);
+            unset($_SESSION['blocked']);
+
+            if($this->form_validation->run() == FALSE)
+            {
+
+                $browser_id = $_SERVER["HTTP_USER_AGENT"];
+                if(strpos($browser_id,"Windows CE") || strpos($browser_id,"Windows NT 5.1") )
                 {
 
                     $this->load->view('WinCe/header');
                     $this->load->view('WinCe/index',$data);
                 
                 }   
-                
-            else
+                    
+                else
                 {
                     echo "<script> alert('Please insert email/username and password');</script>";
                    /* $this->load->view('header');*/
                     $this->load->view('user/superlogin', $data);
                     //$this->load->view('footer');
                 }
-        }
-        else
-        {   
-            $username1 = $this->input->post('userid');
-            $userpass = $this->input->post('passwd');
-            $username = $this->db->query("SELECT username FROM osticket.ost_staff_test WHERE username = '$username1' OR email = '$username1'")->row('username');
-            $staffid = $this->db->query("SELECT staff_id FROM osticket.ost_staff_test WHERE username = '$username' AND passwd = '$userpass'")->row('staff_id');
-            $pw_expire = $this->db->query("SELECT passwdreset FROM osticket.ost_staff_test WHERE username = '$username' AND passwd = '$userpass'")->row('passwdreset');
-            
-/*            $userdep =  $this->db->query("SELECT user_depart FROM osticket.ost_user_test WHERE user_name = '$username' AND passwd = '$userpass'")->row('user_depart');
-            $userdepname = $this->db->query("SELECT name FROM osticket.ost_department_test WHERE id = '$userdep'")->row('name');*/
-            $staffemail = $this->db->query("SELECT email FROM osticket.ost_staff_test WHERE username = '$username' AND passwd = '$userpass'")->row('email');
-            $staffdept = $this->db->query("SELECT dept_id FROM osticket.ost_staff_test WHERE username = '$username' AND passwd = '$userpass'")->row('dept_id');
-            $change_passwd = $this->db->query("SELECT change_passwd FROM osticket.ost_staff_test WHERE username = '$username' AND passwd = '$userpass'")->row('change_passwd');
-            $auto_refresh_rate = $this->db->query("SELECT auto_refresh_rate FROM osticket.ost_staff_test WHERE username = '$username' AND passwd = '$userpass'")->row('auto_refresh_rate');
-            $default_signature_type = $this->db->query("SELECT default_signature_type FROM osticket.ost_staff_test WHERE username = '$username' AND passwd = '$userpass'")->row('default_signature_type');
-
-
-
+            }
+            else
+            {
+                $username1 = $this->input->post('userid');
+                $userpass = $this->input->post('passwd');
+                $username = $this->db->query("SELECT username FROM osticket.ost_staff_test WHERE username = '$username1' OR email = '$username1'")->row('username');
+                $staffid = $this->db->query("SELECT staff_id FROM osticket.ost_staff_test WHERE username = '$username' AND passwd = '$userpass'")->row('staff_id');
+                $pw_expire = $this->db->query("SELECT passwdreset FROM osticket.ost_staff_test WHERE username = '$username' AND passwd = '$userpass'")->row('passwdreset');
+                $staffemail = $this->db->query("SELECT email FROM osticket.ost_staff_test WHERE username = '$username' AND passwd = '$userpass'")->row('email');
+                $staffdept = $this->db->query("SELECT dept_id FROM osticket.ost_staff_test WHERE username = '$username' AND passwd = '$userpass'")->row('dept_id');
+                $change_passwd = $this->db->query("SELECT change_passwd FROM osticket.ost_staff_test WHERE username = '$username' AND passwd = '$userpass'")->row('change_passwd');
+                $auto_refresh_rate = $this->db->query("SELECT auto_refresh_rate FROM osticket.ost_staff_test WHERE username = '$username' AND passwd = '$userpass'")->row('auto_refresh_rate');
+                $default_signature_type = $this->db->query("SELECT default_signature_type FROM osticket.ost_staff_test WHERE username = '$username' AND passwd = '$userpass'")->row('default_signature_type');
 
                 $result  = $this->User_model->super_login_data($username, $userpass);
 
@@ -586,29 +580,28 @@ class user_controller extends CI_Controller {
                     );              
                     $this->session->set_userdata($sessiondata);
 
-
-                    if($pw_expire != null && $pw_expire<date('Y-m-d')){
-
+                    if($pw_expire != null && $pw_expire<date('Y-m-d'))
+                    {
                         echo "<script> alert('Password already expired, Please change password to continue log in.');</script>";
                         $this->load->view('user/reset_forgot_pw', $sessiondata);
                     }
                     else
                     {
-                    if ($_SESSION['change_passwd'] != 0 ) {
-                        
-                        $this->load->view('user/reset_forgot_pw', $sessiondata);
-
-                    } else{
-
-                    redirect("staff_ticket_controller/main?title=Open&direct=open", $sessiondata);
-                    echo "<script> alert('succesfully loged in');</script>";     
-
-                    }
-                  }  
+                        if ($_SESSION['change_passwd'] != 0 )
+                        {    
+                            $this->load->view('user/reset_forgot_pw', $sessiondata);
+                        }
+                        else
+                        {
+                            redirect("staff_ticket_controller/main?title=Open&direct=open", $sessiondata);
+                            echo "<script> alert('succesfully loged in');</script>";     
+                        }
+                    }  
                 }
                 else
                 {
-                    if(isset($_SESSION['loginsecond'])){
+                    if(isset($_SESSION['loginsecond']))
+                    {
                         $_SESSION['loginsecond'] +=1;
                     }
                     else
@@ -618,23 +611,22 @@ class user_controller extends CI_Controller {
                     $staff_max_login = $this->db->query("SELECT value FROM osticket.ost_config_test WHERE id='14'")->row('value');
                     $staff_login_timeout = $this->db->query("SELECT value FROM osticket.ost_config_test WHERE id='15'")->row('value');
 
-                    if($_SESSION['loginsecond']%$staff_max_login == 0){
+                    if($_SESSION['loginsecond']%$staff_max_login == 0)
+                    {
                         $_SESSION['block_period'] = date("Y-m-d H:i:s",strtotime(date("Y-m-d H:i:s")." +$staff_login_timeout minutes"));
                     }
-
-
 
                     echo "<script> alert('Incorrect username or password');</script>";
                     $this->load->database();
 
                     $browser_id = $_SERVER["HTTP_USER_AGENT"];
                     if(strpos($browser_id,"Windows CE") || strpos($browser_id,"Windows NT 5.1") )
-                        {
+                    {
 
-                            $this->load->view('WinCe/header');
-                            $this->load->view('WinCe/index',$data);
-                            
-                        }
+                        $this->load->view('WinCe/header');
+                        $this->load->view('WinCe/index',$data);
+                        
+                    }
                     else 
                     {   
                         /*$this->load->view('header');*/
@@ -642,9 +634,7 @@ class user_controller extends CI_Controller {
                         /*$this->load->view('footer');*/
                     }    
                 }
-            
-            
-        }
+            }
         }
     }
 
@@ -700,9 +690,10 @@ class user_controller extends CI_Controller {
                 $this->db->query("UPDATE osticket.ost_staff_test SET token='$token',token_expire='$expiretime' WHERE email='$email'");
 
                 $result = $this->db->query("SELECT * FROM ost_staff_test WHERE email = '$email'");
+                $default_template_id = $this->db->query("SELECT * FROM ost_config_test WHERE id = '87'")->row('value');
 
                 $email_data = array(
-                    'body' => $this->db->query("SELECT REPLACE(REPLACE(REPLACE(REPLACE(body, '%firstname%', '".$result->row('firstname')."'), '%lastname%', '".$result->row('lastname')."'), '%token%', '$token'), '%staff_id%', '".$result->row('staff_id')."') AS email, subject FROM ost_email_template_test WHERE id = '23'"),
+                    'body' => $this->db->query("SELECT REPLACE(REPLACE(REPLACE(REPLACE(body, '%firstname%', '".$result->row('firstname')."'), '%lastname%', '".$result->row('lastname')."'), '%token%', '$token'), '%staff_id%', '".$result->row('staff_id')."') AS email, subject FROM ost_email_template_test WHERE code_name = 'staff.forgotpassword.alert' AND tpl_id = '$default_template_id'"),
                     'template' => $this->db->query("SELECT * FROM ost_company_test"),
                 );
 
@@ -843,7 +834,7 @@ class user_controller extends CI_Controller {
 
     }
 
-     public function allow_auth()
+    public function allow_auth()
     {
         // session_unset();
         // session_destroy();
@@ -861,40 +852,34 @@ class user_controller extends CI_Controller {
         $phone = $this->db->query("SELECT user_phone FROM osticket.ost_user_test WHERE user_name = '$username' AND user_pas = '$userpass'")->row('user_phone');
         $phoneext = $this->db->query("SELECT user_phoneext FROM osticket.ost_user_test WHERE user_name = '$username' AND user_pas = '$userpass'")->row('user_phoneext');
         
-
-         $sessiondata = array(
+        $sessiondata = array(
                               
-                        'username' => $username,
-                        'userpass' => $userpass,
-                        'userid' => $userid,
-                        'userdepname' => $userdepname,
-                        'useremail' =>  $useremail,
-                        'userphone' => $phone,
-                        'userphoneext' =>$phoneext,
-                        'loginuser' => TRUE,
-                        'LAST_ACTIVITY' => $_SERVER['REQUEST_TIME'],
-                             
-                    );              
-                    $this->session->set_userdata($sessiondata);
+            'username' => $username,
+            'userpass' => $userpass,
+            'userid' => $userid,
+            'userdepname' => $userdepname,
+            'useremail' =>  $useremail,
+            'userphone' => $phone,
+            'userphoneext' =>$phoneext,
+            'loginuser' => TRUE,
+            'LAST_ACTIVITY' => $_SERVER['REQUEST_TIME'],
+                 
+        );
+        $this->session->set_userdata($sessiondata);
 
-         $browser_id = $_SERVER["HTTP_USER_AGENT"];
+        $browser_id = $_SERVER["HTTP_USER_AGENT"];
         if(strpos($browser_id,"Windows CE") || strpos($browser_id,"Windows NT 5.1") )
-            {
+        {
 
-                /*$this->load->view('WinCe/header');
-                $this->load->view('WinCe/po/po_main',$data);*/
-                
-            }
+            /*$this->load->view('WinCe/header');
+            $this->load->view('WinCe/po/po_main',$data);*/
+            
+        }
         else
-            {
-                redirect('ticket_controller/info?id='.$id);
-                /*$this->load->view('footer');*/
-            }    
-
+        {
+            redirect('ticket_controller/info?id='.$id);
+            /*$this->load->view('footer');*/
+        }
     }
-      
-    
-
-
 }
 ?>

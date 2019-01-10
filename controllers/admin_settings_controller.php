@@ -158,12 +158,12 @@ class admin_settings_controller extends CI_Controller {
         {   
             $data = array(
                 'template' => $this->db->query("SELECT * FROM ost_company_test"),
-                'landpages' => $this->db->query("SELECT * FROM ost_content_test WHERE type = 'landing' AND isactive = '1' AND pages = '1'"),
-                'offpages' => $this->db->query("SELECT * FROM ost_content_test WHERE type = 'offline' AND isactive = '1' AND pages = '1'"),
-                'typages' => $this->db->query("SELECT * FROM ost_content_test WHERE type = 'thank-you' AND isactive = '1' AND pages = '1'"),
-                'orilandpages' => $this->db->query("SELECT * FROM ost_content_test WHERE type = 'landing' AND in_use = '1' AND isactive = '1' AND pages = '1'"),
-                'orioffpages' => $this->db->query("SELECT * FROM ost_content_test WHERE type = 'offline' AND in_use = '1' AND isactive = '1' AND pages = '1'"),
-                'oritypages' => $this->db->query("SELECT * FROM ost_content_test WHERE type = 'thank-you' AND in_use = '1' AND isactive = '1' AND pages = '1'"),
+                'landpages' => $this->db->query("SELECT * FROM ost_content_test WHERE type = 'landing' AND isactive = '1' AND field = 'pages'"),
+                'offpages' => $this->db->query("SELECT * FROM ost_content_test WHERE type = 'offline' AND isactive = '1' AND field = 'pages'"),
+                'typages' => $this->db->query("SELECT * FROM ost_content_test WHERE type = 'thank-you' AND isactive = '1' AND field = 'pages'"),
+                'orilandpages' => $this->db->query("SELECT * FROM ost_content_test WHERE type = 'landing' AND in_use = '1' AND isactive = '1' AND field = 'pages'"),
+                'orioffpages' => $this->db->query("SELECT * FROM ost_content_test WHERE type = 'offline' AND in_use = '1' AND isactive = '1' AND field = 'pages'"),
+                'oritypages' => $this->db->query("SELECT * FROM ost_content_test WHERE type = 'thank-you' AND in_use = '1' AND isactive = '1' AND field = 'pages'"),
                 'logo' => $this->db->query("SELECT * FROM ost_file_test WHERE type = 'logo' ORDER BY id"),
                 'defclientlogo' => $this->db->query("SELECT * FROM ost_file_test WHERE type = 'logo' AND default_client = '1'"),
                 'defstafflogo' => $this->db->query("SELECT * FROM ost_file_test WHERE type = 'logo' AND default_staff = '1'"),
@@ -211,7 +211,7 @@ class admin_settings_controller extends CI_Controller {
 
         $this->db->query("UPDATE ost_company_test SET name_template = '$cname', web_template = '$cwebsite', phone_template = '$cphone', address_template = '$caddress', company_updated = now()");
         $this->db->query("UPDATE ost_content_test SET in_use = '1', updated = now() WHERE id IN ($landing_page_id, $offline_page_id, $ty_page_id)");
-        $this->db->query("UPDATE ost_content_test SET in_use = '0', updated = now() WHERE pages = '1' AND id NOT IN ($landing_page_id, $offline_page_id, $ty_page_id)");
+        $this->db->query("UPDATE ost_content_test SET in_use = '0', updated = now() WHERE field = 'pages' AND id NOT IN ($landing_page_id, $offline_page_id, $ty_page_id)");
         $this->db->query("UPDATE ost_file_test SET default_client = '1' WHERE id = '$clientlogo'");
         $this->db->query("UPDATE ost_file_test SET default_client = '0' WHERE id != '$clientlogo' AND type = 'logo'");
         $this->db->query("UPDATE ost_file_test SET default_staff = '1' WHERE id = '$stafflogo'");
@@ -332,32 +332,30 @@ class admin_settings_controller extends CI_Controller {
         }
     }
 
-    public function ticket_seq_update()
-    {   
-        $name = $this->input->post('name');
-        $next = $this->input->post('next');
-        $increment = $this->input->post('increment');
-        $padding = $this->input->post('padding');
-        $id = $this->input->post('id');
-        $namecheck = end($name);
-        $all_id = $this->db->query("SELECT id FROM ost_sequence_test")->result();
-        
+    public function ticket_seq_update() 
+    {       
+        $name = $this->input->post('name'); 
+        $next = $this->input->post('next'); 
+        $increment = $this->input->post('increment');   
+        $padding = $this->input->post('padding');   
+        $id = $this->input->post('id'); 
+        $namecheck = end($name);    
+        $all_id = $this->db->query("SELECT id FROM ost_sequence_test")->result();   
+            
+        foreach($id as $key=>$value){  
+            if($value != ''){   
+            $this->db->query("UPDATE ost_sequence_test SET name='$name[$key]',next='$next[$key]',increment='$increment[$key]',padding='$padding[$key]' WHERE id='$value'"); 
+            }   
+            else if($value == '' && $name[$key] != $namecheck)  
+            {   
+                $this->db->query("INSERT INTO ost_sequence_test (name,next,increment,padding) VALUES('$name[$key]','$next[$key]','$increment[$key]','$padding[$key]')");    
+            }else if($value != )    
+        }   
+        echo "<script> alert('Successfully Update settings');</script>";   
+            
+        echo "<script> document.location='" . base_url() . "/index.php/admin_settings_controller/settings_ticket' </script>";   
+     }  
 
-            foreach($id as $key=>$value){
-                if($value != ''){
-                $this->db->query("UPDATE ost_sequence_test SET name='$name[$key]',next='$next[$key]',increment='$increment[$key]',padding='$padding[$key]' WHERE id='$value'");
-                }
-                else if($value == '' && $name[$key] != $namecheck)
-                {
-                    $this->db->query("INSERT INTO ost_sequence_test (name,next,increment,padding) VALUES('$name[$key]','$next[$key]','$increment[$key]','$padding[$key]')");
-                }else if($value != )
-            }
-
-        echo "<script> alert('Successfully Update settings');</script>";
-        
-        echo "<script> document.location='" . base_url() . "/index.php/admin_settings_controller/settings_ticket' </script>";
-
-    }
 
     public function ticket_update()
     {   
@@ -430,9 +428,7 @@ class admin_settings_controller extends CI_Controller {
                 'staff_sess_timeout' => $this->db->query("SELECT * FROM ost_config_test WHERE id ='16'")->row(),
                 'staff_ip_binding' => $this->db->query("SELECT * FROM ost_config_test WHERE id ='13'")->row(),
                 'hide_staff_name' => $this->db->query("SELECT * FROM ost_config_test WHERE id = '67'")->row(),
-                'awe' => $this->db->query("SELECT * FROM ost_content_test WHERE id='4'")->row(),
-                'slb' => $this->db->query("SELECT * FROM ost_content_test WHERE id='6'")->row(),
-                'opr' => $this->db->query("SELECT * FROM ost_content_test WHERE id='5'")->row(),
+                'agent_template' => $this->db->query("SELECT * FROM ost_content_test WHERE field = 'agent'"),
             );
 
             $browser_id = $_SERVER["HTTP_USER_AGENT"];
@@ -495,7 +491,8 @@ class admin_settings_controller extends CI_Controller {
                 'client_max_logins' => $this->db->query("SELECT * FROM ost_config_test WHERE id ='18'")->row(),
                 'client_login_timeout' => $this->db->query("SELECT * FROM ost_config_test WHERE id ='19'")->row(),
                 'client_session_timeout' => $this->db->query("SELECT * FROM ost_config_test WHERE id ='20'")->row(),
-                 'allow_auth_tokens' => $this->db->query("SELECT * FROM ost_config_test WHERE id ='112'")->row(),
+                'allow_auth_tokens' => $this->db->query("SELECT * FROM ost_config_test WHERE id ='112'")->row(),
+                'user_template' => $this->db->query("SELECT * FROM ost_content_test WHERE field = 'user'"),
             );
 
             $browser_id = $_SERVER["HTTP_USER_AGENT"];
@@ -540,14 +537,23 @@ class admin_settings_controller extends CI_Controller {
 
     public function templates_update()
     {   
-        $topic = $this->input->post('topic');
-        $body = $this->input->post('body');
-        $id = $this->input->post('id');
+        $id = $_REQUEST['id'];
+        $direct = $_REQUEST['direct'];
+        $topic = addslashes($this->input->post('topic'));
+        $body = addslashes($this->input->post('body'));
 
         $this->db->query("UPDATE ost_content_test SET name = '$topic', updated = NOW(), body = '$body' WHERE id='$id' ");
        
         echo "<script> alert('Successfully update template.');</script>";
-        echo "<script> document.location='" . base_url() . "/index.php/admin_settings_controller/settings_agent' </script>";
+
+        if ($direct == 'agent')
+        {
+            echo "<script> document.location='" . base_url() . "/index.php/admin_settings_controller/settings_agent#templates' </script>";
+        }
+        else if ($direct == 'user')
+        {
+            echo "<script> document.location='" . base_url() . "/index.php/admin_settings_controller/settings_user#templates' </script>";
+        }
     }
 }
 ?>

@@ -355,8 +355,7 @@ class admin_emails_controller extends CI_Controller {
         }
     }
 
-     public function emails_settings_process()
-
+    public function emails_settings_process()
     {  
         $default_template_id = $this->input->post('default_template_id');
         $default_email_id = $this->input->post('default_email_id');
@@ -681,6 +680,7 @@ class admin_emails_controller extends CI_Controller {
                 
                 'emails_templates_group_info' => $this->db->query("SELECT * FROM ost_email_template_group_test WHERE tpl_id = '$template_group_id'"),
                 'emails_templates' => $this->db->query("SELECT * FROM ost_email_template_test WHERE tpl_id = '$template_group_id' ORDER BY code_name"),
+                'default_template_id' => $this->db->query("SELECT * FROM ost_config_test WHERE id = '87'"),
 
             );
 

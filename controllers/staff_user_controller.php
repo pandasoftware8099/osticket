@@ -433,10 +433,12 @@ class staff_user_controller extends CI_Controller {
 
                     $this->load->library('email');
 
+                    $company_name = $this->db->query("SELECT * FROM ost_company_test")->row('name_template');
                     $result = $this->db->query("SELECT * FROM ost_user_test WHERE user_email = '$user_email'");
 
                     $data = array(
-                        'body' => $this->db->query("SELECT REPLACE(REPLACE(body, '%user_name%', '".$result->row('user_name')."'), '%user_id%', '".$result->row('user_id')."') AS email, subject FROM ost_email_template_test WHERE id = '22'"),
+                        'body' => $this->db->query("SELECT REPLACE(name, '%company_name%', '$company_name') AS subject,
+                            REPLACE(REPLACE(body, '%user_name%', '".$result->row('user_name')."'), '%user_id%', '".$result->row('user_id')."') AS email FROM ost_content_test WHERE type = 'registration-client'"),
                         'template' => $this->db->query("SELECT * FROM ost_company_test"),
                     );
 
@@ -564,10 +566,12 @@ class staff_user_controller extends CI_Controller {
 
                         $this->load->library('email');
 
+                        $company_name = $this->db->query("SELECT * FROM ost_company_test")->row('name_template');
                         $result = $this->db->query("SELECT * FROM ost_user_test WHERE user_email = '$user_email'")->row('user_name');
 
                         $data = array(
-                            'body' => $this->db->query("SELECT REPLACE(body, '%result%', '".$result."') AS email, subject FROM ost_email_template_test WHERE id = '20'"),
+                            'body' => $this->db->query("SELECT REPLACE(name, '%company_name%', '$company_name') AS subject,
+                                REPLACE(body, '%user_name%', '$result') AS email FROM ost_content_test WHERE type = 'pwreset-client'"),
                             'template' => $this->db->query("SELECT * FROM ost_company_test"),
                         );
 
@@ -726,10 +730,12 @@ class staff_user_controller extends CI_Controller {
             {
                 $this->load->library('email');
 
-                $subject = 'Panda Ticketing System Activation Email';
+                $company_name = $this->db->query("SELECT * FROM ost_company_test")->row('name_template');
+                $result = $this->db->query("SELECT * FROM ost_user_test WHERE user_email = '$user_email'");
 
                 $data = array(
-                    'result' => $this->db->query("SELECT * FROM ost_user_test WHERE user_email = '$user_email'"),
+                    'body' => $this->db->query("SELECT REPLACE(name, '%company_name%', '$company_name') AS subject,
+                        REPLACE(REPLACE(body, '%user_name%', '".$result->row('user_name')."'), '%user_id%', '".$result->row('user_id')."') AS email FROM ost_content_test WHERE type = 'registration-client'"),
                     'template' => $this->db->query("SELECT * FROM ost_company_test"),
                 );
 
@@ -745,14 +751,14 @@ class staff_user_controller extends CI_Controller {
                             
                 );
 
-                $bodyContent = $this->load->view('activateemailguest', $data, TRUE);
+                $bodyContent = $this->load->view('email_template', $data, TRUE);
 
                 $result = $this->email
                     ->initialize($config)
                     ->from($sender_email->userid) 
                     ->reply_to($sender_email->userid)    // Optional, an account where a human being reads.
                     ->to($user_email)
-                    ->subject($subject)
+                    ->subject($data['body']->row('subject'))
                     ->message($bodyContent)
                     ->send();
 
@@ -918,10 +924,12 @@ class staff_user_controller extends CI_Controller {
         $user_email = $this->db->query("SELECT user_email FROM osticket.ost_user_test WHERE user_id = '$user_id'")->row('user_email');
 
         $this->load->library('email');
+        $company_name = $this->db->query("SELECT * FROM ost_company_test")->row('name_template');
         $result = $this->db->query("SELECT * FROM ost_user_test WHERE user_email = '$user_email'")->row('user_name');
 
         $data = array(
-            'body' => $this->db->query("SELECT REPLACE(body, '%result%', '".$result."') AS email, subject FROM ost_email_template_test WHERE id = '20'"),
+            'body' => $this->db->query("SELECT REPLACE(name, '%company_name%', '$company_name') AS subject,
+                REPLACE(body, '%user_name%', '$result') AS email FROM ost_content_test WHERE type = 'pwreset-client'"),
             'template' => $this->db->query("SELECT * FROM ost_company_test"),
         );
 
@@ -965,10 +973,12 @@ class staff_user_controller extends CI_Controller {
 
         $this->load->library('email');
 
-        $subject = 'Panda Ticketing System Activation Email';
+        $company_name = $this->db->query("SELECT * FROM ost_company_test")->row('name_template');
+        $result = $this->db->query("SELECT * FROM ost_user_test WHERE user_email = '$user_email'");
 
         $data = array(
-            'result' => $this->db->query("SELECT * FROM ost_user_test WHERE user_email = '$user_email'"),
+            'body' => $this->db->query("SELECT REPLACE(name, '%company_name%', '$company_name') AS subject,
+                REPLACE(REPLACE(REPLACE(body, '%user_name%', '".$result->row('user_name')."'), 'activateuserguest', 'activateuser'), '%user_id%', '".$result->row('user_id')."') AS email FROM ost_content_test WHERE type = 'registration-client'"),
             'template' => $this->db->query("SELECT * FROM ost_company_test"),
         );
 
@@ -984,14 +994,14 @@ class staff_user_controller extends CI_Controller {
                             
         );
 
-        $bodyContent = $this->load->view('activateemail', $data, TRUE);
+        $bodyContent = $this->load->view('email_template', $data, TRUE);
 
         $result = $this->email
             ->initialize($config)
             ->from($sender_email->userid)
             ->reply_to($sender_email->userid)    // Optional, an account where a human being reads.
             ->to($user_email)
-            ->subject($subject)
+            ->subject($data['body']->row('subject'))
             ->message($bodyContent)
             ->send();
 

@@ -708,7 +708,7 @@ class admin_manage_controller extends CI_Controller {
         if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
         {   
             $data = array(
-                'pages' => $this->db->query("SELECT * FROM ost_content_test WHERE pages = '1'"),
+                'pages' => $this->db->query("SELECT * FROM ost_content_test WHERE field = 'pages'"),
                 'max_page_size' => $this->db->query("SELECT value FROM ost_config_test WHERE id = '21'")->row('value'),
             );
 
@@ -813,8 +813,8 @@ class admin_manage_controller extends CI_Controller {
         $content = addslashes($this->input->post('content'));
         $notes = addslashes($this->input->post('notes'));
 
-        $this->db->query("INSERT INTO ost_content_test (isactive, pages, type, name, body, notes, created, updated)
-        VALUES ('$isactive', '1', '$type', '$name', '$content', '$notes', now(), now())");
+        $this->db->query("INSERT INTO ost_content_test (isactive, field, type, name, body, notes, created, updated)
+        VALUES ('$isactive', 'pages', '$type', '$name', '$content', '$notes', now(), now())");
 
         redirect('admin_manage_controller/manage_pages');
     }

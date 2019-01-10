@@ -59,7 +59,6 @@ class Open_controller extends CI_Controller {
     {
         if($this->session->userdata('loginuser') == true && $this->session->userdata('username') != '')
         {
-
             $subject = addslashes($this->input->post('topicId'));
             $description = $this->input->post('message');
             $subtopic = addslashes($this->input->post('subtopic'));
@@ -73,9 +72,11 @@ class Open_controller extends CI_Controller {
             {
                 $result = $this->Open_model->add_process($subject, $subtopic, $description, $userid, $userdepname, $username);
 
+                $ticket_info = $this->db->query("SELECT ticket_id, value, number FROM ost_ticket_test AS a INNER JOIN ost_list_items_test AS b ON a.subtopic_id = b.id WHERE number = '$result'");
+
                 $data = array(
-                    'thank_you_page' => $this->db->query("SELECT body FROM ost_content_test WHERE type = 'thank-you' AND in_use = '1' AND pages = '1'"),
-                    'ticket_info' => $this->db->query("SELECT ticket_id, value, number FROM ost_ticket_test AS a INNER JOIN ost_list_items_test AS b ON a.subtopic_id = b.id WHERE number = '$result'"),
+                    'thank_you_page' => $this->db->query("SELECT REPLACE(body, '%ticket_id%', '".$ticket_info->row('ticket_id')."') AS content FROM ost_content_test WHERE type = 'thank-you' AND in_use = '1' AND field = 'pages'"),
+                    'ticket_info' => $ticket_info,
                 );
 
                 if(isset($_POST['submit']))
