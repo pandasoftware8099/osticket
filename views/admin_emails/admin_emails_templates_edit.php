@@ -9,9 +9,21 @@
         <div class="pull-right" style="overflow:auto;">
         <span style="font-size:10pt">Viewing:</span>
         <select id="tpl_options" name="id" style="width:250px;">
-            <?php foreach ($email_template->result() as $template) { ?>
-            <option value="<?php echo $template->id;?>" <?php echo $template->id == $_REQUEST['id']?"selected":"";?>><?php echo $template->title;?></option>
-            <?php } ?>
+            <optgroup label="Ticket End-User Email Templates">
+                <?php foreach ($ticket_end_user_templates->result() as $ticket_end_user) { ?>
+                <option value="<?php echo $ticket_end_user->id;?>" <?php echo $ticket_end_user->id == $_REQUEST['id']?"selected":"";?>><?php echo $ticket_end_user->title;?></option>
+                <?php } ?>
+            </optgroup>
+            <optgroup label="Ticket Agent Email Templates">
+                <?php foreach ($ticket_agent_templates->result() as $ticket_agent) { ?>
+                <option value="<?php echo $ticket_agent->id;?>" <?php echo $ticket_agent->id == $_REQUEST['id']?"selected":"";?>><?php echo $ticket_agent->title;?></option>
+                <?php } ?>
+            </optgroup>
+            <optgroup label="Task Email Templates">
+                <?php foreach ($task_templates->result() as $task) { ?>
+                <option value="<?php echo $task->id;?>" <?php echo $task->id == $_REQUEST['id']?"selected":"";?>><?php echo $task->title;?></option>
+                <?php } ?>
+            </optgroup>
         </select>
         </div>
     </div>
