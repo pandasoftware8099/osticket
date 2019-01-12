@@ -7,7 +7,39 @@ class staff_new_ticket_model extends CI_Model
 		$todaydate = date('Ymd');
 		$todaydate2 = substr($todaydate, 2);
 		$number_random_digit = $this->db->query("SELECT * FROM ost_config_test WHERE id = '70'")->row('value');
-		$number = $this->db->query("SELECT LPAD(FLOOR(RAND() * 999999.99), '$number_random_digit', '0') as randno")->row('randno');
+		$ticket_seq_id = $this->db->query("SELECT value FROM ost_config_test WHERE id='71'")->row('value');
+		$checkstring = str_repeat("_", $number_random_digit);
+
+		if($ticket_seq_id == '0')
+		{
+			$number = $this->db->query("SELECT LPAD(FLOOR(RAND() * 999999.99), '$number_random_digit', '0') as randno")->row('randno');
+		}
+		else
+		{
+			$next = $this->db->query("SELECT next FROM ost_sequence_test WHERE id='$ticket_seq_id'")->row('next');
+			$increment = $this->db->query("SELECT increment FROM ost_sequence_test WHERE id='$ticket_seq_id'")->row('increment');
+			$padding = $this->db->query("SELECT padding FROM ost_sequence_test WHERE id='$ticket_seq_id'")->row('padding');
+			$lastnumber = $this->db->query("SELECT number FROM ost_ticket_test WHERE number LIKE '$todaydate2$checkstring' AND sequence_id = '$ticket_seq_id' ORDER BY number DESC LIMIT 1");
+
+			if($lastnumber->num_rows() != '0')
+			{
+				$number = $lastnumber->row('number')+$increment;
+			}
+			else
+			{
+				$pad = str_repeat($padding,$number_random_digit-1);
+				$number = $todaydate2.$pad.$next;
+			}
+
+			$checknumber2 = $this->db->query("SELECT * FROM ost_ticket_test WHERE number ='$number'")->num_rows();
+
+			while($checknumber2 != 0){
+				$number += $increment;
+				$checknumber2 = $this->db->query("SELECT * FROM ost_ticket_test WHERE number ='$number'")->num_rows();
+			}
+			$number = substr($number, 6);
+		}
+
 		$poster_id = $_SESSION["staffid"];
 		$ipaddress = $_SERVER['REMOTE_ADDR'];
 		$datetime = date('Y-m-d H:i', strtotime("$datetime"));
@@ -45,8 +77,8 @@ class staff_new_ticket_model extends CI_Model
                         $this->db->query("UPDATE ost_user_test SET user_org_id = '$orgdomain->id' WHERE user_id = '$user_id' ");
                 }
 
-				$createticket = $this->db->query("INSERT INTO osticket.ost_ticket_test ( number, user_id, status_id, priority_id, department, sla_id, topic_id, subtopic_id, description, created_at, ticket_updated, ticket_updated_by_id, ticket_updated_by_role, assigned_to, team_id, ipadd, source)
-				VALUES ( '$todaydate2$number', '$user_id', '$status_id', '$priority_id', '$userdepname', '$sla_id', '$subject', '$subtopic_id', '$description', now(), now(), '$poster_id', 'agent', '$staff_id', '$team_id', '$ipaddress', '$source')");
+				$createticket = $this->db->query("INSERT INTO osticket.ost_ticket_test ( number, sequence_id, user_id, status_id, priority_id, department, sla_id, topic_id, subtopic_id, description, created_at, ticket_updated, ticket_updated_by_id, ticket_updated_by_role, assigned_to, team_id, ipadd, source)
+				VALUES ( '$todaydate2$number', '$ticket_seq_id', '$user_id', '$status_id', '$priority_id', '$userdepname', '$sla_id', '$subject', '$subtopic_id', '$description', now(), now(), '$poster_id', 'agent', '$staff_id', '$team_id', '$ipaddress', '$source')");
 
 				$manager = $this->db->query("SELECT * FROM ost_organization_test AS a
 	                LEFT JOIN ost_user_test AS b ON a.id = b.user_org_id WHERE b.user_id = '$user_id'")->row('manager');
@@ -97,8 +129,8 @@ class staff_new_ticket_model extends CI_Model
 
 			else if ($checkuser != 0 && $checkemail != 0)
 			{
-				$createticket = $this->db->query("INSERT INTO osticket.ost_ticket_test ( number, user_id, status_id, priority_id, department, sla_id, topic_id, subtopic_id, description, created_at, ticket_updated, ticket_updated_by_id, ticket_updated_by_role, assigned_to, team_id, ipadd, source)
-				VALUES ( '$todaydate2$number', '$user_id', '$status_id', '$priority_id', '$userdepname', '$sla_id', '$subject', '$subtopic_id', '$description', now(), now(), '$poster_id', 'agent', '$staff_id', '$team_id', '$ipaddress', '$source')");
+				$createticket = $this->db->query("INSERT INTO osticket.ost_ticket_test ( number, sequence_id, user_id, status_id, priority_id, department, sla_id, topic_id, subtopic_id, description, created_at, ticket_updated, ticket_updated_by_id, ticket_updated_by_role, assigned_to, team_id, ipadd, source)
+				VALUES ( '$todaydate2$number', '$ticket_seq_id', '$user_id', '$status_id', '$priority_id', '$userdepname', '$sla_id', '$subject', '$subtopic_id', '$description', now(), now(), '$poster_id', 'agent', '$staff_id', '$team_id', '$ipaddress', '$source')");
 				
 				$ticket_id = $this->db->query("SELECT * FROM ost_ticket_test WHERE number = '$todaydate2$number'")->row('ticket_id');
 
