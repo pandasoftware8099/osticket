@@ -40,26 +40,35 @@ class user_controller extends CI_Controller {
 
     }
 
+    public function register()
+    {   
+        if (isset($_REQUEST['id']))
+        {
+            $user_id = $_REQUEST['id'];
 
-        public function register()
-    {
-        
-         
-         $browser_id = $_SERVER["HTTP_USER_AGENT"];
-        if(strpos($browser_id,"Windows CE") || strpos($browser_id,"Windows NT 5.1") )
-            {
-
-                /*$this->load->view('WinCe/header');
-                $this->load->view('WinCe/po/po_main',$data);*/
-                
-            }
+            $data = array(
+                'user_info' => $this->db->query("SELECT * FROM ost_user_test WHERE user_id = '$user_id'"),
+            );
+        }
         else
-            {
-                $this->load->view('header');
-                $this->load->view('user/register.php');
-                /*$this->load->view('footer');*/
-            }    
+        {
+            $data = array();
+        }
 
+        $browser_id = $_SERVER["HTTP_USER_AGENT"];
+        if(strpos($browser_id,"Windows CE") || strpos($browser_id,"Windows NT 5.1") )
+        {
+
+            /*$this->load->view('WinCe/header');
+            $this->load->view('WinCe/po/po_main',$data);*/
+            
+        }
+        else
+        {
+            $this->load->view('header');
+            $this->load->view('user/register', $data);
+            /*$this->load->view('footer');*/
+        }
     }
 
     public function superlogin()
@@ -105,7 +114,7 @@ class user_controller extends CI_Controller {
 
         $data = array(
             'body' => $this->db->query("SELECT REPLACE(name, '%company_name%', '$company_name') AS subject,
-                REPLACE(REPLACE(REPLACE(body, '%user_name%', '".$result->row('user_name')."'), 'activateuserguest', 'activateuser'), '%user_id%', '".$result->row('user_id')."') AS email FROM ost_content_test WHERE type = 'registration-client'"),
+                REPLACE(REPLACE(body, '%user_name%', '".$result->row('user_name')."'), '%user_id%', '".$result->row('user_id')."') AS email FROM ost_content_test WHERE type = 'registration-client'"),
             'template' => $this->db->query("SELECT * FROM ost_company_test"),
         );
 
@@ -136,57 +145,98 @@ class user_controller extends CI_Controller {
         echo $this->email->print_debugger();
 
         exit;*/
-        $view_data = array(
-            'confirm_email_page' => $this->db->query("SELECT * FROM ost_content_test WHERE type ='registration-confirm'"),
-        );
-
-        $this->load->view('header');
-        $this->load->view('user/email_confirmation', $view_data);
-
+        redirect('user_controller/email_confirmation?direct=registration-confirm');
         /*echo "<script>
             document.location='" . base_url() . "/index.php/welcome/index'
         </script>";*/
     }
 
+    public function email_confirmation()
+    {
+        $direct = $_REQUEST['direct'];
+        $company_name = $this->db->query("SELECT * FROM ost_company_test")->row('name_template');
+
+        if ($direct == 'registration-confirm')
+        {
+            $data = array(
+                'confirm_page' => $this->db->query("SELECT name, body AS content FROM ost_content_test WHERE type ='registration-confirm'"),
+            );
+        }
+        else if ($direct == 'registration-thanks')
+        {
+            $data = array(
+                'confirm_page' => $this->db->query("SELECT name, REPLACE(body, '%company_name%', '$company_name') AS content FROM ost_content_test WHERE type = 'registration-thanks'"),
+            );
+        }
+         
+        $browser_id = $_SERVER["HTTP_USER_AGENT"];
+        if(strpos($browser_id,"Windows CE") || strpos($browser_id,"Windows NT 5.1") )
+        {
+
+            /*$this->load->view('WinCe/header');
+            $this->load->view('WinCe/po/po_main',$data);*/
+            
+        }
+        else
+        {
+            $this->load->view('header');
+            $this->load->view('user/email_confirmation', $data);
+            /*$this->load->view('footer');*/
+        }
+    }
+
     public function activateuser()
     {
         $user_id = $_REQUEST['id'];
+        $getuserinfo = $this->db->query("SELECT a.user_name, a.user_pas, a.user_email, a.user_phone, a.user_phoneext, b.name FROM ost_user_test a INNER JOIN ost_department_test b ON a.user_depart = b.id WHERE a.user_id = '$user_id'");
+        
+        $sessiondata = array(
+            'username' => $getuserinfo->row('user_name'),
+            'userpass' => $getuserinfo->row('user_pas'),
+            'userid' => $user_id,
+            'userdepname' => $getuserinfo->row('name'),
+            'useremail' =>  $getuserinfo->row('user_email'),
+            'userphone' => $getuserinfo->row('user_phone'),
+            'userphoneext' => $getuserinfo->row('user_phoneext'),
+            'loginuser' => TRUE,
+            'LAST_ACTIVITY' => $_SERVER['REQUEST_TIME'],
+        );
+        $this->session->set_userdata($sessiondata);
+
         $this->db->query("UPDATE ost_user_test SET status = '1', active = '1', user_updated_at = now() WHERE user_id = '$user_id' ");
 
-        echo "<script> alert('Your account had been activate.');</script>";
-        echo "<script>
-                document.location='" . base_url() . "/index.php/user_controller/login'
-              </script>";
-    }
-
-    public function activateuserguest()
-    {
-        $user_id = $_REQUEST['id'];
-        $data = array(
-            'result' => $this->db->query("SELECT * FROM ost_user_test WHERE user_id = '$user_id'")
-        );
-
-        $this->load->view('user/guestuseractivate', $data); 
+        redirect('user_controller/email_confirmation?direct=registration-thanks');
     }
 
     public function activateuserguestconfirm()
     {
-        
-        $cemail = $this->input->post('cemail');
-        $cname = $this->input->post('cname');
-        $cphone = $this->input->post('cphone');
-        $cphoneext = $this->input->post('cphoneext');
+        $cemail = $this->input->post('email');
+        $cname = $this->input->post('fullname');
+        $cphone = $this->input->post('phone');
+        $cphoneext = $this->input->post('phoneext');
         $newpass1 = $this->input->post('passwd1');
         $newpass2 = $this->input->post('passwd2');
         $user_id = $_REQUEST['id'];
 
         if($newpass1 == $newpass2){
-            $this->db->query("UPDATE ost_user_test SET user_email = '$cemail' , user_name = '$cname', user_pas = '$newpass2', user_phone = '$cphone', user_phoneext = '$cphoneext',status = '1', active = '1', user_updated_at = now() WHERE user_id = '$user_id'");
-        
-            echo "<script> alert('Succesfully activate account');</script>";
-            echo "<script>
-            document.location='" . base_url() . "/index.php/user_controller/login'
-            </script>";
+            $this->db->query("UPDATE ost_user_test SET user_email = '$cemail' , user_name = '$cname', user_pas = '$newpass2', user_phone = '$cphone', user_phoneext = '$cphoneext', status = '1', active = '1', user_updated_at = now() WHERE user_id = '$user_id'");
+
+            $getuserinfo = $this->db->query("SELECT b.name FROM ost_user_test a INNER JOIN ost_department_test b ON a.user_depart = b.id WHERE a.user_id = '$user_id'");
+
+            $sessiondata = array(
+                'username' => $cname,
+                'userpass' => $newpass2,
+                'userid' => $user_id,
+                'userdepname' => $getuserinfo->row('name'),
+                'useremail' =>  $cemail,
+                'userphone' => $cphone,
+                'userphoneext' => $cphoneext,
+                'loginuser' => TRUE,
+                'LAST_ACTIVITY' => $_SERVER['REQUEST_TIME'],
+            );
+            $this->session->set_userdata($sessiondata);
+
+            redirect('user_controller/email_confirmation?direct=registration-thanks');
         }
 
         else{
@@ -687,13 +737,12 @@ class user_controller extends CI_Controller {
                 $expiretime = date("Y-m-d H:i:s",strtotime(date("Y-m-d H:i:s")." +$token_life minutes"));
 
                 $token = bin2hex(openssl_random_pseudo_bytes(16));
-                $this->db->query("UPDATE osticket.ost_staff_test SET token='$token',token_expire='$expiretime' WHERE email='$email'");
+                $this->db->query("UPDATE osticket.ost_staff_test SET token='$token', token_expire='$expiretime' WHERE email='$email'");
 
                 $result = $this->db->query("SELECT * FROM ost_staff_test WHERE email = '$email'");
-                $default_template_id = $this->db->query("SELECT * FROM ost_config_test WHERE id = '87'")->row('value');
 
                 $email_data = array(
-                    'body' => $this->db->query("SELECT REPLACE(REPLACE(REPLACE(REPLACE(body, '%firstname%', '".$result->row('firstname')."'), '%lastname%', '".$result->row('lastname')."'), '%token%', '$token'), '%staff_id%', '".$result->row('staff_id')."') AS email, subject FROM ost_email_template_test WHERE code_name = 'staff.forgotpassword.alert' AND tpl_id = '$default_template_id'"),
+                    'body' => $this->db->query("SELECT REPLACE(REPLACE(REPLACE(body, '%firstname%', '".$result->row('firstname')."'), '%token%', '$token'), '%staff_id%', '".$result->row('staff_id')."') AS email, name FROM ost_content_test WHERE type = 'pwreset-staff'"),
                     'template' => $this->db->query("SELECT * FROM ost_company_test"),
                 );
 
@@ -716,7 +765,7 @@ class user_controller extends CI_Controller {
                     ->from($sender_email->userid)
                     ->reply_to($sender_email->userid)    // Optional, an account where a human being reads.
                     ->to($email)
-                    ->subject($email_data['body']->row('subject'))
+                    ->subject($email_data['body']->row('name'))
                     ->message($bodyContent)
                     ->send();
 
@@ -749,8 +798,6 @@ class user_controller extends CI_Controller {
 
     public function resetforgotpassword()
     {
-       
-
         $user_id = $this->input->post('id');
         $old_pw = $this->input->post('old_pw');
         $newpw = $this->input->post('new_pw');
@@ -759,20 +806,19 @@ class user_controller extends CI_Controller {
         $getDate = date('Y-m-d');
         $getDate = strtotime(date("Y-m-d", strtotime($getDate)) . " +".$passwdreset." months");
         $expiry_date = date('Y-m-d',$getDate);
-        $user_token_pw = $this->db->query("SELECT token FROM ost_staff_test WHERE staff_id = '$user_id' ")->row('token');
-        $token_expire = $this->db->query("SELECT token_expire FROM ost_staff_test WHERE staff_id='$user_id' ")->row('token_expire');
+        $staff_info = $this->db->query("SELECT token, token_expire, passwd FROM ost_staff_test WHERE staff_id = '$user_id' ");
 
         $curtime=date("Y-m-d H:i:s");
-        if($user_token_pw != null && $token_expire != null)
+        if($staff_info->row('token') != null && $staff_info->row('token_expire') != null)
         {   
-            if($curtime>$token_expire)
+            if($curtime>$staff_info->row('token_expire'))
             {
-                 echo "<script> alert('Temporary Password has expired! Please send another temporary password to reset your password.');</script>";
+                echo "<script> alert('Temporary Password has expired! Please send another temporary password to reset your password.');</script>";
                 echo "<script>
                 document.location='" . base_url() . "/index.php/user/pwreset'
                 </script>";
             }
-            else if($newpw == $newpw2 && $old_pw == $user_token_pw)
+            else if($newpw == $newpw2 && $old_pw == ($staff_info->row('token') || $staff_info->row('passwd')))
             {
                 $this->db->query("UPDATE ost_staff_test SET change_passwd = '0', passwd = '$newpw2' , updated = NOW(),passwdreset='$expiry_date' WHERE staff_id = '$user_id'");
 
@@ -796,19 +842,19 @@ class user_controller extends CI_Controller {
             $stafforipasswd = $this->db->query("SELECT passwd FROM ost_staff_test WHERE staff_id = '$user_id' ")->row('passwd');
             if($newpw == $newpw2 && $old_pw == $stafforipasswd)
             {
-            $this->db->query("UPDATE ost_staff_test SET change_passwd = '0', passwd = '$newpw2' , updated = NOW(),passwdreset='$expiry_date' WHERE staff_id = '$user_id'");
-        
-            echo "<script> alert('Succesfully change password');</script>";
-           echo "<script>
-                document.location='" . base_url() . "/index.php/staff_ticket_controller/main?title=Open&direct=open'
-                </script>";
+                $this->db->query("UPDATE ost_staff_test SET change_passwd = '0', passwd = '$newpw2' , updated = NOW(),passwdreset='$expiry_date' WHERE staff_id = '$user_id'");
+            
+                echo "<script> alert('Succesfully change password');</script>";
+                echo "<script>
+                    document.location='" . base_url() . "/index.php/staff_ticket_controller/main?title=Open&direct=open'
+                    </script>";
             }
             else
             {
-            echo "<script> alert('Wrong original password or different new password');</script>"; 
-            echo "<script>
-            document.location='" . base_url() . "/index.php/user_controller/reset_forgot_pw?id=".$user_id."'
-            </script>";  
+                echo "<script> alert('Wrong original password or different new password');</script>"; 
+                echo "<script>
+                document.location='" . base_url() . "/index.php/user_controller/reset_forgot_pw?id=".$user_id."'
+                </script>";  
             }
         }
     }
@@ -817,7 +863,7 @@ class user_controller extends CI_Controller {
     {
         $data['id'] = $_REQUEST['id'];
          
-         $browser_id = $_SERVER["HTTP_USER_AGENT"];
+        $browser_id = $_SERVER["HTTP_USER_AGENT"];
         if(strpos($browser_id,"Windows CE") || strpos($browser_id,"Windows NT 5.1") )
             {
 
@@ -842,7 +888,7 @@ class user_controller extends CI_Controller {
 
         $id = $_REQUEST['id'];
 
-        $getuser = $this->db->query("SELECT a.user_name, a.user_pas FROM ost_user_test a INNER JOIN ost_ticket_test b ON a.user_id = b.user_id WHERE b.ticket_id = '667'");
+        $getuser = $this->db->query("SELECT a.user_name, a.user_pas FROM ost_user_test a INNER JOIN ost_ticket_test b ON a.user_id = b.user_id WHERE b.ticket_id = '$id'");
         $username = $getuser->row('user_name');
         $userpass = $getuser->row('user_pas');
         $userid = $this->db->query("SELECT user_id FROM osticket.ost_user_test WHERE user_name = '$username' AND user_pas = '$userpass'")->row('user_id');

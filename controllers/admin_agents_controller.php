@@ -322,15 +322,19 @@ class admin_agents_controller extends CI_Controller {
 
         else if($sendreset == '1') {
 
+            $token_life = $this->db->query("SELECT value FROM osticket.ost_config_test WHERE id='107'")->row('value');
+            $expiretime = date("Y-m-d H:i:s",strtotime(date("Y-m-d H:i:s")." +$token_life minutes"));
+            $token = bin2hex(openssl_random_pseudo_bytes(16));
+
             $this->db->query("INSERT INTO 
-            ost_staff_test (firstname, lastname, email, phone, phone_ext, mobile, username, isactive, isadmin, assigned_only, change_passwd, onvacation, notes, dept_id, role_id, user_created, permissions, updated, passwdreset)
+            ost_staff_test (firstname, lastname, email, phone, phone_ext, mobile, username, isactive, isadmin, assigned_only, change_passwd, onvacation, notes, dept_id, role_id, user_created, permissions, token, token_expire, updated, passwdreset)
             VALUES 
-            ('$firstname', '$lastname', '$email', '$phone', '$phone_ext', '$mobile', '$username', '$islocked', '$isadmin', '$assigned_only', '$change_passwd', '$onvacation', '$notes','$dept_id', '$role_id', NOW(), '$perms', NOW(), '$expiry_date')");
+            ('$firstname', '$lastname', '$email', '$phone', '$phone_ext', '$mobile', '$username', '$islocked', '$isadmin', '$assigned_only', '$change_passwd', '$onvacation', '$notes','$dept_id', '$role_id', NOW(), '$perms', '$token', '$expiretime', NOW(), '$expiry_date')");
 
             $result = $this->db->query("SELECT * FROM ost_staff_test WHERE email = '$email'");
 
             $data = array(
-                'body' => $this->db->query("SELECT REPLACE(REPLACE(body, '%firstname%', '".$result->row('firstname')."'), '%staff_id%', '".$result->row('staff_id')."') AS email, name FROM ost_content_test WHERE type = 'pwreset-staff'"),
+                'body' => $this->db->query("SELECT REPLACE(REPLACE(REPLACE(body, '%firstname%', '".$result->row('firstname')."'), '%token%', '$token'), '%staff_id%', '".$result->row('staff_id')."') AS email, name FROM ost_content_test WHERE type = 'pwreset-staff'"),
                 'template' => $this->db->query("SELECT * FROM ost_company_test"),
             );
 
@@ -578,30 +582,36 @@ class admin_agents_controller extends CI_Controller {
 
         else if($sendreset == '1') {
 
+        $token_life = $this->db->query("SELECT value FROM osticket.ost_config_test WHERE id='107'")->row('value');
+        $expiretime = date("Y-m-d H:i:s",strtotime(date("Y-m-d H:i:s")." +$token_life minutes"));
+        $token = bin2hex(openssl_random_pseudo_bytes(16));
+
         $this->db->query("UPDATE ost_staff_test
-        SET firstname = '$firstname', 
-        lastname = '$lastname', 
-        email = '$email', 
-        phone = '$phone', 
-        phone_ext = '$phone_ext', 
-        mobile = '$mobile', 
-        username = '$username', 
-        isactive = '$islocked',
-        isadmin = '$isadmin', 
-        change_passwd ='4',
-        assigned_only = '$assigned_only', 
-        onvacation = '$onvacation', 
-        notes = '$notes', 
-        dept_id = '$dept_id', 
-        role_id = '$role_id', 
-        permissions =  '$perms',
-        updated = NOW()
-        WHERE staff_id = '$staffid';");
+            SET firstname = '$firstname', 
+                lastname = '$lastname', 
+                email = '$email', 
+                phone = '$phone', 
+                phone_ext = '$phone_ext', 
+                mobile = '$mobile', 
+                username = '$username', 
+                isactive = '$islocked',
+                isadmin = '$isadmin', 
+                change_passwd ='4',
+                assigned_only = '$assigned_only', 
+                onvacation = '$onvacation', 
+                notes = '$notes', 
+                dept_id = '$dept_id', 
+                role_id = '$role_id', 
+                permissions =  '$perms',
+                token = '$token',
+                token_expire = '$expiretime',
+                updated = NOW()
+            WHERE staff_id = '$staffid';");
 
         $result = $this->db->query("SELECT * FROM ost_staff_test WHERE email = '$email'");
 
         $data = array(
-            'body' => $this->db->query("SELECT REPLACE(REPLACE(body, '%firstname%', '".$result->row('firstname')."'), '%staff_id%', '".$result->row('staff_id')."') AS email, name FROM ost_content_test WHERE type = 'pwreset-staff'"),
+            'body' => $this->db->query("SELECT REPLACE(REPLACE(REPLACE(body, '%firstname%', '".$result->row('firstname')."'), '%token%', '$token'), '%staff_id%', '".$result->row('staff_id')."') AS email, name FROM ost_content_test WHERE type = 'pwreset-staff'"),
             'template' => $this->db->query("SELECT * FROM ost_company_test"),
         );
 
@@ -700,7 +710,7 @@ class admin_agents_controller extends CI_Controller {
             }
 
             $this->db->query("DELETE FROM ost_staff_dept_access_test WHERE staff_id='$staffid' ");
-        foreach ( $ext_role_id as $index => $ext_role_id1 ) 
+            foreach ( $ext_role_id as $index => $ext_role_id1 ) 
 
             {
 
