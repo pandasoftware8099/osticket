@@ -125,13 +125,8 @@ div.dataTables_wrapper div.dataTables_paginate ul.pagination {
 <body>
 
     <?php
-
      $time = $_SERVER['REQUEST_TIME'];
         $timeout = $this->db->query("SELECT value FROM ost_config_test WHERE id = '16'")->row('value');
-
-         $data = array(
-            'offline' => $this->db->query("SELECT value FROM ost_config_test WHERE id = '12'"),
-        );
 
         if($timeout <> 0)
         {
@@ -142,11 +137,11 @@ div.dataTables_wrapper div.dataTables_paginate ul.pagination {
                 session_destroy();
                 session_start();
                 echo "<script> alert('You have been IDLE for too long, please log in to continue.');</script>";
-                $this->load->view('user/superlogin',$data);die;
+                echo "<script> document.location='" . base_url() . "/index.php/user_controller/superlogin' </script>";
             }
             else
             {
-            $_SESSION['LAST_ACTIVITY'] = $time;
+                $_SESSION['LAST_ACTIVITY'] = $time;
             }
         } 
     ?>

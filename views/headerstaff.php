@@ -161,7 +161,7 @@ div.dataTables_wrapper div.dataTables_paginate ul.pagination {
         
         if ($data['offline']->row('value') == '0' && $admin->row('isadmin') == '0')
         {   
-            redirect("user_controller/superlogin", $data);die;
+            redirect("user_controller/superlogin", $data);
         }
 
         $time = $_SERVER['REQUEST_TIME'];
@@ -176,11 +176,11 @@ div.dataTables_wrapper div.dataTables_paginate ul.pagination {
                 session_destroy();
                 session_start();
                 echo "<script> alert('You have been IDLE for too long, please log in to continue.');</script>";
-                $this->load->view('user/superlogin',$data);die;
+                echo "<script> document.location='" . base_url() . "/index.php/user_controller/superlogin' </script>";
             }
             else
             {
-            $_SESSION['LAST_ACTIVITY'] = $time;
+                $_SESSION['LAST_ACTIVITY'] = $time;
             }
         }
     ;?>
