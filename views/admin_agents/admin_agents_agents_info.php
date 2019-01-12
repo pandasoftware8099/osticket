@@ -60,7 +60,7 @@
 
 
 <div class="form-group" style="overflow:auto;">
-      <label class="col-lg-2 control-label"><i class="offset help-tip icon-question-sign" href="#username"></i> Password <span class="error">* </span> :</label>
+      <label class="col-lg-2 control-label" style="padding-top:9px"><i class="offset help-tip icon-question-sign" href="#username"></i> Password <span class="error">* </span> :</label>
       <div class="col-lg-10">
 
   <div class="quick-add">
@@ -68,33 +68,45 @@
           <caption>                  <div><small></small></div>
           </caption>
           <tbody><tr><td style="width:8.3333%"></td><td style="width:8.3333%"></td><td style="width:8.3333%"></td><td style="width:8.3333%"></td><td style="width:8.3333%"></td><td style="width:8.3333%"></td><td style="width:8.3333%"></td><td style="width:8.3333%"></td><td style="width:8.3333%"></td><td style="width:8.3333%"></td><td style="width:8.3333%"></td><td style="width:8.3333%"></td></tr></tbody>
-<tbody><tr>          <td class="cell" colspan="12" rowspan="1" style="" data-field-id="1">
+    <tbody>
+      <tr>
+          <td class="cell" colspan="12" rowspan="1" style="" data-field-id="1">
               <fieldset class="field " id="field_67c3468a5b7b8e08" data-field-id="1">
-        <label class="checkbox">
-        <input id="_changepass" type="checkbox" name="_field-checkboxes" value="1">
-        Send the agent a password reset email    
-        <small>(Leave blank if you dont want to reset password)</small>  
-            </label>
+              <label class="checkbox">
+                  <input id="_changepass" type="checkbox" name="_field-checkboxes" value="1">
+                  Send the agent a password reset email    
+                  <small>(Leave blank if you dont want to reset password)</small>  
+              </label>
               </fieldset>
           </td>
-      </tr><tr>          <td class="cell" colspan="12" rowspan="1" style="" data-field-id="2">
+      </tr>
+      <tr>
+          <td class="cell" colspan="12" rowspan="1" style="" data-field-id="2">
               <fieldset class="field " id="field_b83f52c50b053a90" data-field-id="2">
-        <input type="password" class="form-control" id="_b83f52c50b053a90" size="16" maxlength="30" placeholder="New Password" name="password1" value="">
-            </fieldset>
+                  <input type="password" class="form-control" id="_b83f52c50b053a90" size="16" maxlength="30" placeholder="New Password" name="password1" value="">
+              </fieldset>
           </td>
-      </tr><tr>          <td class="cell" colspan="12" rowspan="1" style="" data-field-id="3">
+      </tr>
+      <tr>
+          <td class="cell" colspan="12" rowspan="1" style="" data-field-id="3">
               <fieldset class="field " id="field_4710deaa31acbbd2" data-field-id="3">
-        <input type="password" class="form-control" id="_4710deaa31acbbd2" size="16" maxlength="30" placeholder="Confirm Password" name="password2" value="">
-                         </fieldset>
+                  <input type="password" class="form-control" id="_4710deaa31acbbd2" size="16" maxlength="30" placeholder="Confirm Password" name="password2" value="">
+              </fieldset>
           </td>
-      </tr><tr>          <td class="cell" colspan="12" rowspan="1" style="" data-field-id="4">
-              <fieldset class="field " id="field_25aab4ced655a467" data-field-id="4">
-        <label class="checkbox form footer">
-        <input id="_25aab4ced655a467" type="checkbox" name="change_passwd" value="4">
-        Require password change at next login        </label>
-                 </fieldset>
+      </tr>
+      <tr>
+          <td class="cell" colspan="12" rowspan="1" style="" data-field-id="4">
+              <fieldset class="field">
+              <label class="checkbox">
+                  <input id="_25aab4ced655a467" type="checkbox" name="change_passwd" value="4">
+                  Require password change at next login
+              </label>
+              </fieldset>
           </td>
-      </tr></tbody></table>  </div> 
+      </tr>
+    </tbody>
+  </table>
+</div> 
   
 
   <div class="clear"></div>
