@@ -89,7 +89,11 @@
                         minutes <em>(0 to disable)</em>.
                 </div>
             </div>
-            
+            <br>
+            <p style="text-align:center">
+                <input class="button" type="submit" name="submit" value="Save Changes">
+                <input class="button" type="reset" name="reset" value="Reset Changes">
+            </p>
         </div>
         <div id="templates" class="tab_content hiddens">
             <table class="form_table settings_table" width="100%" border="0" cellspacing="0" cellpadding="2">

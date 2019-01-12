@@ -6,10 +6,10 @@
     <ul class="clean tabs">
         <li class="active"><a href="#settings"><i class="icon-asterisk"></i>
             Settings</a></li>
-        <!-- <li><a href="#autoresp"><i class="icon-mail-reply-all"></i>
+        <li><a href="#autoresp"><i class="icon-mail-reply-all"></i>
             Autoresponder</a></li>
         <li><a href="#alerts"><i class="icon-bell-alt"></i>
-            Alerts and Notices</a></li> -->
+            Alerts and Notices</a></li>
     </ul>
 </div>
 <div class="tab_content" id="settings">
@@ -17,7 +17,7 @@
         <em>System-wide default ticket settings and options.</em>
     </div>
     <div class="form-group" style="overflow:auto;">
-        <label class="col-lg-4 control-label" style="padding-top:0px">Default Ticket Number Format<br/> (Range : 2 - 12)<span class="error">*</span> :</label>
+        <label class="col-lg-4 control-label" style="padding-top:0px"><!-- <i class="help-tip icon-question-sign" href="#number_format"></i> --> Default Ticket Number Random Digit (Range : 2 - 12) <span class="error">*</span> :</label>
         <div class="col-lg-6">
             <input type="number" name="ticket_number_format" id="ticket_number_format" class="form-control no-spin" min="2" max="12" value="<?php echo $ticket_number_format->row('value');?>" required>
             <div class="error"></div>
@@ -30,7 +30,7 @@
     <div class="form-group" style="overflow:auto;">
         <label class="col-lg-4 control-label"> Default Ticket Number Sequence :</label>
         <div class="col-lg-6">
-            <select name="ticket_sequence_id" class="form-control" id="ticket_sequence_id">
+            <select name="ticket_sequence_id" class="form-control">
                 <option value="0" <?php if($ticket_seq=='0'){echo 'selected';}?>>— Random —</option>
                 <?php foreach($ticket_seq_list->result() as $value){
                     if($ticket_seq==$value->id){
@@ -148,7 +148,220 @@
             <input type="checkbox" name="show_answered_tickets" value="1" <?php echo $show_answered_tickets->row('value') == 1?"checked":"";?>>
                 Exclude answered tickets from open queue.        </div>
     </div>
-
+</div>
+<div class="hiddens tab_content" id="autoresp" data-tip-namespace="settings.autoresponder" style="display: none;">
+    <div class="section-break" style="margin-bottom:10px;">
+    <em>Global setting - can be disabled at department or email level.</em>
+</div>
+<div class="form-group" style="overflow:auto;margin-bottom:0px;">
+    <label class="col-lg-3 control-label" style="padding-top:1px"> New Ticket :</label>
+    <div class="col-lg-9">
+        <input type="hidden" name="ticket_autoresponder" value="0">
+        <input type="checkbox" name="ticket_autoresponder" value="1" <?php echo $ticket_autoresponder == 1?"checked":"";?>>
+            Ticket Owner&nbsp;
+    </div>
+</div>
+<br><div class="form-group" style="overflow:auto;margin-bottom:0px;">
+    <label class="col-lg-3 control-label" style="padding-top:1px"> New Ticket by Agent :</label>
+    <div class="col-lg-9">
+        <input type="hidden" name="ticket_notice_active" value="0">
+        <input type="checkbox" name="ticket_notice_active" value="1" <?php echo $ticket_notice_active == 1?"checked":"";?>>
+            Ticket Owner&nbsp;
+    </div>
+</div>
+<br><div class="form-group" style="overflow:auto;margin-bottom:0px;">
+    <label class="col-lg-3 control-label" style="padding-top:1px"> New Message :</label>
+    <div class="col-lg-9">
+        <input type="hidden" name="message_autoresponder" value="0">
+        <input type="checkbox" name="message_autoresponder" value="1" <?php echo $message_autoresponder == 1?"checked":"";?>>
+            Submitter: Send receipt confirmation&nbsp;
+    </div>
+</div>
+<!-- <div class="form-group" style="overflow:auto;margin-bottom:0px;">
+    <label class="col-lg-3 control-label" style="padding-top:1px">&nbsp;&nbsp;</label>
+    <div class="col-lg-9">
+        <input type="hidden" name="message_autoresponder_collabs" value="0">
+        <input type="checkbox" name="message_autoresponder_collabs" value="1">
+            Participants: Send new activity notice&nbsp;
+    </div>
+</div> -->
+<br><div class="form-group" style="overflow:auto;margin-bottom:0px;">
+    <label class="col-lg-3 control-label" style="padding-top:1px"> Overlimit Notice :</label>
+    <div class="col-lg-8">
+        <input type="hidden" name="overlimit_notice_active" value="0">
+        <input type="checkbox" name="overlimit_notice_active" value="1" <?php echo $overlimit_notice_active == 1?"checked":"";?>>
+            Ticket Submitter&nbsp;
+    </div>
+</div></div>
+<div class="hiddens tab_content" id="alerts" data-tip-namespace="settings.alerts" style="display: none;">
+    <table class="form_table settings_table" width="100%" border="0" cellspacing="0" cellpadding="2">
+    <tbody>
+        <tr><th><em></i> <b>New Ticket Alert</b> :
+            </em></th></tr>
+        <tr>
+            <td><em><b>Status:</b></em> &nbsp;
+                <input type="radio" name="ticket_alert_active" value="1"> Enable
+                <input type="radio" name="ticket_alert_active" value="0">
+                 Disable                &nbsp;&nbsp;<font class="error">&nbsp;</font>
+             </td>
+        </tr>
+        <tr>
+            <td>
+                <input type="checkbox" name="ticket_alert_admin">
+                Admin Email <em>(kelwin@pandasoftware.my)</em>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input type="checkbox" name="ticket_alert_dept_manager" checked="">
+                Department Manager            </td>
+        </tr>
+        <tr>
+            <td>
+                <input type="checkbox" name="ticket_alert_dept_members" checked="">
+                Department Members            </td>
+        </tr>
+        <tr>
+            <td>
+                <input type="checkbox" name="ticket_alert_acct_manager" checked="">
+                Organization Account Manager            </td>
+        </tr>
+        <tr><th><em><b>New Message Alert</b> :
+            </em></th></tr>
+        <tr>
+            <td><em><b>Status:</b></em> &nbsp;
+              <input type="radio" name="message_alert_active" value="1"> Enable              &nbsp;&nbsp;
+              <input type="radio" name="message_alert_active" value="0" checked="">
+              Disable            </td>
+        </tr>
+        <tr>
+            <td>
+              <input type="checkbox" name="message_alert_laststaff" checked="">
+                Last Respondent            </td>
+        </tr>
+        <tr>
+            <td>
+              <input type="checkbox" name="message_alert_assigned" checked="">
+              Assigned Agent / Team            </td>
+        </tr>
+        <tr>
+            <td>
+              <input type="checkbox" name="message_alert_dept_manager" checked="">
+              Department Manager            </td>
+        </tr>
+        <tr>
+            <td>
+                <input type="checkbox" name="message_alert_acct_manager" checked="">
+                Organization Account Manager            </td>
+        </tr>
+        <tr><th><em><b>New Internal Activity Alert</b> :
+            </em></th></tr>
+        <tr>
+            <td><em><b>Status:</b></em> &nbsp;
+              <input type="radio" name="note_alert_active" value="1">
+                Enable              &nbsp;&nbsp;
+              <input type="radio" name="note_alert_active" value="0" checked="">
+                Disable              &nbsp;&nbsp;&nbsp;<font class="error">&nbsp;</font>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <input type="checkbox" name="note_alert_laststaff" checked=""> Last Respondent            </td>
+        </tr>
+        <tr>
+            <td>
+              <input type="checkbox" name="note_alert_assigned" checked="">
+                Assigned Agent / Team            </td>
+        </tr>
+        <tr>
+            <td>
+              <input type="checkbox" name="note_alert_dept_manager" checked="">
+                Department Manager            </td>
+        </tr>
+        <tr><th><em><b>Ticket Assignment Alert</b> :
+            </em></th></tr>
+        <tr>
+            <td><em><b>Status: </b></em> &nbsp;
+              <input name="assigned_alert_active" value="1" type="radio"> Enable              &nbsp;&nbsp;
+              <input name="assigned_alert_active" value="0" type="radio" checked="checked"> Disable               &nbsp;&nbsp;&nbsp;<font class="error">&nbsp;</font>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <input type="checkbox" name="assigned_alert_staff" checked=""> Assigned Agent            </td>
+        </tr>
+        <tr>
+            <td>
+              <input type="checkbox" name="assigned_alert_team_lead" checked=""> Team Lead            </td>
+        </tr>
+        <tr>
+            <td>
+              <input type="checkbox" name="assigned_alert_team_members" checked="">
+                Team Members            </td>
+        </tr>
+        <tr><th><em><b>Ticket Transfer Alert</b> :
+            </em></th></tr>
+        <tr>
+            <td><em><b>Status:</b></em> &nbsp;
+            <input type="radio" name="transfer_alert_active" value="1">
+                Enable            <input type="radio" name="transfer_alert_active" value="0" checked="">
+                Disable              &nbsp;&nbsp;&nbsp;<font class="error">&nbsp;</font>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <input type="checkbox" name="transfer_alert_assigned" checked="">
+                Assigned Agent / Team            </td>
+        </tr>
+        <tr>
+            <td>
+              <input type="checkbox" name="transfer_alert_dept_manager" checked="">
+                Department Manager            </td>
+        </tr>
+        <tr>
+            <td>
+              <input type="checkbox" name="transfer_alert_dept_members" checked="">
+                Department Members            </td>
+        </tr>
+        <tr><th><em><b>Overdue Ticket Alert</b> :
+            </em></th></tr>
+        <tr>
+            <td><em><b>Status:</b></em> &nbsp;
+              <input type="radio" name="overdue_alert_active" value="1"> Enable              <input type="radio" name="overdue_alert_active" value="0" checked=""> Disable              &nbsp;&nbsp;<font class="error">&nbsp;</font>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <input type="checkbox" name="overdue_alert_assigned" checked=""> Assigned Agent / Team            </td>
+        </tr>
+        <tr>
+            <td>
+              <input type="checkbox" name="overdue_alert_dept_manager" checked=""> Department Manager            </td>
+        </tr>
+        <tr>
+            <td>
+              <input type="checkbox" name="overdue_alert_dept_members" checked=""> Department Members            </td>
+        </tr>
+        <tr><th>
+            <em><b>System Alerts</b>: </em></th></tr>
+        <tr>
+            <td>
+              <input type="checkbox" name="send_sys_errors" checked="checked" disabled="disabled">
+                System Errors              <em>(enabled by default)</em>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <input type="checkbox" name="send_sql_errors">
+                SQL errors            </td>
+        </tr>
+        <tr>
+            <td>
+              <input type="checkbox" name="send_login_errors">
+                Excessive failed login attempts            </td>
+        </tr>
+    </tbody>
+</table>
 </div>
 
 <p style="text-align:center;">
@@ -171,145 +384,32 @@
         return random_number;
     }
 
-    function pad (str, max, padding) {
-      str = str.toString();
-      padding = padding.toString();
-      return str.length < max ? pad(padding + str, max, padding) : str;
-    }
-
-    var ticket_no_seq = document.getElementById("ticket_sequence_id").options[document.getElementById("ticket_sequence_id").selectedIndex].value;
     var random_number_digit = document.getElementById("ticket_number_format");
-    
-        if (ticket_no_seq == '0'){
+    document.getElementById("ticket_number_example").innerHTML = 'YYMMDD' + random_number(random_number_digit);
+
+    random_number_digit.onkeyup = function (){
+        if (random_number_digit.value > 1 && random_number_digit.value < 13)
+        {   
             document.getElementById("ticket_number_example").innerHTML = 'YYMMDD' + random_number(random_number_digit);
-
-            random_number_digit.onkeyup = function (){
-                if (random_number_digit.value > 1 && random_number_digit.value < 13)
-                {   
-                    document.getElementById("ticket_number_example").innerHTML = 'YYMMDD' + random_number(random_number_digit);
-                }
-                else
-                {
-                    do
-                    {                
-                        if (random_number_digit.value <= 1)
-                        {
-                            var random_number_minimum = Math.floor(Math.random()*1E2);
-                        }
-                        else if (random_number_digit.value >= 13)
-                        {
-                            var random_number_minimum = Math.floor(Math.random()*1E12);
-                        }
-                    }
-                    while (random_number_minimum.toString().length != 2 && random_number_minimum.toString().length != 12);
-
-                    document.getElementById("ticket_number_example").innerHTML = 'YYMMDD' + random_number_minimum;
-                }
-            }
         }
         else
         {
-            
-                $.ajax({
-                  url : "<?php echo site_url('admin_settings_controller/ticketlist?id='); ?>" + ticket_no_seq,
-                  success : function(result){
-                    result = JSON.parse(result);
-                     document.getElementById("ticket_number_example").innerHTML = 'YYMMDD' + pad(result[0].next,random_number_digit.value,result[0].padding);
-
-                    random_number_digit.onkeyup = function (){
-                        if (random_number_digit.value > 1 && random_number_digit.value < 13)
-                        {   
-                            document.getElementById("ticket_number_example").innerHTML = 'YYMMDD' + pad(result[0].next,random_number_digit.value,result[0].padding);
-                        }
-                        else
-                        {
-                            do
-                            {                
-                                if (random_number_digit.value <= 1)
-                                {
-                                    var random_number_minimum = pad(result[0].next,2,result[0].padding);
-                                }
-                                else if (random_number_digit.value >= 13)
-                                {
-                                    var random_number_minimum = pad(result[0].next,12,result[0].padding);;
-                                }
-                            }
-                            while (random_number_minimum.toString().length != 2 && random_number_minimum.toString().length != 12);
-
-                            document.getElementById("ticket_number_example").innerHTML = 'YYMMDD' + random_number_minimum;
-                        }
-                    }
-                    
-                  }
-                });
-        }
-    
-    $("#ticket_sequence_id").change(function () {
-                var val = $(this).val();
-                if (val == '0'){
-            document.getElementById("ticket_number_example").innerHTML = 'YYMMDD' + random_number(random_number_digit);
-
-            random_number_digit.onkeyup = function (){
-                if (random_number_digit.value > 1 && random_number_digit.value < 13)
-                {   
-                    document.getElementById("ticket_number_example").innerHTML = 'YYMMDD' + random_number(random_number_digit);
-                }
-                else
+            do
+            {                
+                if (random_number_digit.value <= 1)
                 {
-                    do
-                    {                
-                        if (random_number_digit.value <= 1)
-                        {
-                            var random_number_minimum = Math.floor(Math.random()*1E2);
-                        }
-                        else if (random_number_digit.value >= 13)
-                        {
-                            var random_number_minimum = Math.floor(Math.random()*1E12);
-                        }
-                    }
-                    while (random_number_minimum.toString().length != 2 && random_number_minimum.toString().length != 12);
-
-                    document.getElementById("ticket_number_example").innerHTML = 'YYMMDD' + random_number_minimum;
+                    var random_number_minimum = Math.floor(Math.random()*1E2);
+                }
+                else if (random_number_digit.value >= 13)
+                {
+                    var random_number_minimum = Math.floor(Math.random()*1E12);
                 }
             }
-        }
-        else
-        {
-            
-                $.ajax({
-                  url : "<?php echo site_url('admin_settings_controller/ticketlist?id='); ?>" + val,
-                  success : function(result){
-                    result = JSON.parse(result);
-                     document.getElementById("ticket_number_example").innerHTML = 'YYMMDD' + pad(result[0].next,random_number_digit.value,result[0].padding);
+            while (random_number_minimum.toString().length != 2 && random_number_minimum.toString().length != 12);
 
-                    random_number_digit.onkeyup = function (){
-                        if (random_number_digit.value > 1 && random_number_digit.value < 13)
-                        {   
-                            document.getElementById("ticket_number_example").innerHTML = 'YYMMDD' + pad(result[0].next,random_number_digit.value,result[0].padding);
-                        }
-                        else
-                        {
-                            do
-                            {                
-                                if (random_number_digit.value <= 1)
-                                {
-                                    var random_number_minimum = pad(result[0].next,2,result[0].padding);
-                                }
-                                else if (random_number_digit.value >= 13)
-                                {
-                                    var random_number_minimum = pad(result[0].next,12,result[0].padding);;
-                                }
-                            }
-                            while (random_number_minimum.toString().length != 2 && random_number_minimum.toString().length != 12);
-
-                            document.getElementById("ticket_number_example").innerHTML = 'YYMMDD' + random_number_minimum;
-                        }
-                    }
-                    
-                  }
-                });
+            document.getElementById("ticket_number_example").innerHTML = 'YYMMDD' + random_number_minimum;
         }
-    });
+    }
 
     function manage()
         {
@@ -371,7 +471,7 @@ used to generate sequences for different purposes.<br>
     <div class="col-lg-10">
         <i class="icon-sort-by-order"></i>
         <div style="display:inline-block" class="name">
-            <input type="text" value="" name="name[]" autocomplete="off"></input>
+            <input type="text" value="" name="name[]"></input>
         </div>
     </div>
     <input type="hidden" value="" name="id[]">
