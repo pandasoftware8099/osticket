@@ -201,9 +201,8 @@ $.dialog(url, [201], function(xhr, resp) {
 
 <?php if ($openclose->status_id != '3') { ?>
 <form id="reply" action="<?php echo site_url('ticket_controller/StatusUpdate')?>" name="reply" method="post" enctype="multipart/form-data">
-    <input type="hidden" name="__CSRFToken__" value="12c2cebeb988fe44d2dcd7b6e47f5400f54c6921">    <h2>Post a Reply</h2>
+    <h2>Post a Reply</h2>
     <input type="hidden" name="id" value="<?php  echo $_REQUEST['id']; ?>">
-    <input type="hidden" name="a" value="reply">
     <div>
         <p><em>To best assist you, we request that you be specific and detailed</em>
         <font class="error">*&nbsp;</font>
