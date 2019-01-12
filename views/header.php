@@ -78,7 +78,7 @@ input[type="button"], input[type="reset"], input[type="submit"] {
         
         if ($offline->row('value') == '0')
         {   
-            $this->load->view('offline', $data);die;
+            redirect("user_controller/login", $data);
         }
 
         $time = $_SERVER['REQUEST_TIME'];
@@ -93,8 +93,7 @@ input[type="button"], input[type="reset"], input[type="submit"] {
                 session_destroy();
                 session_start();
                 echo "<script> alert('You have been IDLE for too long, please log in to continue.');</script>";
-                $this->load->view('header');
-                $this->load->view('user/login',$data);die;
+                echo "<script> document.location='" . base_url() . "/index.php/user_controller/login' </script>";
             }
             else
             {
