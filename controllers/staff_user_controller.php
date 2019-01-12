@@ -56,9 +56,8 @@ class staff_user_controller extends CI_Controller {
 
         else       
         {
-           redirect('user_controller/login');
+           redirect('user_controller/superlogin');
         }
-
     }
 
     public function createuser()
@@ -438,7 +437,7 @@ class staff_user_controller extends CI_Controller {
 
                     $data = array(
                         'body' => $this->db->query("SELECT REPLACE(name, '%company_name%', '$company_name') AS subject,
-                            REPLACE(REPLACE(body, '%user_name%', '".$result->row('user_name')."'), '%user_id%', '".$result->row('user_id')."') AS email FROM ost_content_test WHERE type = 'registration-client'"),
+                            REPLACE(REPLACE(REPLACE(body, '%user_name%', '".$result->row('user_name')."'), 'activateuser', 'register'), '%user_id%', '".$result->row('user_id')."') AS email FROM ost_content_test WHERE type = 'registration-client'"),
                         'template' => $this->db->query("SELECT * FROM ost_company_test"),
                     );
 
@@ -735,7 +734,7 @@ class staff_user_controller extends CI_Controller {
 
                 $data = array(
                     'body' => $this->db->query("SELECT REPLACE(name, '%company_name%', '$company_name') AS subject,
-                        REPLACE(REPLACE(body, '%user_name%', '".$result->row('user_name')."'), '%user_id%', '".$result->row('user_id')."') AS email FROM ost_content_test WHERE type = 'registration-client'"),
+                        REPLACE(REPLACE(REPLACE(body, '%user_name%', '".$result->row('user_name')."'), 'activateuser', 'register'), '%user_id%', '".$result->row('user_id')."') AS email FROM ost_content_test WHERE type = 'registration-client'"),
                     'template' => $this->db->query("SELECT * FROM ost_company_test"),
                 );
 
@@ -978,7 +977,7 @@ class staff_user_controller extends CI_Controller {
 
         $data = array(
             'body' => $this->db->query("SELECT REPLACE(name, '%company_name%', '$company_name') AS subject,
-                REPLACE(REPLACE(REPLACE(body, '%user_name%', '".$result->row('user_name')."'), 'activateuserguest', 'activateuser'), '%user_id%', '".$result->row('user_id')."') AS email FROM ost_content_test WHERE type = 'registration-client'"),
+                REPLACE(REPLACE(body, '%user_name%', '".$result->row('user_name')."'), '%user_id%', '".$result->row('user_id')."') AS email FROM ost_content_test WHERE type = 'registration-client'"),
             'template' => $this->db->query("SELECT * FROM ost_company_test"),
         );
 

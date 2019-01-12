@@ -306,6 +306,11 @@ class admin_settings_controller extends CI_Controller {
                 'auto_claim_tickets' => $this->db->query("SELECT * FROM ost_config_test WHERE id ='63'"),
                 'show_assigned_tickets' => $this->db->query("SELECT * FROM ost_config_test WHERE id ='65'"),
                 'show_answered_tickets' => $this->db->query("SELECT * FROM ost_config_test WHERE id ='66'"),
+                'ticket_autoresponder' => $this->db->query("SELECT value FROM ost_config_test WHERE id='36'")->row('value'),
+                'ticket_notice_active' => $this->db->query("SELECT value FROM ost_config_test WHERE id='38'")->row('value'),
+                'message_autoresponder' => $this->db->query("SELECT value FROM ost_config_test WHERE id='37'")->row('value'),
+                /*'message_autoresponder_collabs' => $this->db->query("SELECT value FROM ost_config_test WHERE id='99'")->row('value'),*/
+                'overlimit_notice_active' => $this->db->query("SELECT value FROM ost_config_test WHERE id='68'")->row('value'),
                 'ticket_seq_list' => $this->db->query("SELECT * FROM ost_sequence_test"),
                 'ticket_seq' => $this->db->query("SELECT value FROM ost_config_test WHERE id='71'")->row('value'),
             );
@@ -342,19 +347,21 @@ class admin_settings_controller extends CI_Controller {
         $namecheck = end($name);    
         $all_id = $this->db->query("SELECT id FROM ost_sequence_test")->result();   
             
-        foreach($id as $key=>$value){  
-            if($value != ''){   
-            $this->db->query("UPDATE ost_sequence_test SET name='$name[$key]',next='$next[$key]',increment='$increment[$key]',padding='$padding[$key]' WHERE id='$value'"); 
+        foreach($id as $key=>$value)
+        {  
+            if($value != '')
+            {   
+                $this->db->query("UPDATE ost_sequence_test SET name='$name[$key]',next='$next[$key]',increment='$increment[$key]',padding='$padding[$key]' WHERE id='$value'"); 
             }   
             else if($value == '' && $name[$key] != $namecheck)  
             {   
                 $this->db->query("INSERT INTO ost_sequence_test (name,next,increment,padding) VALUES('$name[$key]','$next[$key]','$increment[$key]','$padding[$key]')");    
-            }else if($value != )    
+            }  
         }   
         echo "<script> alert('Successfully Update settings');</script>";   
             
         echo "<script> document.location='" . base_url() . "/index.php/admin_settings_controller/settings_ticket' </script>";   
-     }  
+    }  
 
 
     public function ticket_update()
@@ -368,6 +375,11 @@ class admin_settings_controller extends CI_Controller {
         $auto_claim_tickets = $this->input->post('auto_claim_tickets');
         $show_assigned_tickets = $this->input->post('show_assigned_tickets');
         $show_answered_tickets = $this->input->post('show_answered_tickets');
+        $ticket_autoresponder = $this->input->post('ticket_autoresponder');
+        $ticket_notice_active = $this->input->post('ticket_notice_active');
+        $message_autoresponder = $this->input->post('message_autoresponder');
+        /*$message_autoresponder_collabs = $this->input->post('message_autoresponder_collabs');*/
+        $overlimit_notice_active = $this->input->post('overlimit_notice_active');
 
         $this->db->query("UPDATE ost_config_test SET value = '$ticket_number_format', updated = NOW() WHERE id='70' ");
         $this->db->query("UPDATE ost_config_test SET value = '$default_status', updated = NOW() WHERE id='103' ");
@@ -378,6 +390,11 @@ class admin_settings_controller extends CI_Controller {
         $this->db->query("UPDATE ost_config_test SET value = '$auto_claim_tickets', updated = NOW() WHERE id='63' ");
         $this->db->query("UPDATE ost_config_test SET value = '$show_assigned_tickets', updated = NOW() WHERE id='65' ");
         $this->db->query("UPDATE ost_config_test SET value = '$show_answered_tickets', updated = NOW() WHERE id='66' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$ticket_autoresponder', updated = NOW() WHERE id='36' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$ticket_notice_active', updated = NOW() WHERE id='38' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$message_autoresponder', updated = NOW() WHERE id='37' ");
+        /*$this->db->query("UPDATE ost_config_test SET value = '$message_autoresponder_collabs', updated = NOW() WHERE id='99' ");*/
+        $this->db->query("UPDATE ost_config_test SET value = '$overlimit_notice_active', updated = NOW() WHERE id='68' ");
 
         echo "<script> alert('Successfully change settings');</script>";
         echo "<script> document.location='" . base_url() . "/index.php/admin_settings_controller/settings_ticket' </script>";

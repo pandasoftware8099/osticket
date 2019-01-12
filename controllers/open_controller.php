@@ -52,7 +52,6 @@ class Open_controller extends CI_Controller {
         {
            redirect('user_controller/login');
         }
-
     }
 
     public function create()
@@ -67,17 +66,17 @@ class Open_controller extends CI_Controller {
             $userdepname = $_SESSION['userdepname'];
             $count_user_tickets = $this->db->query("SELECT COUNT(*) AS count FROM ost_ticket_test a INNER JOIN ost_ticket_status_test b ON a.status_id = b.id WHERE a.user_id = '$userid' AND b.state = 'open'")->row('count');
             $max_open_tickets = $this->db->query("SELECT value FROM ost_config_test WHERE id = '22'")->row('value');
+            $ticket_autoresponder = $this->db->query("SELECT value FROM ost_config_test WHERE id='36'")->row('value');
+            $overlimit_notice_active = $this->db->query("SELECT value FROM ost_config_test WHERE id='68'")->row('value');
+            $default_template_id = $this->db->query("SELECT * FROM ost_config_test WHERE id = '87'")->row('value');
 
             if ($count_user_tickets < $max_open_tickets || empty($max_open_tickets))
             {
                 $result = $this->Open_model->add_process($subject, $subtopic, $description, $userid, $userdepname, $username);
 
-                $ticket_info = $this->db->query("SELECT ticket_id, value, number FROM ost_ticket_test AS a INNER JOIN ost_list_items_test AS b ON a.subtopic_id = b.id WHERE number = '$result'");
-
-                $data = array(
-                    'thank_you_page' => $this->db->query("SELECT REPLACE(body, '%ticket_id%', '".$ticket_info->row('ticket_id')."') AS content FROM ost_content_test WHERE type = 'thank-you' AND in_use = '1' AND field = 'pages'"),
-                    'ticket_info' => $ticket_info,
-                );
+                $ticket_info = $this->db->query("SELECT b.user_name, b.user_email FROM ost_ticket_test AS a
+                    INNER JOIN ost_user_test AS b ON a.user_id = b.user_id 
+                    WHERE number = '$result'");
 
                 if(isset($_POST['submit']))
                 {
@@ -111,14 +110,109 @@ class Open_controller extends CI_Controller {
                     }
                 }
 
-                $this->load->view('header');
-                $this->load->view('viewt/ticket_thankyou', $data);
+                $body = array();
+                if ($ticket_autoresponder == '1')
+                {
+                    $body_ticket_autoresponder = $this->db->query("SELECT REPLACE(subject, '%number%', '$result') AS email_subject,
+                        REPLACE(REPLACE(body, '%user_name%', '".$ticket_info->row('user_name')."'), '%number%', '$result') AS email
+                        FROM ost_email_template_test WHERE code_name = 'ticket.autoresp' AND tpl_id = '$default_template_id'");
+                    array_push($body, $body_ticket_autoresponder);
+                }
+                if ($overlimit_notice_active == '1' && $count_user_tickets + 1 == $max_open_tickets)
+                {
+                    $body_overlimit_notice_active = $this->db->query("SELECT subject AS email_subject, REPLACE(body, '%user_name%', '".$ticket_info->row('user_name')."') AS email FROM ost_email_template_test WHERE code_name = 'ticket.overlimit' AND tpl_id = '$default_template_id'");
+                    array_push($body, $body_overlimit_notice_active);
+                }
+
+                if ($ticket_autoresponder == '1' || ($overlimit_notice_active == '1' && $count_user_tickets + 1 == $max_open_tickets))
+                {
+                    $this->load->library('email');
+                    $thread_id = $this->db->query("SELECT * FROM ost_thread_entry_test INNER JOIN ost_ticket_test WHERE number = '$result' AND type ='S'")->row('id');
+                    $file_id = $this->db->query("SELECT name FROM ost_file_test WHERE thread_entry_id='$thread_id'");
+                    $email_attach = $this->db->query("SELECT value FROM ost_config_test WHERE id='69'")->row('value');
+                    
+                    foreach ($body as $email_body)
+                    {
+                        $data = array(
+                            'body' => $email_body,
+                            'template' => $this->db->query("SELECT * FROM ost_company_test"),
+                        );
+
+                        $default_email = $this->db->query("SELECT value FROM ost_config_test WHERE id='83'")->row('value');
+                        $sender_email = $this->db->query("SELECT * FROM ost_email_test WHERE email_id='$default_email'")->row();
+
+                        $config = array(
+            
+                            'smtp_user' => $sender_email->userid,
+                            'smtp_pass' => $sender_email->userpass,
+                            'smtp_host' => $sender_email->smtp_host,
+                            'smtp_port' => $sender_email->smtp_port,
+                            
+                        );
+
+                        $bodyContent = $this->load->view('email_template', $data, TRUE);
+
+                        $this->email->initialize($config);
+                        $this->email->from($sender_email->userid); 
+                        $this->email->reply_to($sender_email->userid);    // Optional, an account where a human being reads.
+                        $this->email->to($ticket_info->row('user_email'));
+                        $this->email->subject($data['body']->row('email_subject'));
+                        $this->email->message($bodyContent);
+                        if($email_attach == '1' || $ticket_autoresponder == '1')
+                        {
+                            foreach($file_id->result() as $value1)
+                            {
+                                $this->email->attach('uploads/'.$value1->name);
+                            }
+                        }
+                        $this->email->send();
+                    }
+                }
+
+                echo "<script> document.location='" . base_url() . "/index.php/open_controller/ticket_thank_you?number=$result' </script>";
             }
             else
             {
                 echo "<script> alert('The number of unsolved tickets has exceeded maximum number allowed for a single user.');</script>";
                 echo "<script> document.location='" . base_url() . "/index.php/open_controller/main' </script>";
             }
+        }
+
+        else       
+        {
+           redirect('user_controller/login');
+        }
+    }
+
+    public function ticket_thank_you()
+    {
+        if($this->session->userdata('loginuser') == true && $this->session->userdata('username') != '')
+        {
+            $ticket_number = $_REQUEST['number'];
+            $ticket_info = $this->db->query("SELECT a.ticket_id, b.value, a.number FROM ost_ticket_test AS a 
+                INNER JOIN ost_list_items_test AS b ON a.subtopic_id = b.id
+                WHERE number = '$ticket_number'");
+
+            $data = array(
+                'thank_you_page' => $this->db->query("SELECT REPLACE(body, '%ticket_id%', '".$ticket_info->row('ticket_id')."') AS content FROM ost_content_test WHERE type = 'thank-you' AND in_use = '1' AND field = 'pages'"),
+                'ticket_info' => $ticket_info,
+            );
+
+            $browser_id = $_SERVER["HTTP_USER_AGENT"];
+            if(strpos($browser_id,"Windows CE") || strpos($browser_id,"Windows NT 5.1") )
+            {
+
+                /*$this->load->view('WinCe/header');
+                $this->load->view('WinCe/po/po_main',$data);*/
+                
+            }
+            else
+            {
+                $this->load->view('header');
+                $this->load->view('opent/ticket_thankyou' ,$data);
+                /*$this->load->view('footer');*/
+            }    
+
         }
 
         else       

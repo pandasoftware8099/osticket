@@ -248,7 +248,7 @@ class staff_ticket_controller extends CI_Controller {
 
         else       
         {
-           redirect('user_controller/login');
+           redirect('user_controller/superlogin');
         }
     }
 
@@ -486,6 +486,7 @@ class staff_ticket_controller extends CI_Controller {
                 VALUES ('$ticketid' ,'$poster_id', 'E' ,'$posterfname $posterlname', '$description', '$ipaddress', now(), now(), 'magic', 'left')");
             
                 $ticket_auto_response = $this->db->query("SELECT ticket_auto_response FROM ost_department_test WHERE NAME = (SELECT department FROM ost_ticket_test WHERE ticket_id = '$ticketid')")->row('ticket_auto_response');
+                $ticket_notice_active = $this->db->query("SELECT value FROM ost_config_test WHERE id='38'")->row('value');
 
                 if(isset($_POST['submit']))
                 {
@@ -519,11 +520,10 @@ class staff_ticket_controller extends CI_Controller {
                     } , $array1
                 );
 
-                if ($ticket_auto_response == '1')
+                if ($ticket_auto_response == '1' && $ticket_notice_active == '1')
                 {
                     foreach ($alluseremail as $value)
                     {
-
                         $this->load->library('email');
 
                         $thread_id = $this->db->query("SELECT * FROM ost_thread_entry_test WHERE created = now() AND type ='S'")->row('id');
@@ -591,7 +591,7 @@ class staff_ticket_controller extends CI_Controller {
                 }
                 else
                 {
-                    if ($alertuser == '1')
+                    if ($alertuser == '1' && $ticket_notice_active == '1')
                     {
                         $this->load->library('email');
 
@@ -654,7 +654,6 @@ class staff_ticket_controller extends CI_Controller {
                         $this->email->send();
                     }
                 }
-
                 
                 echo "<script> alert('Ticket succesfully created.');</script>"; 
                 echo "<script> document.location='" . base_url() . "/index.php/staff_ticket_controller/ticketinfo?id=$result' </script>";
@@ -1023,7 +1022,7 @@ class staff_ticket_controller extends CI_Controller {
 
         else       
         {
-           redirect('user_controller/login');
+           redirect('user_controller/superlogin');
         }
     }
 
@@ -1251,7 +1250,7 @@ class staff_ticket_controller extends CI_Controller {
 
         else       
         {
-           redirect('user_controller/login');
+           redirect('user_controller/superlogin');
         }
     }
 
@@ -1296,7 +1295,7 @@ class staff_ticket_controller extends CI_Controller {
 
         else       
         {
-           redirect('user_controller/login');
+           redirect('user_controller/superlogin');
         }
 
     }
@@ -1349,17 +1348,14 @@ class staff_ticket_controller extends CI_Controller {
             $ipaddress = $_SERVER['REMOTE_ADDR'];
             $signature = $this->input->post('signature');
             $sign = $this->input->post('sign');
-
-            /*$departmentemail = $this->db->query("SELECT email FROM ost_email_test WHERE email_id = (SELECT autoresp_email_id FROM `ost_department_test` WHERE NAME = (SELECT department FROM ost_ticket_test WHERE ticket_id = '$ticketid'))")->row('email');
-            // follow config email , not following here */
             
             $email = $this->db->query("SELECT b.user_email, b.user_name FROM ost_ticket_test a INNER JOIN ost_user_test b ON a.user_id = b.user_id WHERE ticket_id = '$ticketid'");
             $ticket_info = $this->db->query("SELECT a.number, a.assigned_to, a.team_id, a.reopened, a.ticket_updated, a.ticket_updated_by_id, a.ticket_updated_by_role, b.state, c.value FROM ost_ticket_test a 
                 INNER JOIN ost_ticket_status_test b ON a.status_id = b.id 
                 INNER JOIN ost_list_items_test c ON a.subtopic_id = c.id WHERE a.ticket_id = '$ticketid'");
-
-            $posterfname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_id = $poster_id")->row('firstname');
-            $posterlname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_id = $poster_id")->row('lastname');
+            $poster_info = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_id = $poster_id");
+            $posterfname = $poster_info->row('firstname');
+            $posterlname = $poster_info->row('lastname');
 
             $autolock_minutes = $this->db->query("SELECT value FROM ost_config_test WHERE id = '23'");
             $autolock_time = date("Y-m-d H:i:s", strtotime("+{$autolock_minutes->row('value')} minutes", strtotime($ticket_info->row('ticket_updated'))));
@@ -1388,15 +1384,14 @@ class staff_ticket_controller extends CI_Controller {
                     }
                 }
 
-                $autoresponseusercheck = $this->db->query("SELECT message_auto_response FROM ost_department_test WHERE NAME = (SELECT department FROM ost_ticket_test WHERE ticket_id = '$ticketid')")->row('message_auto_response');
+                /*$autoresponseusercheck = $this->db->query("SELECT message_auto_response FROM ost_department_test WHERE NAME = (SELECT department FROM ost_ticket_test WHERE ticket_id = '$ticketid')")->row('message_auto_response');
+                $message_autoresponder = $this->db->query("SELECT value FROM ost_config_test WHERE id='37'")->row('value');
                 $default_template_id = $this->db->query("SELECT * FROM ost_config_test WHERE id = '87'")->row('value');
 
-                if ($autoresponseusercheck == '1')
+                if ($autoresponseusercheck == '1' && $message_autoresponder == '1')
                 {
                     $data = array(
-                        'body' => $this->db->query("SELECT REPLACE(REPLACE(subject, '%subject%', '".$ticket_info->row('value')."'), '%number%', '".$ticket_info->row('number')."') AS email_subject,
-                            REPLACE(REPLACE(body, '%name%', '".$email->row('user_name')."'), '%response%', '$description') AS email
-                            FROM ost_email_template_test WHERE code_name = 'ticket.reply' AND tpl_id = '$default_template_id'"),
+                        'body' => $this->db->query("SELECT REPLACE(REPLACE(body, '%user_name%', '".$email->row('user_name')."'), '%number%', '".$ticket_info->row('number')."') AS email, subject FROM ost_email_template_test WHERE code_name = 'message.autoresp' AND tpl_id = '$default_template_id'"),
                         'signature' => $signature,
                         'ticketsign' => $this->db->query("SELECT a.*, b.*, a.signature AS staffsign, b.signature AS deptsign FROM ost_staff_test AS a
                             INNER JOIN ost_department_test AS b ON a.dept_id = b.id
@@ -1408,23 +1403,22 @@ class staff_ticket_controller extends CI_Controller {
                     $sender_email = $this->db->query("SELECT * FROM ost_email_test WHERE email_id='$default_email'")->row();
 
                     $config = array(
-                        
                         'smtp_user' => $sender_email->userid,
                         'smtp_pass' => $sender_email->userpass,
                         'smtp_host' => $sender_email->smtp_host,
                         'smtp_port' => $sender_email->smtp_port,
-                                        
                     );
                     $bodyContent = $this->load->view('email_template', $data, TRUE);
+
                     $result = $this->email
                     ->initialize($config)
                     ->from($sender_email->userid)
                     ->reply_to($sender_email->userid)    // Optional, an account where a human being reads.
-                    ->to($email->row('user_email'))
-                    ->subject($data['body']->row('email_subject'))
+                    ->to($poster_info->row('email'))
+                    ->subject($data['body']->row('subject'))
                     ->message($bodyContent)
                     ->send();
-                }
+                }*/
                 
                 $solve = $this->input->post('solve');
                 $this->db->query("UPDATE ost_ticket_test SET status_id = '$solve', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_id = '$ticketid' ");
@@ -1466,7 +1460,7 @@ class staff_ticket_controller extends CI_Controller {
 
         else
         {
-            redirect('user_controller/login');
+            redirect('user_controller/superlogin');
         }
     }
 
@@ -1532,7 +1526,7 @@ class staff_ticket_controller extends CI_Controller {
 
         else
         {
-            redirect('user_controller/login');
+            redirect('user_controller/superlogin');
         }
     }
 
@@ -1898,7 +1892,7 @@ class staff_ticket_controller extends CI_Controller {
 
         else       
         {
-           redirect('user_controller/login');
+           redirect('user_controller/superlogin');
         }
     }
 

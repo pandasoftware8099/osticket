@@ -169,7 +169,6 @@ class Ticket_controller extends CI_Controller {
     {
         if($this->session->userdata('loginuser') == true && $this->session->userdata('username') != '')
         {
-
             $ticketid = $this->input->post('id');
             $description = addslashes($this->input->post('message'));
             $userid = $_SESSION['userid'];
@@ -181,6 +180,11 @@ class Ticket_controller extends CI_Controller {
 
             $solve = $this->input->post('solve');
             $this->db->query("UPDATE ost_ticket_test SET status_id = '$solve', ticket_updated = now(), ticket_updated_by_id = '$userid', ticket_updated_by_role = 'user' WHERE ticket_id = '$ticketid' ");
+
+            $message_autoresponder = $this->db->query("SELECT value FROM ost_config_test WHERE id='37'")->row('value');
+            $default_template_id = $this->db->query("SELECT * FROM ost_config_test WHERE id = '87'")->row('value');
+            $user_info = $this->db->query("SELECT * FROM ost_user_test WHERE user_id = '$userid'");
+            $ticket_info = $this->db->query("SELECT * FROM ost_ticket_test WHERE ticket_id = '$ticketid'");
 
             if(isset($_POST['submit'])){
      
@@ -204,32 +208,43 @@ class Ticket_controller extends CI_Controller {
 
                         echo "<script> alert('$i File(s) and message successfully sent.');</script>";
                     }
-
-                    else {
-
+                    else
+                    {
                         echo "<script> alert('Message successfully sent.');</script>"; 
-
                     }
                 }
-
-                if ($filename == ""){
-
-                    echo "<script> alert('Please choose file.');</script>"; 
-
-                }
-
-                else {
-
-                    echo "<script> alert('$i file(s) succesfully upload.');</script>"; 
-
-                }
-             
-
             }
 
-                redirect('ticket_controller/info?id='.$ticketid);
+            if ($message_autoresponder == '1')
+            {
+                $data = array(
+                    'body' => $this->db->query("SELECT REPLACE(REPLACE(body, '%user_name%', '".$user_info->row('user_name')."'), '%number%', '".$ticket_info->row('number')."') AS email, subject FROM ost_email_template_test WHERE code_name = 'message.autoresp' AND tpl_id = '$default_template_id'"),
+                    'template' => $this->db->query("SELECT * FROM ost_company_test"),
+                );
+                
+                $default_email = $this->db->query("SELECT value FROM ost_config_test WHERE id='83'")->row('value');
+                $sender_email = $this->db->query("SELECT * FROM ost_email_test WHERE email_id='$default_email'")->row();
+
+                $config = array(
+                    'smtp_user' => $sender_email->userid,
+                    'smtp_pass' => $sender_email->userpass,
+                    'smtp_host' => $sender_email->smtp_host,
+                    'smtp_port' => $sender_email->smtp_port,
+                );
+                $bodyContent = $this->load->view('email_template', $data, TRUE);
+
+                $result = $this->email
+                ->initialize($config)
+                ->from($sender_email->userid)
+                ->reply_to($sender_email->userid)    // Optional, an account where a human being reads.
+                ->to($user_info->row('user_email'))
+                ->subject($data['body']->row('subject'))
+                ->message($bodyContent)
+                ->send();
             }
 
+            redirect('ticket_controller/info?id='.$ticketid);
+        }
         else       
         {
            redirect('user_controller/login');

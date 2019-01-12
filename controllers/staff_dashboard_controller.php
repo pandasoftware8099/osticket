@@ -49,7 +49,7 @@ class staff_dashboard_controller extends CI_Controller {
 
         else       
         {
-           redirect('user_controller/login');
+           redirect('user_controller/superlogin');
         }
 
     }
@@ -85,7 +85,7 @@ class staff_dashboard_controller extends CI_Controller {
 
         else       
         {
-           redirect('user_controller/login');
+           redirect('user_controller/superlogin');
         }
 
     }
@@ -261,7 +261,7 @@ class staff_dashboard_controller extends CI_Controller {
 
         else       
         {
-           redirect('user_controller/login');
+           redirect('user_controller/superlogin');
         }
 
     }

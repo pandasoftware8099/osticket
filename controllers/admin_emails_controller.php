@@ -679,7 +679,9 @@ class admin_emails_controller extends CI_Controller {
             $data = array(
                 
                 'emails_templates_group_info' => $this->db->query("SELECT * FROM ost_email_template_group_test WHERE tpl_id = '$template_group_id'"),
-                'emails_templates' => $this->db->query("SELECT * FROM ost_email_template_test WHERE tpl_id = '$template_group_id' ORDER BY code_name"),
+                'ticket_end_user_templates' => $this->db->query("SELECT * FROM ost_email_template_test WHERE tpl_id = '$template_group_id' AND type = 'ticket_end_user'"),
+                'ticket_agent_templates' => $this->db->query("SELECT * FROM ost_email_template_test WHERE tpl_id = '$template_group_id' AND type = 'ticket_agent'"),
+                'task_templates' => $this->db->query("SELECT * FROM ost_email_template_test WHERE tpl_id = '$template_group_id' AND type = 'task'"),
                 'default_template_id' => $this->db->query("SELECT * FROM ost_config_test WHERE id = '87'"),
 
             );
@@ -733,9 +735,12 @@ class admin_emails_controller extends CI_Controller {
         if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
         {   
             $template_id = $_REQUEST['id'];
+            $default_template_id = $this->db->query("SELECT * FROM ost_config_test WHERE id = '87'")->row('value');
 
             $data = array(
-                'email_template' => $this->db->query("SELECT * FROM ost_email_template_test ORDER BY code_name"),
+                'ticket_end_user_templates' => $this->db->query("SELECT * FROM ost_email_template_test WHERE tpl_id = '$default_template_id' AND type = 'ticket_end_user'"),
+                'ticket_agent_templates' => $this->db->query("SELECT * FROM ost_email_template_test WHERE tpl_id = '$default_template_id' AND type = 'ticket_agent'"),
+                'task_templates' => $this->db->query("SELECT * FROM ost_email_template_test WHERE tpl_id = '$default_template_id' AND type = 'task'"),
                 'email_template_info' => $this->db->query("SELECT * FROM ost_email_template_test WHERE id = '$template_id'"),
                 'company' => $this->db->query("SELECT * FROM ost_company_test"),
             );
@@ -767,11 +772,11 @@ class admin_emails_controller extends CI_Controller {
         $template_id = $_REQUEST['id'];
         $email_subject = addslashes($this->input->post('subject'));
         $email_body = addslashes($this->input->post('body'));
-        $template_group_id = $this->db->query("SELECT * FROM ost_email_template_test WHERE id = '$template_id'")->row('tpl_id');
 
         $this->db->query("UPDATE ost_email_template_test SET subject = '$email_subject', body = '$email_body', updated = now() WHERE id = '$template_id'");
 
-        redirect('admin_emails_controller/emails_templates_info?id='.$template_group_id.'');
+        echo "<script> alert('Successfully updated this message template.');</script>";
+        echo "<script> document.location='" . base_url() . "/index.php/admin_emails_controller/emails_templates_edit?id=$template_id' </script>";
     }
 
     public function emails_diagnostic()
