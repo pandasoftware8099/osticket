@@ -47,7 +47,7 @@
             else if(isset($staffid)){
                 echo $staffid;
             }?>">
-            <input type="password" name="old_pw"  placeholder="Old Password" autofocus="" autocorrect="off" autocapitalize="off" required>
+            <input type="password" name="old_pw"  placeholder="Old/Temporary Password" autofocus="" autocorrect="off" autocapitalize="off" required>
             <input type="password" name="new_pw" placeholder="New Password" autofocus="" autocorrect="off" autocapitalize="off" required>
             <input type="password" name="confirm" placeholder="Confirm New Password" autocorrect="off" autocapitalize="off" required>
             <button class="submit button pull-right" type="submit" name="submit">

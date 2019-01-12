@@ -22,15 +22,15 @@
 <?php $logostaff = $this->db->query("SELECT * FROM ost_file_test WHERE type = 'logo' AND default_staff = '1'");?>
 <?php $backdropstaff = $this->db->query("SELECT * FROM ost_file_test WHERE type = 'backdrop' AND default_staff = '1'");?>
 
-<body id="loginBody" style="background-image: url(<?php echo base_url('/uploads/'.$backdropstaff->row(
-'name'))?>);background-repeat: no-repeat;background-size: cover;">
+<body id="loginBody" style="background-image: url(<?php echo base_url('/uploads/'.$backdropstaff->row('name'))?>);background-repeat: no-repeat;background-size: cover;">
 
 <div id="loginBox">
     <div id="blur">
         <div id="background"></div>
     </div>
     <a href="<?php echo site_url('user_controller/login')?>" style="float:right;margin-right:5px;">
-                        <i class="icon-signout" style="color:#4380B8;text-decoration: none;font-size: 26px;"></i></a>
+        <i class="icon-signout" style="color:#4380B8;text-decoration: none;font-size: 26px;"></i>
+    </a>
     <h1 id="logo">
         <a href="<?php echo site_url('user_controller/superlogin')?>">
             <span class="valign-helper"></span>

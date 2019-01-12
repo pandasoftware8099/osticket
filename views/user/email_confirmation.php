@@ -1,8 +1,6 @@
 <div id="content">
-    <div id="landing_page">
-        <h1><?php echo $confirm_email_page->row('name');?></h1>
-        <div><?php echo $confirm_email_page->row('body');?></div>
-    </div>
+    <h1><?php echo $confirm_page->row('name');?></h1><br>
+    <div><?php echo $confirm_page->row('content');?></div>
 </div>
 
 <div id="footer">

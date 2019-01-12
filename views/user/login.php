@@ -23,7 +23,7 @@ $user_banner = $this->db->query("SELECT REPLACE(name, '%company_name%', '$compan
     <div style="margin-bottom: 5px">
     <?php $client_registration=$this->db->query("SELECT value FROM osticket.ost_config_test WHERE id='76'");
         if($client_registration->row('value') == '1'){?>
-            <h5>Not yet registered?<a href="<?php echo site_url('user_controller/register')?>">Create an account</a> </h5>
+            <h5>Not yet registered? <a href="<?php echo site_url('user_controller/register')?>">Create an account</a> </h5>
         <?php } else { ?>
             <h5>Not yet registered? Please Contact An Agent To Create An Account.</h5>
     <?php };?>

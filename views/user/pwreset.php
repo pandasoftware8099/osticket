@@ -21,8 +21,7 @@
 
 <?php $logostaff = $this->db->query("SELECT * FROM ost_file_test WHERE type = 'logo' AND default_staff = '1'");?>
 <?php $backdropstaff = $this->db->query("SELECT * FROM ost_file_test WHERE type = 'backdrop' AND default_staff = '1'");?>
-<body id="loginBody" style="background-image: url(<?php echo base_url('/uploads/'.$backdropstaff->row(
-'name'))?>);background-repeat: no-repeat;background-size: cover;">
+<body id="loginBody" style="background-image: url(<?php echo base_url('/uploads/'.$backdropstaff->row('name'))?>);background-repeat: no-repeat;background-size: cover;">
 <div id="brickwall"></div>
 <div id="loginBox">
     <div id="blur">
