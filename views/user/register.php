@@ -4,8 +4,11 @@
     <h1>Account Registration</h1>
     <p>Use the forms below to create or update the information we have on file for your account    </p>
 </div>
+<?php if (isset($_REQUEST['id'])) { ?>
+<form action="<?php echo site_url('user_controller/activateuserguestconfirm');?>?id=<?php echo $_REQUEST['id'];?>" method="post" class="form-horizontal">
+<?php } else { ?>
 <form action="<?php echo site_url('user_controller/create');?>" method="post" class="form-horizontal">
-  <input type="hidden" name="__CSRFToken__" value="714b5a27a9f6648ae37c3e3805458924f8c51d20">  <input type="hidden" name="do" value="create">
+<?php } ?>
     <div class="col-lg-12" style="overflow:auto;">
     <hr>
     <div class="form-header" style="margin-bottom:0.5em;">
@@ -17,7 +20,7 @@
                 <span class="required">Email Address<span class="error">*</span></span>     
             </label>
             <div class="col-sm-9">
-                <input type="email" class="form-control" id="_56690b6e57d97f25" size="40" maxlength="64" placeholder="" name="email" value="" required>
+                <input type="email" class="form-control" size="40" maxlength="64" placeholder="" name="email" value="<?php echo isset($_REQUEST['id'])?"".$user_info->row('user_email')."":"";?>" required>
             </div>            
         </div>
         
@@ -26,16 +29,24 @@
                 <span class="required">Full Name<span class="error">*</span></span>        
             </label>
             <div class="col-sm-9">
-                <input type="text" class="form-control" id="_450fc361286915b9" size="40" maxlength="64" placeholder="" name="fullname" value="" required input pattern=".{5,}"   required title="5 characters minimum">
+                <input type="text" class="form-control" id="_450fc361286915b9" size="40" maxlength="64" placeholder="" name="fullname" value="<?php echo isset($_REQUEST['id'])?"".$user_info->row('user_name')."":"";?>" required input pattern=".{5,}"   required title="5 characters minimum">
             </div>           
         </div>
         
         <div class="form-group">
-            <label for="304374eaeea4c808" class="col-sm-3 control-label">
+            <label class="col-sm-3 control-label">
                 <span class="">Phone Numbers</span></label>
             <div class="col-sm-9">
-                <input id="_304374eaeea4c808" type="tel" name="phone" value=""> 
-                Ext:<input type="text" name="phoneext" value="" size="5">
+                <div class="col-sm-8" style="padding-left:0px">
+                    <input type="tel" class="form-control" name="phone" value="<?php echo isset($_REQUEST['id'])?"".$user_info->row('user_phone')."":"";?>">
+                </div>
+                <div class="col-sm-4" style="padding-left:0px;padding-right:0px">
+                    <label class="col-sm-3 control-label">
+                        <span class="">Ext</span></label>
+                    <div class="col-sm-9" style="padding-right:0px">
+                        <input type="text" class="form-control" name="phoneext" value="<?php echo isset($_REQUEST['id'])?"".$user_info->row('user_phoneext')."":"";?>">
+                    </div>
+                </div>
             </div>            
         </div>
     </div>
