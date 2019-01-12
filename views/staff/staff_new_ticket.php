@@ -470,7 +470,7 @@ $(document).ready(function () {
           url : "<?php echo site_url('staff_ticket_controller/subtopic?id='); ?>" + val,
           success : function(result){
             result = JSON.parse(result);
-
+            console.log(result);
             html = "";
             for(i = 0; i < result.length; i++)
             {

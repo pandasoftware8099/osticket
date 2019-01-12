@@ -343,30 +343,54 @@ class admin_settings_controller extends CI_Controller {
         $next = $this->input->post('next'); 
         $increment = $this->input->post('increment');   
         $padding = $this->input->post('padding');   
-        $id = $this->input->post('id'); 
+        $id = $this->input->post('id');
         $namecheck = end($name);    
         $all_id = $this->db->query("SELECT id FROM ost_sequence_test")->result();   
-            
-        foreach($id as $key=>$value)
-        {  
-            if($value != '')
-            {   
-                $this->db->query("UPDATE ost_sequence_test SET name='$name[$key]',next='$next[$key]',increment='$increment[$key]',padding='$padding[$key]' WHERE id='$value'"); 
+
+        foreach($id as $key=>$value){  
+            if($value != ''){   
+            $this->db->query("UPDATE ost_sequence_test SET name='$name[$key]',next='$next[$key]',increment='$increment[$key]',padding='$padding[$key]' WHERE id='$value'"); 
+
             }   
             else if($value == '' && $name[$key] != $namecheck)  
             {   
                 $this->db->query("INSERT INTO ost_sequence_test (name,next,increment,padding) VALUES('$name[$key]','$next[$key]','$increment[$key]','$padding[$key]')");    
-            }  
-        }   
+
+            };
+        }
+
+        foreach($all_id as $value){
+            if(!in_array($value->id,$id)){
+                $this->db->query("DELETE FROM ost_sequence_test WHERE id='$value->id'");
+            }
+        }
+
         echo "<script> alert('Successfully Update settings');</script>";   
             
         echo "<script> document.location='" . base_url() . "/index.php/admin_settings_controller/settings_ticket' </script>";   
-    }  
+     }
+
+      public function ticketlist()
+    {
+        if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
+        {   
+            $id= $_REQUEST['id'];
+            $data = $this->db->query("SELECT next,padding FROM ost_sequence_test WHERE id='$id'")->result();
+            echo json_encode($data);
+        }
+
+        else       
+        {
+           redirect('user_controller/superlogin');
+        }
+    }
+
 
 
     public function ticket_update()
     {   
         $ticket_number_format = $this->input->post('ticket_number_format');
+        $ticket_sequence_id = $this->input->post('ticket_sequence_id');
         $default_status = $this->input->post('default_ticket_status');
         $default_priority = $this->input->post('default_priority');
         $default_sla = $this->input->post('default_sla');
@@ -382,6 +406,7 @@ class admin_settings_controller extends CI_Controller {
         $overlimit_notice_active = $this->input->post('overlimit_notice_active');
 
         $this->db->query("UPDATE ost_config_test SET value = '$ticket_number_format', updated = NOW() WHERE id='70' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$ticket_sequence_id', updated = NOW() WHERE id='71' ");
         $this->db->query("UPDATE ost_config_test SET value = '$default_status', updated = NOW() WHERE id='103' ");
         $this->db->query("UPDATE ost_config_test SET value = '$default_priority', updated = NOW() WHERE id='9' ");
         $this->db->query("UPDATE ost_config_test SET value = '$default_sla', updated = NOW() WHERE id='86' ");
