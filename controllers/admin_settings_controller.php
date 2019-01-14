@@ -345,7 +345,8 @@ class admin_settings_controller extends CI_Controller {
         $padding = $this->input->post('padding');   
         $id = $this->input->post('id');
         $namecheck = end($name);    
-        $all_id = $this->db->query("SELECT id FROM ost_sequence_test")->result();   
+        $all_id = $this->db->query("SELECT id FROM ost_sequence_test")->result();
+        $status = $_REQUEST['status'];  
 
         foreach($id as $key=>$value){  
             if($value != ''){   
@@ -365,9 +366,16 @@ class admin_settings_controller extends CI_Controller {
             }
         }
 
-        echo "<script> alert('Successfully Update settings');</script>";   
-            
-        echo "<script> document.location='" . base_url() . "/index.php/admin_settings_controller/settings_ticket' </script>";   
+        echo "<script> alert('Successfully Update settings');</script>";
+
+        if($status == 'task')
+        {
+            echo "<script> document.location='" . base_url() . "/index.php/admin_settings_controller/settings_task' </script>";
+        }
+        else if($status == 'ticket')
+        {
+            echo "<script> document.location='" . base_url() . "/index.php/admin_settings_controller/settings_ticket' </script>";
+        }
      }
 
       public function ticketlist()
@@ -432,6 +440,9 @@ class admin_settings_controller extends CI_Controller {
             $data = array(
                 'task_info' => $this->db->query("SELECT * FROM ost_task_test"),
                 'default_task_priority_id' => $this->db->query("SELECT * FROM ost_config_test WHERE id ='141'"),
+                'ticket_number_format' => $this->db->query("SELECT * FROM ost_config_test WHERE id ='72'"),
+                'ticket_seq_list' => $this->db->query("SELECT * FROM ost_sequence_test"),
+                'ticket_seq' => $this->db->query("SELECT value FROM ost_config_test WHERE id='73'")->row('value'),
             );
 
             $browser_id = $_SERVER["HTTP_USER_AGENT"];
@@ -454,6 +465,18 @@ class admin_settings_controller extends CI_Controller {
         {
            redirect('user_controller/superlogin');
         }
+    }
+
+    public function task_update()
+    {   
+        $ticket_number_format = $this->input->post('ticket_number_format');
+        $ticket_sequence_id = $this->input->post('ticket_sequence_id');
+
+        $this->db->query("UPDATE ost_config_test SET value = '$ticket_number_format', updated = NOW() WHERE id='72' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$ticket_sequence_id', updated = NOW() WHERE id='73' ");
+
+        echo "<script> alert('Successfully change settings');</script>";
+        echo "<script> document.location='" . base_url() . "/index.php/admin_settings_controller/settings_user' </script>";
     }
 
     public function settings_agent()

@@ -17,7 +17,7 @@
         <em>System-wide default ticket settings and options.</em>
     </div>
     <div class="form-group" style="overflow:auto;">
-        <label class="col-lg-4 control-label" style="padding-top:0px"><!-- <i class="help-tip icon-question-sign" href="#number_format"></i> --> Default Ticket Number Random Digit (Range : 2 - 12) <span class="error">*</span> :</label>
+        <label class="col-lg-4 control-label" style="padding-top:0px">Default Ticket Number Format<br/> (Range : 2 - 12)<span class="error">*</span> :</label>
         <div class="col-lg-6">
             <input type="number" name="ticket_number_format" id="ticket_number_format" class="form-control no-spin" min="2" max="12" value="<?php echo $ticket_number_format->row('value');?>" required>
             <div class="error"></div>
@@ -30,7 +30,7 @@
     <div class="form-group" style="overflow:auto;">
         <label class="col-lg-4 control-label"> Default Ticket Number Sequence :</label>
         <div class="col-lg-6">
-            <select name="ticket_sequence_id" class="form-control">
+            <select name="ticket_sequence_id" class="form-control" id="ticket_sequence_id">
                 <option value="0" <?php if($ticket_seq=='0'){echo 'selected';}?>>— Random —</option>
                 <?php foreach($ticket_seq_list->result() as $value){
                     if($ticket_seq==$value->id){
@@ -384,33 +384,136 @@
         return random_number;
     }
 
-    var random_number_digit = document.getElementById("ticket_number_format");
-    document.getElementById("ticket_number_example").innerHTML = 'YYMMDD' + random_number(random_number_digit);
+    function pad (str, max, padding) {  
+        str = str.toString(); 
+        padding = padding.toString(); 
+        return str.length < max ? pad(padding + str, max, padding) : str; 
+    }   
+        var ticket_no_seq = document.getElementById("ticket_sequence_id").options[document.getElementById("ticket_sequence_id").selectedIndex].value;
 
-    random_number_digit.onkeyup = function (){
-        if (random_number_digit.value > 1 && random_number_digit.value < 13)
-        {   
-            document.getElementById("ticket_number_example").innerHTML = 'YYMMDD' + random_number(random_number_digit);
+    var random_number_digit = document.getElementById("ticket_number_format");
+    if (ticket_no_seq == '0'){  
+            document.getElementById("ticket_number_example").innerHTML = 'YYMMDD' + random_number(random_number_digit); 
+             random_number_digit.onkeyup = function (){ 
+                if (random_number_digit.value > 1 && random_number_digit.value < 13)    
+                {       
+                    document.getElementById("ticket_number_example").innerHTML = 'YYMMDD' + random_number(random_number_digit); 
+                }   
+                else    
+                {   
+                    do  
+                    {                   
+                        if (random_number_digit.value <= 1) 
+                        {   
+                            var random_number_minimum = Math.floor(Math.random()*1E2);  
+                        }   
+                        else if (random_number_digit.value >= 13)   
+                        {   
+                            var random_number_minimum = Math.floor(Math.random()*1E12); 
+                        }   
+                    }   
+                    while (random_number_minimum.toString().length != 2 && random_number_minimum.toString().length != 12);
+                    document.getElementById("ticket_number_example").innerHTML = 'YYMMDD' + random_number_minimum;
+                }
+            }
         }
         else
         {
-            do
-            {                
-                if (random_number_digit.value <= 1)
-                {
-                    var random_number_minimum = Math.floor(Math.random()*1E2);
+                $.ajax({
+                    url : "<?php echo site_url('admin_settings_controller/ticketlist?id='); ?>" + ticket_no_seq,
+                    success : function(result){
+                    result = JSON.parse(result);
+                     document.getElementById("ticket_number_example").innerHTML = 'YYMMDD' + pad(result[0].next,random_number_digit.value,result[0].padding);   
+                     random_number_digit.onkeyup = function (){ 
+                        if (random_number_digit.value > 1 && random_number_digit.value < 13)    
+                        {       
+                            document.getElementById("ticket_number_example").innerHTML = 'YYMMDD' + pad(result[0].next,random_number_digit.value,result[0].padding);    
+                        }   
+                        else    
+                        {   
+                            do  
+                            {                   
+                                if (random_number_digit.value <= 1) 
+                                {   
+                                    var random_number_minimum = pad(result[0].next,2,result[0].padding);    
+                                }   
+                                else if (random_number_digit.value >= 13)   
+                                {   
+                                    var random_number_minimum = pad(result[0].next,12,result[0].padding);;  
+                                }   
+                            }   
+                            while (random_number_minimum.toString().length != 2 && random_number_minimum.toString().length != 12);  
+                             document.getElementById("ticket_number_example").innerHTML = 'YYMMDD' + random_number_minimum; 
+                        }   
+                    }   
+                        
+                  } 
+                }); 
+        }   
+        
+    $("#ticket_sequence_id").change(function () {   
+                var val = $(this).val();    
+                if (val == '0'){    
+            document.getElementById("ticket_number_example").innerHTML = 'YYMMDD' + random_number(random_number_digit); 
+             random_number_digit.onkeyup = function (){ 
+                if (random_number_digit.value > 1 && random_number_digit.value < 13)    
+                {       
+                    document.getElementById("ticket_number_example").innerHTML = 'YYMMDD' + random_number(random_number_digit); 
                 }
-                else if (random_number_digit.value >= 13)
+                else
                 {
-                    var random_number_minimum = Math.floor(Math.random()*1E12);
+                    do
+                    {
+                        if (random_number_digit.value <= 1) 
+                        {   
+                            var random_number_minimum = Math.floor(Math.random()*1E2);  
+                        }   
+                        else if (random_number_digit.value >= 13)   
+                        {   
+                            var random_number_minimum = Math.floor(Math.random()*1E12); 
+                        }   
+                    }   
+                    while (random_number_minimum.toString().length != 2 && random_number_minimum.toString().length != 12);  
+                     document.getElementById("ticket_number_example").innerHTML = 'YYMMDD' + random_number_minimum; 
                 }
             }
-            while (random_number_minimum.toString().length != 2 && random_number_minimum.toString().length != 12);
-
-            document.getElementById("ticket_number_example").innerHTML = 'YYMMDD' + random_number_minimum;
         }
-    }
-
+        else    
+        {   
+                
+                $.ajax({    
+                  url : "<?php echo site_url('admin_settings_controller/ticketlist?id='); ?>" + val,    
+                  success : function(result){   
+                    result = JSON.parse(result);    
+                     document.getElementById("ticket_number_example").innerHTML = 'YYMMDD' + pad(result[0].next,random_number_digit.value,result[0].padding);   
+                     random_number_digit.onkeyup = function (){ 
+                        if (random_number_digit.value > 1 && random_number_digit.value < 13)    
+                        {       
+                            document.getElementById("ticket_number_example").innerHTML = 'YYMMDD' + pad(result[0].next,random_number_digit.value,result[0].padding);    
+                        }   
+                        else    
+                        {   
+                            do  
+                            {                   
+                                if (random_number_digit.value <= 1) 
+                                {   
+                                    var random_number_minimum = pad(result[0].next,2,result[0].padding);    
+                                }   
+                                else if (random_number_digit.value >= 13)   
+                                {   
+                                    var random_number_minimum = pad(result[0].next,12,result[0].padding);;  
+                                }   
+                            }   
+                            while (random_number_minimum.toString().length != 2 && random_number_minimum.toString().length != 12);
+                             document.getElementById("ticket_number_example").innerHTML = 'YYMMDD' + random_number_minimum;
+                         }
+                     }
+                 }
+             });
+            }
+        });
+                
+        
     function manage()
         {
           save_method = 'manage';
@@ -431,7 +534,7 @@
 <hr>Sequences are used to generate sequential numbers. Various sequences can be
 used to generate sequences for different purposes.<br>
 <br>
-<form method="post" action="<?php echo site_url('admin_settings_controller/ticket_seq_update')?>">
+<form method="post" action="<?php echo site_url('admin_settings_controller/ticket_seq_update?status=ticket')?>">
 
 <div id="sequences">
 <?php foreach($ticket_seq_list->result() as $value){?>
