@@ -534,7 +534,7 @@
 <hr>Sequences are used to generate sequential numbers. Various sequences can be
 used to generate sequences for different purposes.<br>
 <br>
-<form method="post" action="<?php echo site_url('admin_settings_controller/ticket_seq_update')?>">
+<form method="post" action="<?php echo site_url('admin_settings_controller/ticket_seq_update?status=ticket')?>">
 
 <div id="sequences">
 <?php foreach($ticket_seq_list->result() as $value){?>
