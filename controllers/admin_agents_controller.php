@@ -288,9 +288,7 @@ class admin_agents_controller extends CI_Controller {
                 </script>";
         }
 
-        else if($ext_dept_id != '') {
-
-            if (in_array($dept_id, $ext_dept_id)) {
+        else if (isset($ext_dept_id) && in_array($dept_id, $ext_dept_id)){
 
                  echo "<script> alert('Extended department cannot be the same with primary department');</script>";
 
@@ -299,7 +297,7 @@ class admin_agents_controller extends CI_Controller {
                     document.location='" . base_url() . "/index.php/admin_agents_controller/agents_agents_add'
                     </script>";
 
-            }
+            
         }
 
         else if ($role_id == '0') {
