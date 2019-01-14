@@ -149,10 +149,54 @@ class staff_task_controller extends CI_Controller {
         $posterfname = $this->db->query("SELECT firstname FROM osticket.ost_staff_test WHERE staff_id = '$poster_id'")->row('firstname');
         $posterlname = $this->db->query("SELECT lastname FROM osticket.ost_staff_test WHERE staff_id = '$poster_id'")->row('lastname');
 
+
         $duedatetime = date('Y-m-d H:i', strtotime("$duedatetime"));
         $todaydatetime = date('Y-m-d H:i');
+        $todaydate = date('Ymd');
+        $todaydate2 = substr($todaydate, 2);
+        $number_random_digit = $this->db->query("SELECT * FROM ost_config_test WHERE id = '72'")->row('value');
+        $task_seq_id = $this->db->query("SELECT value FROM ost_config_test WHERE id='73'")->row('value');
+        $checkstring = str_repeat("_", $number_random_digit);
 
-        echo $todaydatetime;die;
+        if($task_seq_id == '0')
+        {
+            $number = $this->db->query("SELECT LPAD(FLOOR(RAND() * 999999.99), '$number_random_digit', '0') as randno")->row('randno');
+
+            $checknumber2 = $this->db->query("SELECT * FROM ost_task_test WHERE number ='$todaydate2$number'")->num_rows();
+
+            while($checknumber2 != 0){
+                $number = $this->db->query("SELECT LPAD(FLOOR(RAND() * 999999.99), '$number_random_digit', '0') as randno")->row('randno');
+                $checknumber2 = $this->db->query("SELECT * FROM ost_task_test WHERE number ='$todaydate2$number'")->num_rows();
+            }
+
+
+        }
+        else
+        {
+            $next = $this->db->query("SELECT next FROM ost_sequence_test WHERE id='$task_seq_id'")->row('next');
+            $increment = $this->db->query("SELECT increment FROM ost_sequence_test WHERE id='$task_seq_id'")->row('increment');
+            $padding = $this->db->query("SELECT padding FROM ost_sequence_test WHERE id='$task_seq_id'")->row('padding');
+            $lastnumber = $this->db->query("SELECT number FROM ost_task_test WHERE number LIKE '$todaydate2$checkstring' AND sequence_id = '$task_seq_id' ORDER BY number DESC LIMIT 1");
+
+            if($lastnumber->num_rows() != '0')
+            {
+                $number = $lastnumber->row('number')+$increment;
+            }
+            else
+            {
+                $pad = str_repeat($padding,$number_random_digit-1);
+                $number = $todaydate2.$pad.$next;
+            }
+
+            $checknumber2 = $this->db->query("SELECT * FROM ost_task_test WHERE number ='$number'")->num_rows();
+
+            while($checknumber2 != 0){
+                $number += $increment;
+                $checknumber2 = $this->db->query("SELECT * FROM ost_task_test WHERE number ='$number'")->num_rows();
+            }
+            $number = substr($number, 6);
+        }
+
 
         if ($assign != "")
         {
@@ -173,8 +217,8 @@ class staff_task_controller extends CI_Controller {
             $staff_id = '0';
         }
 
-        $this->db->query("INSERT INTO osticket.ost_task_test ( task_status, dept_id , staff_id, team_id, task_created, task_updated)
-            VALUES ( '1', '$deparment', '$staff_id', '$team_id', now(), now() )");
+        $this->db->query("INSERT INTO osticket.ost_task_test ( task_status, number, sequence_id, dept_id , staff_id, team_id, task_created, task_updated)
+            VALUES ( '1', '$todaydate2$number', '$task_seq_id', '$deparment', '$staff_id', '$team_id', now(), now() )");
 
         $task_id = $this->db->query("SELECT task_id FROM ost_task_test WHERE task_created = now()")->row('task_id');
 
