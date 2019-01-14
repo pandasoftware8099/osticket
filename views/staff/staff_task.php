@@ -37,7 +37,7 @@
                           Title:
                           <span class="error">*</span>
                         </label>
-                        <input type="text" class="form-control" id="_31e14e029d68ee1d" size="40" maxlength="50" placeholder="" name="title" value="" required="true">
+                        <input type="text" class="form-control" id="_31e14e029d68ee1d" size="40" maxlength="50" placeholder="" name="title" value="" required="true" autocomplete="off">
                       </fieldset>
                     </td>
                   </tr>
@@ -226,7 +226,7 @@ $(function() {
             
             <tr id="3">
                 <td align="center" class="nohover"><input class="ckb" type="checkbox" name="tids[]" value="<?php echo $value->task_id;?>"></td>
-                <td nowrap=""><a class="preview" href="<?php echo site_url('staff_task_controller/taskinfo');?>?id=<?php echo $value->task_id;?>"><b><?php echo $value->task_id;?></b></a></td>
+                <td nowrap=""><a class="preview" href="<?php echo site_url('staff_task_controller/taskinfo');?>?id=<?php echo $value->task_id;?>"><?php echo $value->number;?></a></td>
                 <td nowrap=""><?php echo $value->task_created;?></td>
                 <td><a href="<?php echo site_url('staff_task_controller/taskinfo');?>?id=<?php echo $value->task_id;?>"><?php echo $value->title;?></a>
                     <?php 
