@@ -25,7 +25,7 @@
             
             <?php } ?>
                         
-            <span class="action-button" data-toggle="modal" data-target="#cstatus" id="checkBtn" title="Change Status">
+            <span class="action-button" data-toggle="modal" data-target="#cstatus" id="checkBtn" title="Close Task">
     
                 <a class="tickets-action" href="#statuses"><i class="icon-flag"></i></a>
             </span>
