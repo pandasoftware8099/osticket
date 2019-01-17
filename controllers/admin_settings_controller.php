@@ -311,6 +311,33 @@ class admin_settings_controller extends CI_Controller {
                 'message_autoresponder' => $this->db->query("SELECT value FROM ost_config_test WHERE id='37'")->row('value'),
                 /*'message_autoresponder_collabs' => $this->db->query("SELECT value FROM ost_config_test WHERE id='99'")->row('value'),*/
                 'overlimit_notice_active' => $this->db->query("SELECT value FROM ost_config_test WHERE id='68'")->row('value'),
+                'ticket_alert_active' => $this->db->query("SELECT value FROM ost_config_test WHERE id='39'")->row('value'),
+                'ticket_alert_admin' => $this->db->query("SELECT value FROM ost_config_test WHERE id='40'")->row('value'),
+                'ticket_alert_dept_manager' => $this->db->query("SELECT value FROM ost_config_test WHERE id='41'")->row('value'),
+                'ticket_alert_dept_members' => $this->db->query("SELECT value FROM ost_config_test WHERE id='42'")->row('value'),
+                'ticket_alert_acct_manager' => $this->db->query("SELECT value FROM ost_config_test WHERE id='100'")->row('value'),
+                'admin_email' => $this->db->query("SELECT value FROM ost_config_test WHERE id = '1'")->row('value'),
+                'message_alert_active' => $this->db->query("SELECT value FROM ost_config_test WHERE id='43'")->row('value'),
+                'message_alert_laststaff' => $this->db->query("SELECT value FROM ost_config_test WHERE id='44'")->row('value'),
+                'message_alert_assigned' => $this->db->query("SELECT value FROM ost_config_test WHERE id='45'")->row('value'),
+                'message_alert_dept_manager' => $this->db->query("SELECT value FROM ost_config_test WHERE id='46'")->row('value'),
+                'message_alert_acct_manager' => $this->db->query("SELECT value FROM ost_config_test WHERE id='101'")->row('value'),
+                'note_alert_active' => $this->db->query("SELECT value FROM ost_config_test WHERE id='47'")->row('value'),
+                'note_alert_laststaff' => $this->db->query("SELECT value FROM ost_config_test WHERE id='48'")->row('value'),
+                'note_alert_assigned' => $this->db->query("SELECT value FROM ost_config_test WHERE id='49'")->row('value'),
+                'note_alert_dept_manager' => $this->db->query("SELECT value FROM ost_config_test WHERE id='50'")->row('value'),
+                'assigned_alert_active' => $this->db->query("SELECT value FROM ost_config_test WHERE id='59'")->row('value'),
+                'assigned_alert_staff' => $this->db->query("SELECT value FROM ost_config_test WHERE id='60'")->row('value'),
+                'assigned_alert_team_lead' => $this->db->query("SELECT value FROM ost_config_test WHERE id='61'")->row('value'),
+                'assigned_alert_team_members' => $this->db->query("SELECT value FROM ost_config_test WHERE id='62'")->row('value'),
+                'transfer_alert_active' => $this->db->query("SELECT value FROM ost_config_test WHERE id='51'")->row('value'),
+                'transfer_alert_assigned' => $this->db->query("SELECT value FROM ost_config_test WHERE id='52'")->row('value'),
+                'transfer_alert_dept_manager' => $this->db->query("SELECT value FROM ost_config_test WHERE id='53'")->row('value'),
+                'transfer_alert_dept_members' => $this->db->query("SELECT value FROM ost_config_test WHERE id='54'")->row('value'),
+                'overdue_alert_active' => $this->db->query("SELECT value FROM ost_config_test WHERE id='55'")->row('value'),
+                'overdue_alert_assigned' => $this->db->query("SELECT value FROM ost_config_test WHERE id='56'")->row('value'),
+                'overdue_alert_dept_manager' => $this->db->query("SELECT value FROM ost_config_test WHERE id='57'")->row('value'),
+                'overdue_alert_dept_members' => $this->db->query("SELECT value FROM ost_config_test WHERE id='58'")->row('value'),
                 'ticket_seq_list' => $this->db->query("SELECT * FROM ost_sequence_test"),
                 'ticket_seq' => $this->db->query("SELECT value FROM ost_config_test WHERE id='71'")->row('value'),
             );
@@ -412,6 +439,32 @@ class admin_settings_controller extends CI_Controller {
         $message_autoresponder = $this->input->post('message_autoresponder');
         /*$message_autoresponder_collabs = $this->input->post('message_autoresponder_collabs');*/
         $overlimit_notice_active = $this->input->post('overlimit_notice_active');
+        $ticket_alert_active = $this->input->post('ticket_alert_active');
+        $ticket_alert_admin = $this->input->post('ticket_alert_admin');
+        $ticket_alert_dept_manager = $this->input->post('ticket_alert_dept_manager');
+        $ticket_alert_dept_members = $this->input->post('ticket_alert_dept_members');
+        $ticket_alert_acct_manager = $this->input->post('ticket_alert_acct_manager');
+        $message_alert_active = $this->input->post('message_alert_active');
+        $message_alert_laststaff = $this->input->post('message_alert_laststaff');
+        $message_alert_assigned = $this->input->post('message_alert_assigned');
+        $message_alert_dept_manager = $this->input->post('message_alert_dept_manager');
+        $message_alert_acct_manager = $this->input->post('message_alert_acct_manager');
+        $note_alert_active = $this->input->post('note_alert_active');
+        $note_alert_laststaff = $this->input->post('note_alert_laststaff');
+        $note_alert_assigned = $this->input->post('note_alert_assigned');
+        $note_alert_dept_manager = $this->input->post('note_alert_dept_manager');
+        $assigned_alert_active = $this->input->post('assigned_alert_active');
+        $assigned_alert_staff = $this->input->post('assigned_alert_staff');
+        $assigned_alert_team_lead = $this->input->post('assigned_alert_team_lead');
+        $assigned_alert_team_members = $this->input->post('assigned_alert_team_members');
+        $transfer_alert_active = $this->input->post('transfer_alert_active');
+        $transfer_alert_assigned = $this->input->post('transfer_alert_assigned');
+        $transfer_alert_dept_manager = $this->input->post('transfer_alert_dept_manager');
+        $transfer_alert_dept_members = $this->input->post('transfer_alert_dept_members');
+        $overdue_alert_active = $this->input->post('overdue_alert_active');
+        $overdue_alert_assigned = $this->input->post('overdue_alert_assigned');
+        $overdue_alert_dept_manager = $this->input->post('overdue_alert_dept_manager');
+        $overdue_alert_dept_members = $this->input->post('overdue_alert_dept_members');
 
         $this->db->query("UPDATE ost_config_test SET value = '$ticket_number_format', updated = NOW() WHERE id='70' ");
         $this->db->query("UPDATE ost_config_test SET value = '$ticket_sequence_id', updated = NOW() WHERE id='71' ");
@@ -428,6 +481,32 @@ class admin_settings_controller extends CI_Controller {
         $this->db->query("UPDATE ost_config_test SET value = '$message_autoresponder', updated = NOW() WHERE id='37' ");
         /*$this->db->query("UPDATE ost_config_test SET value = '$message_autoresponder_collabs', updated = NOW() WHERE id='99' ");*/
         $this->db->query("UPDATE ost_config_test SET value = '$overlimit_notice_active', updated = NOW() WHERE id='68' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$ticket_alert_active', updated = NOW() WHERE id='39' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$ticket_alert_admin', updated = NOW() WHERE id='40' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$ticket_alert_dept_manager', updated = NOW() WHERE id='41' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$ticket_alert_dept_members', updated = NOW() WHERE id='42' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$ticket_alert_acct_manager', updated = NOW() WHERE id='100' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$message_alert_active', updated = NOW() WHERE id='43' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$message_alert_laststaff', updated = NOW() WHERE id='44' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$message_alert_assigned', updated = NOW() WHERE id='45' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$message_alert_dept_manager', updated = NOW() WHERE id='46' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$message_alert_acct_manager', updated = NOW() WHERE id='101' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$note_alert_active', updated = NOW() WHERE id='47' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$note_alert_laststaff', updated = NOW() WHERE id='48' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$note_alert_assigned', updated = NOW() WHERE id='49' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$note_alert_dept_manager', updated = NOW() WHERE id='50' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$assigned_alert_active', updated = NOW() WHERE id='59' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$assigned_alert_staff', updated = NOW() WHERE id='60' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$assigned_alert_team_lead', updated = NOW() WHERE id='61' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$assigned_alert_team_members', updated = NOW() WHERE id='62' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$transfer_alert_active', updated = NOW() WHERE id='51' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$transfer_alert_assigned', updated = NOW() WHERE id='52' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$transfer_alert_dept_manager', updated = NOW() WHERE id='53' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$transfer_alert_dept_members', updated = NOW() WHERE id='54' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$overdue_alert_active', updated = NOW() WHERE id='55' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$overdue_alert_assigned', updated = NOW() WHERE id='56' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$overdue_alert_dept_manager', updated = NOW() WHERE id='57' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$overdue_alert_dept_members', updated = NOW() WHERE id='58' ");
 
         echo "<script> alert('Successfully change settings');</script>";
         echo "<script> document.location='" . base_url() . "/index.php/admin_settings_controller/settings_ticket' </script>";
