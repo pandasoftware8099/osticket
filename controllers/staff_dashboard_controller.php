@@ -238,7 +238,7 @@ class staff_dashboard_controller extends CI_Controller {
         $userid = $_SESSION["staffid"];    
         $data = array(
             
-            'result' => $this->db->query("SELECT * FROM  ost_staff_test ORDER BY staff_id DESC"),
+            'result' => $this->db->query("SELECT * FROM ost_staff_test a INNER JOIN ost_department_test b ON a.dept_id = b.id ORDER BY staff_id DESC"),
             'max_page_size' => $this->db->query("SELECT value FROM ost_config_test WHERE id = '21'")->row('value'), 
 
         );
