@@ -487,6 +487,8 @@ class staff_ticket_controller extends CI_Controller {
             
                 $ticket_auto_response = $this->db->query("SELECT ticket_auto_response FROM ost_department_test WHERE NAME = (SELECT department FROM ost_ticket_test WHERE ticket_id = '$ticketid')")->row('ticket_auto_response');
                 $ticket_notice_active = $this->db->query("SELECT value FROM ost_config_test WHERE id='38'")->row('value');
+                $ticket_alert_active = $this->db->query("SELECT value FROM ost_config_test WHERE id='39'")->row('value');
+                $default_template_id = $this->db->query("SELECT * FROM ost_config_test WHERE id = '87'")->row('value');
 
                 if(isset($_POST['submit']))
                 {
@@ -520,6 +522,28 @@ class staff_ticket_controller extends CI_Controller {
                     } , $array1
                 );
 
+                $user_name = $this->db->query("SELECT user_name FROM ost_user_test WHERE user_email = '$value'")->row('user_name');
+                $emailinfo = $this->db->query("SELECT * FROM ost_user_test AS a
+                    INNER JOIN ost_ticket_test AS b ON a.user_id = b.user_id
+                    INNER JOIN ost_help_topic_test AS c ON b.topic_id = c.topic_id
+                    INNER JOIN ost_list_items_test AS d ON b.subtopic_id = d.id
+                    WHERE ticket_id = '$result'");
+
+                if ($ticket_notice_active == '1')
+                {
+                    $body_ticket_notice = $this->db->query("SELECT REPLACE(REPLACE(subject, '%subject%', '".$emailinfo->row('value')."'), '%number%', '".$emailinfo->row('number')."') AS email_subject, 
+                        REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(body, '%user_name%', '$user_name'), '%login%', '$login'), '%number%', '".$emailinfo->row('number')."'), '%topic%', '".$emailinfo->row('topic')."'), '%subtopic%', '".$emailinfo->row('value')."') AS email
+                        FROM ost_email_template_test WHERE code_name = 'ticket.notice' AND tpl_id = '$default_template_id'");
+                }
+                else if ($ticket_alert_active == '1')
+                {
+                    /*foreach ()
+                    {*/
+                        $body_ticket_alert = $this->db->query("SELECT REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(body, '%user_name%', '$user_name'), '%login%', '$login'), '%number%', '".$emailinfo->row('number')."'), '%topic%', '".$emailinfo->row('topic')."'), '%subtopic%', '".$emailinfo->row('value')."') AS email
+                            FROM ost_email_template_test WHERE code_name = 'ticket.alert' AND tpl_id = '$default_template_id'");
+                    /*}*/
+                }
+
                 if ($ticket_auto_response == '1' && $ticket_notice_active == '1')
                 {
                     foreach ($alluseremail as $value)
@@ -530,14 +554,7 @@ class staff_ticket_controller extends CI_Controller {
                         $file_id = $this->db->query("SELECT name FROM ost_file_test WHERE thread_entry_id='$thread_id'");
                         $email_attach = $this->db->query("SELECT value FROM ost_config_test WHERE id='69'")->row('value');
                         $allow_auth_tokens = $this->db->query("SELECT value FROM ost_config_test WHERE id='112'")->row('value');
-                        $user_name = $this->db->query("SELECT user_name FROM ost_user_test WHERE user_email = '$value'")->row('user_name');
-                        $emailinfo = $this->db->query("SELECT * FROM ost_user_test AS a
-                            INNER JOIN ost_ticket_test AS b ON a.user_id = b.user_id
-                            INNER JOIN ost_help_topic_test AS c ON b.topic_id = c.topic_id
-                            INNER JOIN ost_list_items_test AS d ON b.subtopic_id = d.id
-                            WHERE ticket_id = '$result'");
-                        $default_template_id = $this->db->query("SELECT * FROM ost_config_test WHERE id = '87'")->row('value');
-
+                        
                         if ($allow_auth_tokens == '0')
                         {
                             $login = 'http://[::1]/helpme/index.php/user_controller/login';
@@ -548,9 +565,7 @@ class staff_ticket_controller extends CI_Controller {
                         }
 
                         $data = array(
-                            'body' => $this->db->query("SELECT REPLACE(REPLACE(subject, '%subject%', '".$emailinfo->row('value')."'), '%number%', '".$emailinfo->row('number')."') AS email_subject, 
-                                REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(body, '%user_name%', '$user_name'), '%login%', '$login'), '%number%', '".$emailinfo->row('number')."'), '%topic%', '".$emailinfo->row('topic')."'), '%subtopic%', '".$emailinfo->row('value')."') AS email
-                                FROM ost_email_template_test WHERE code_name = 'ticket.notice' AND tpl_id = '$default_template_id'"),
+                            'body' => $body,
                             'ticketsign' => $this->db->query("SELECT a.*, b.*, a.signature AS staffsign, b.signature AS deptsign FROM ost_staff_test AS a
                                 INNER JOIN ost_department_test AS b ON a.dept_id = b.id
                                 WHERE staff_id = '$poster_id'"),
@@ -604,7 +619,6 @@ class staff_ticket_controller extends CI_Controller {
                             INNER JOIN ost_help_topic_test AS c ON b.topic_id = c.topic_id
                             INNER JOIN ost_list_items_test AS d ON b.subtopic_id = d.id
                             WHERE ticket_id = '$result'");
-                        $default_template_id = $this->db->query("SELECT * FROM ost_config_test WHERE id = '87'")->row('value');
                         
                         if ($allow_auth_tokens == '0')
                         {
