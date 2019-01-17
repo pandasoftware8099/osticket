@@ -53,7 +53,7 @@
         </div>
     </div>
 </div>
-
+<p>**Please do not modify <b>%variable%</b></p>
 <p style="text-align:center">
     <input class="button" type="submit" name="submit" value="Save Changes">
     <input class="button" type="reset" name="reset" value="Reset Changes">
