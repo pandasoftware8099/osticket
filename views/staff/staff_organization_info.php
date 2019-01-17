@@ -337,8 +337,7 @@ $(function() {
             <!-- /.box-header -->
             <div class="box-body pad">
                 
-                <textarea required="true" name="orgnote" id="task-response" class="textarea" placeholder="Start writing your note here"
-                          style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"></textarea>
+                <textarea required="true" name="orgnote" id="task-response" class="textarea" placeholder="Start writing your note here" style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"></textarea>
                 
               
             </div>

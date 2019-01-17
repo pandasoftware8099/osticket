@@ -520,7 +520,7 @@ function myFunction() {
                     <th width="20%">Date Created</th>
                     <th width="38%">Title</th>
                     <th width="16%">Department</th>
-                    <th width="16%">Agent</th>        
+                    <th width="16%">Agent</th>
                 </tr>
             </thead>
 

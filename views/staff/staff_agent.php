@@ -26,7 +26,7 @@
                     <tr id="23">
 
                 <td><?php echo $value->firstname;?> <?php echo $value->lastname;?></td>
-                <td><?php echo $value->dept_id;?></td>
+                <td><?php echo $value->name;?></td>
                 <td><?php echo $value->email;?></td>
                 <td><?php echo $value->phone;?></td>
                 <td><?php echo $value->phone_ext;?></td>
