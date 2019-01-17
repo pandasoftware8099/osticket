@@ -17,7 +17,7 @@
         <em>System-wide default ticket settings and options.</em>
     </div>
     <div class="form-group" style="overflow:auto;">
-        <label class="col-lg-4 control-label" style="padding-top:0px">Default Ticket Number Format<br/> (Range : 2 - 12)<span class="error">*</span> :</label>
+        <label class="col-lg-4 control-label" style="padding-top:0px"><!-- <i class="help-tip icon-question-sign" href="#number_format"></i> --> Default Ticket Number Random Digit (Range : 2 - 12) <span class="error">*</span> :</label>
         <div class="col-lg-6">
             <input type="number" name="ticket_number_format" id="ticket_number_format" class="form-control no-spin" min="2" max="12" value="<?php echo $ticket_number_format->row('value');?>" required>
             <div class="error"></div>
@@ -30,7 +30,7 @@
     <div class="form-group" style="overflow:auto;">
         <label class="col-lg-4 control-label"> Default Ticket Number Sequence :</label>
         <div class="col-lg-6">
-            <select name="ticket_sequence_id" class="form-control" id="ticket_sequence_id">
+            <select name="ticket_sequence_id" class="form-control">
                 <option value="0" <?php if($ticket_seq=='0'){echo 'selected';}?>>— Random —</option>
                 <?php foreach($ticket_seq_list->result() as $value){
                     if($ticket_seq==$value->id){
@@ -200,147 +200,149 @@
             </em></th></tr>
         <tr>
             <td><em><b>Status:</b></em> &nbsp;
-                <input type="radio" name="ticket_alert_active" value="1"> Enable
-                <input type="radio" name="ticket_alert_active" value="0">
+                <input type="radio" name="ticket_alert_active" value="1" <?php echo $ticket_alert_active == 1?"checked":"";?>> Enable
+                <input type="radio" name="ticket_alert_active" value="0" <?php echo $ticket_alert_active == 0?"checked":"";?>>
                  Disable                &nbsp;&nbsp;<font class="error">&nbsp;</font>
              </td>
         </tr>
         <tr>
             <td>
-                <input type="checkbox" name="ticket_alert_admin">
-                Admin Email <em>(kelwin@pandasoftware.my)</em>
+                <input type="checkbox" name="ticket_alert_admin" <?php echo $ticket_alert_admin == 1?"checked":"";?> value="1">
+                Admin Email <em>(<?php echo $admin_email;?>)</em>
             </td>
         </tr>
         <tr>
             <td>
-                <input type="checkbox" name="ticket_alert_dept_manager" checked="">
+                <input type="checkbox" name="ticket_alert_dept_manager" <?php echo $ticket_alert_dept_manager == 1?"checked":"";?> value="1">
                 Department Manager            </td>
         </tr>
         <tr>
             <td>
-                <input type="checkbox" name="ticket_alert_dept_members" checked="">
+                <input type="checkbox" name="ticket_alert_dept_members" <?php echo $ticket_alert_dept_members == 1?"checked":"";?> value="1">
                 Department Members            </td>
         </tr>
         <tr>
             <td>
-                <input type="checkbox" name="ticket_alert_acct_manager" checked="">
+                <input type="checkbox" name="ticket_alert_acct_manager" <?php echo $ticket_alert_acct_manager == 1?"checked":"";?> value="1">
                 Organization Account Manager            </td>
         </tr>
         <tr><th><em><b>New Message Alert</b> :
             </em></th></tr>
         <tr>
             <td><em><b>Status:</b></em> &nbsp;
-              <input type="radio" name="message_alert_active" value="1"> Enable              &nbsp;&nbsp;
-              <input type="radio" name="message_alert_active" value="0" checked="">
+              <input type="radio" name="message_alert_active" value="1" <?php echo $message_alert_active == 1?"checked":"";?>> Enable              &nbsp;&nbsp;
+              <input type="radio" name="message_alert_active" value="0" <?php echo $message_alert_active == 0?"checked":"";?>>
               Disable            </td>
         </tr>
         <tr>
             <td>
-              <input type="checkbox" name="message_alert_laststaff" checked="">
+              <input type="checkbox" name="message_alert_laststaff" <?php echo $message_alert_laststaff == 1?"checked":"";?> value="1">
                 Last Respondent            </td>
         </tr>
         <tr>
             <td>
-              <input type="checkbox" name="message_alert_assigned" checked="">
+              <input type="checkbox" name="message_alert_assigned" <?php echo $message_alert_assigned == 1?"checked":"";?> value="1">
               Assigned Agent / Team            </td>
         </tr>
         <tr>
             <td>
-              <input type="checkbox" name="message_alert_dept_manager" checked="">
+              <input type="checkbox" name="message_alert_dept_manager" <?php echo $message_alert_dept_manager == 1?"checked":"";?> value="1">
               Department Manager            </td>
         </tr>
         <tr>
             <td>
-                <input type="checkbox" name="message_alert_acct_manager" checked="">
+                <input type="checkbox" name="message_alert_acct_manager" <?php echo $message_alert_acct_manager == 1?"checked":"";?> value="1">
                 Organization Account Manager            </td>
         </tr>
         <tr><th><em><b>New Internal Activity Alert</b> :
             </em></th></tr>
         <tr>
             <td><em><b>Status:</b></em> &nbsp;
-              <input type="radio" name="note_alert_active" value="1">
+              <input type="radio" name="note_alert_active" value="1" <?php echo $note_alert_active == 1?"checked":"";?>>
                 Enable              &nbsp;&nbsp;
-              <input type="radio" name="note_alert_active" value="0" checked="">
+              <input type="radio" name="note_alert_active" value="0" <?php echo $note_alert_active == 0?"checked":"";?>>
                 Disable              &nbsp;&nbsp;&nbsp;<font class="error">&nbsp;</font>
             </td>
         </tr>
         <tr>
             <td>
-              <input type="checkbox" name="note_alert_laststaff" checked=""> Last Respondent            </td>
+              <input type="checkbox" name="note_alert_laststaff" <?php echo $note_alert_laststaff == 1?"checked":"";?> value="1"> Last Respondent            </td>
         </tr>
         <tr>
             <td>
-              <input type="checkbox" name="note_alert_assigned" checked="">
+              <input type="checkbox" name="note_alert_assigned" <?php echo $note_alert_assigned == 1?"checked":"";?> value="1">
                 Assigned Agent / Team            </td>
         </tr>
         <tr>
             <td>
-              <input type="checkbox" name="note_alert_dept_manager" checked="">
+              <input type="checkbox" name="note_alert_dept_manager" <?php echo $note_alert_dept_manager == 1?"checked":"";?> value="1">
                 Department Manager            </td>
         </tr>
         <tr><th><em><b>Ticket Assignment Alert</b> :
             </em></th></tr>
         <tr>
             <td><em><b>Status: </b></em> &nbsp;
-              <input name="assigned_alert_active" value="1" type="radio"> Enable              &nbsp;&nbsp;
-              <input name="assigned_alert_active" value="0" type="radio" checked="checked"> Disable               &nbsp;&nbsp;&nbsp;<font class="error">&nbsp;</font>
+              <input name="assigned_alert_active" value="1" type="radio" <?php echo $assigned_alert_active == 1?"checked":"";?>> Enable              &nbsp;&nbsp;
+              <input name="assigned_alert_active" value="0" type="radio" <?php echo $assigned_alert_active == 0?"checked":"";?>> Disable               &nbsp;&nbsp;&nbsp;<font class="error">&nbsp;</font>
             </td>
         </tr>
         <tr>
             <td>
-              <input type="checkbox" name="assigned_alert_staff" checked=""> Assigned Agent            </td>
+              <input type="checkbox" name="assigned_alert_staff" <?php echo $assigned_alert_staff == 1?"checked":"";?> value="1"> Assigned Agent            </td>
         </tr>
         <tr>
             <td>
-              <input type="checkbox" name="assigned_alert_team_lead" checked=""> Team Lead            </td>
+              <input type="checkbox" name="assigned_alert_team_lead" <?php echo $assigned_alert_team_lead == 1?"checked":"";?> value="1"> Team Lead            </td>
         </tr>
         <tr>
             <td>
-              <input type="checkbox" name="assigned_alert_team_members" checked="">
+              <input type="checkbox" name="assigned_alert_team_members" <?php echo $assigned_alert_team_members == 1?"checked":"";?> value="1">
                 Team Members            </td>
         </tr>
         <tr><th><em><b>Ticket Transfer Alert</b> :
             </em></th></tr>
         <tr>
             <td><em><b>Status:</b></em> &nbsp;
-            <input type="radio" name="transfer_alert_active" value="1">
-                Enable            <input type="radio" name="transfer_alert_active" value="0" checked="">
+            <input type="radio" name="transfer_alert_active" value="1" <?php echo $transfer_alert_active == 1?"checked":"";?>>
+                Enable            
+            <input type="radio" name="transfer_alert_active" value="0" <?php echo $transfer_alert_active == 0?"checked":"";?>>
                 Disable              &nbsp;&nbsp;&nbsp;<font class="error">&nbsp;</font>
             </td>
         </tr>
         <tr>
             <td>
-              <input type="checkbox" name="transfer_alert_assigned" checked="">
+              <input type="checkbox" name="transfer_alert_assigned" <?php echo $transfer_alert_assigned == 1?"checked":"";?> value="1">
                 Assigned Agent / Team            </td>
         </tr>
         <tr>
             <td>
-              <input type="checkbox" name="transfer_alert_dept_manager" checked="">
+              <input type="checkbox" name="transfer_alert_dept_manager" <?php echo $transfer_alert_dept_manager == 1?"checked":"";?> value="1">
                 Department Manager            </td>
         </tr>
         <tr>
             <td>
-              <input type="checkbox" name="transfer_alert_dept_members" checked="">
+              <input type="checkbox" name="transfer_alert_dept_members" <?php echo $transfer_alert_dept_members == 1?"checked":"";?> value="1">
                 Department Members            </td>
         </tr>
         <tr><th><em><b>Overdue Ticket Alert</b> :
             </em></th></tr>
         <tr>
             <td><em><b>Status:</b></em> &nbsp;
-              <input type="radio" name="overdue_alert_active" value="1"> Enable              <input type="radio" name="overdue_alert_active" value="0" checked=""> Disable              &nbsp;&nbsp;<font class="error">&nbsp;</font>
+              <input type="radio" name="overdue_alert_active" value="1" <?php echo $overdue_alert_active == 1?"checked":"";?>> Enable              
+              <input type="radio" name="overdue_alert_active" value="0" <?php echo $overdue_alert_active == 0?"checked":"";?>> Disable              &nbsp;&nbsp;<font class="error">&nbsp;</font>
             </td>
         </tr>
         <tr>
             <td>
-              <input type="checkbox" name="overdue_alert_assigned" checked=""> Assigned Agent / Team            </td>
+              <input type="checkbox" name="overdue_alert_assigned" <?php echo $overdue_alert_assigned == 1?"checked":"";?> value="1"> Assigned Agent / Team            </td>
         </tr>
         <tr>
             <td>
-              <input type="checkbox" name="overdue_alert_dept_manager" checked=""> Department Manager            </td>
+              <input type="checkbox" name="overdue_alert_dept_manager" <?php echo $overdue_alert_dept_manager == 1?"checked":"";?> value="1"> Department Manager            </td>
         </tr>
         <tr>
             <td>
-              <input type="checkbox" name="overdue_alert_dept_members" checked=""> Department Members            </td>
+              <input type="checkbox" name="overdue_alert_dept_members" <?php echo $overdue_alert_dept_members == 1?"checked":"";?> value="1"> Department Members            </td>
         </tr>
         <tr><th>
             <em><b>System Alerts</b>: </em></th></tr>
@@ -384,136 +386,33 @@
         return random_number;
     }
 
-    function pad (str, max, padding) {  
-        str = str.toString(); 
-        padding = padding.toString(); 
-        return str.length < max ? pad(padding + str, max, padding) : str; 
-    }   
-        var ticket_no_seq = document.getElementById("ticket_sequence_id").options[document.getElementById("ticket_sequence_id").selectedIndex].value;
-
     var random_number_digit = document.getElementById("ticket_number_format");
-    if (ticket_no_seq == '0'){  
-            document.getElementById("ticket_number_example").innerHTML = 'YYMMDD' + random_number(random_number_digit); 
-             random_number_digit.onkeyup = function (){ 
-                if (random_number_digit.value > 1 && random_number_digit.value < 13)    
-                {       
-                    document.getElementById("ticket_number_example").innerHTML = 'YYMMDD' + random_number(random_number_digit); 
-                }   
-                else    
-                {   
-                    do  
-                    {                   
-                        if (random_number_digit.value <= 1) 
-                        {   
-                            var random_number_minimum = Math.floor(Math.random()*1E2);  
-                        }   
-                        else if (random_number_digit.value >= 13)   
-                        {   
-                            var random_number_minimum = Math.floor(Math.random()*1E12); 
-                        }   
-                    }   
-                    while (random_number_minimum.toString().length != 2 && random_number_minimum.toString().length != 12);
-                    document.getElementById("ticket_number_example").innerHTML = 'YYMMDD' + random_number_minimum;
-                }
-            }
+    document.getElementById("ticket_number_example").innerHTML = 'YYMMDD' + random_number(random_number_digit);
+
+    random_number_digit.onkeyup = function (){
+        if (random_number_digit.value > 1 && random_number_digit.value < 13)
+        {   
+            document.getElementById("ticket_number_example").innerHTML = 'YYMMDD' + random_number(random_number_digit);
         }
         else
         {
-                $.ajax({
-                    url : "<?php echo site_url('admin_settings_controller/ticketlist?id='); ?>" + ticket_no_seq,
-                    success : function(result){
-                    result = JSON.parse(result);
-                     document.getElementById("ticket_number_example").innerHTML = 'YYMMDD' + pad(result[0].next,random_number_digit.value,result[0].padding);   
-                     random_number_digit.onkeyup = function (){ 
-                        if (random_number_digit.value > 1 && random_number_digit.value < 13)    
-                        {       
-                            document.getElementById("ticket_number_example").innerHTML = 'YYMMDD' + pad(result[0].next,random_number_digit.value,result[0].padding);    
-                        }   
-                        else    
-                        {   
-                            do  
-                            {                   
-                                if (random_number_digit.value <= 1) 
-                                {   
-                                    var random_number_minimum = pad(result[0].next,2,result[0].padding);    
-                                }   
-                                else if (random_number_digit.value >= 13)   
-                                {   
-                                    var random_number_minimum = pad(result[0].next,12,result[0].padding);;  
-                                }   
-                            }   
-                            while (random_number_minimum.toString().length != 2 && random_number_minimum.toString().length != 12);  
-                             document.getElementById("ticket_number_example").innerHTML = 'YYMMDD' + random_number_minimum; 
-                        }   
-                    }   
-                        
-                  } 
-                }); 
-        }   
-        
-    $("#ticket_sequence_id").change(function () {   
-                var val = $(this).val();    
-                if (val == '0'){    
-            document.getElementById("ticket_number_example").innerHTML = 'YYMMDD' + random_number(random_number_digit); 
-             random_number_digit.onkeyup = function (){ 
-                if (random_number_digit.value > 1 && random_number_digit.value < 13)    
-                {       
-                    document.getElementById("ticket_number_example").innerHTML = 'YYMMDD' + random_number(random_number_digit); 
-                }
-                else
+            do
+            {                
+                if (random_number_digit.value <= 1)
                 {
-                    do
-                    {
-                        if (random_number_digit.value <= 1) 
-                        {   
-                            var random_number_minimum = Math.floor(Math.random()*1E2);  
-                        }   
-                        else if (random_number_digit.value >= 13)   
-                        {   
-                            var random_number_minimum = Math.floor(Math.random()*1E12); 
-                        }   
-                    }   
-                    while (random_number_minimum.toString().length != 2 && random_number_minimum.toString().length != 12);  
-                     document.getElementById("ticket_number_example").innerHTML = 'YYMMDD' + random_number_minimum; 
+                    var random_number_minimum = Math.floor(Math.random()*1E2);
+                }
+                else if (random_number_digit.value >= 13)
+                {
+                    var random_number_minimum = Math.floor(Math.random()*1E12);
                 }
             }
+            while (random_number_minimum.toString().length != 2 && random_number_minimum.toString().length != 12);
+
+            document.getElementById("ticket_number_example").innerHTML = 'YYMMDD' + random_number_minimum;
         }
-        else    
-        {   
-                
-                $.ajax({    
-                  url : "<?php echo site_url('admin_settings_controller/ticketlist?id='); ?>" + val,    
-                  success : function(result){   
-                    result = JSON.parse(result);    
-                     document.getElementById("ticket_number_example").innerHTML = 'YYMMDD' + pad(result[0].next,random_number_digit.value,result[0].padding);   
-                     random_number_digit.onkeyup = function (){ 
-                        if (random_number_digit.value > 1 && random_number_digit.value < 13)    
-                        {       
-                            document.getElementById("ticket_number_example").innerHTML = 'YYMMDD' + pad(result[0].next,random_number_digit.value,result[0].padding);    
-                        }   
-                        else    
-                        {   
-                            do  
-                            {                   
-                                if (random_number_digit.value <= 1) 
-                                {   
-                                    var random_number_minimum = pad(result[0].next,2,result[0].padding);    
-                                }   
-                                else if (random_number_digit.value >= 13)   
-                                {   
-                                    var random_number_minimum = pad(result[0].next,12,result[0].padding);;  
-                                }   
-                            }   
-                            while (random_number_minimum.toString().length != 2 && random_number_minimum.toString().length != 12);
-                             document.getElementById("ticket_number_example").innerHTML = 'YYMMDD' + random_number_minimum;
-                         }
-                     }
-                 }
-             });
-            }
-        });
-                
-        
+    }
+
     function manage()
         {
           save_method = 'manage';
@@ -534,7 +433,7 @@
 <hr>Sequences are used to generate sequential numbers. Various sequences can be
 used to generate sequences for different purposes.<br>
 <br>
-<form method="post" action="<?php echo site_url('admin_settings_controller/ticket_seq_update?status=ticket')?>">
+<form method="post" action="<?php echo site_url('admin_settings_controller/ticket_seq_update')?>">
 
 <div id="sequences">
 <?php foreach($ticket_seq_list->result() as $value){?>
