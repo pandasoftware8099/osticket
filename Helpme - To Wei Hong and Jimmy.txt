@@ -1,28 +1,28 @@
 Helpme!!!
 
 Priority: High
-1) Wei Hong, how's the GUID?
+//1) Wei Hong, how's the GUID?
 2) Admin Dashboard System Logs
 3) (But do it last) dingtalk, create tickets using dingtalk (using restful)
 
 Priority: Middle
-1) (Not Sure) Agent User info -> Manage Account -> Manage Access, "Password Reset Required" & "User cannot change password" done??
-2) Try to remove every "Insert Link" and "Insert Image" from textarea/readactor box/wysihtml5, or else there will be backdrop error when you try to insert link or image (insert link -> click on link -> click cancel -> error occured)
+twh1) (Not Sure) Agent User info -> Manage Account -> Manage Access, "Password Reset Required" & "User cannot change password" done??
+//2) Try to remove every "Insert Link" and "Insert Image" from textarea/readactor box/wysihtml5, or else there will be backdrop error when you try to insert link or image (insert link -> click on link -> click cancel -> error occured)
 (a) Reason: Error occured if there's an href inside button of modal box (eg. <a href="" data-toggle="modal" data-target="">), but there's no way to remove href from these two buttons, so better just remove them off
-3) User Ticket - Remove Inventory field and edit ticket button? These information/functions seem useless for me
-4) Ticket info, thread entry type = 'E'
-5) Agent edit thread entry text
+jim3) User Ticket - Remove Inventory field and edit ticket button? These information/functions seem useless for me
+jim4) Ticket info, thread entry type = 'E'
+twh5) Agent edit thread entry text
 
 Priority: Low
-1) Agent Dashboard: Graph unprepared, double confirm statistics accuracy
-2) search box (in everywhere, eg. agent create new ticket) have awful view, try to make it looks good
-3) Admin Manage Knowledgebase
+twh1) Agent Dashboard: Graph unprepared, double confirm statistics accuracy
+jim2) search box (in everywhere, eg. agent create new ticket) have awful view, try to make it looks good
+jim3) Admin Manage Knowledgebase
 (a) remove Agent Knowledgebase - Canned Responses
 (b) Knowledgebase Category Type - Featured: show on front-page, Public: readable by public, Private: only accessible by admins & agents
-4) Admin Settings Ticket + Task, Alerts and Notices not done yet (emails) (make sure the variable must modified and follow my format in database, unless you found a better way)
-5) Remove Admin Manage Ticket Filters, Forms and Plugins; unless you want to keep these functions in agent page
-6) Admin Emails - Emails info, Settings, Banlist; add logic/function to workable fields, give up/hide/delete/buang those unworkable fields
-7) Add a redirect button to user page in headerstaff and headeradmin, which is similar to agent login page one
-8) Some buttons in user welcome page not functional yet, eg. search button (delete) & featured questions, search box in user knowledgebase
+twh4) Admin Settings Ticket + Task, Alerts and Notices not done yet (emails) (make sure the variable must modified and follow my format in database, unless you found a better way)
+jim5) Remove Admin Manage Ticket Filters, Forms and Plugins; unless you want to keep these functions in agent page
+twh6) Admin Emails - Emails info, Settings, Banlist; add logic/function to workable fields, give up/hide/delete/buang those unworkable fields
+//7) Add a redirect button to user page in headerstaff and headeradmin, which is similar to agent login page one
+jim8) Some buttons in user welcome page not functional yet, eg. search button (delete) & featured questions, search box in user knowledgebase
 
 Good luck and all the best :)
