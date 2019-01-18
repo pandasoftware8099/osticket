@@ -71,10 +71,10 @@
         <table class="custom-data" cellspacing="0" cellpadding="4" width="100%" border="0">
         <tbody>
         <?php foreach ($editticket->result() as $edit) { ?>
-        <tr><td colspan="2" class="headline flush-left">Inventory</td></tr>
+        <tr><td colspan="2" class="headline flush-left">Contacts</td></tr>
         <tr>
-            <th>Company Name:</th>
-            <td><?php echo $edit->company_name;?></td>
+            <th>Name:</th>
+            <td><?php echo $edit->contact;?></td>
         </tr>
         <tr>
             <th>Phone Numbers:</th>
@@ -189,12 +189,7 @@ $.dialog(url, [201], function(xhr, resp) {
 <?php } ?>
 <?php } ?>
 
-  <div class="thread-event action">
-        <span class="type-icon">
-          <i class="faded icon-magic"></i>
-        </span>
-        <span class="faded description">Created by <b><img class="avatar" alt="Avatar" src="//www.gravatar.com/avatar/591979a746b57c8ed09bca89133daeff?s=80&amp;d=mm"><?php echo $value1->poster;?></b> <time datetime="2018-10-18T08:28:16+00:00" data-toggle="tooltip" title=""></time></span>
-  </div>
+
 
 
 <div class="clear" style="padding-bottom:10px;"></div>
