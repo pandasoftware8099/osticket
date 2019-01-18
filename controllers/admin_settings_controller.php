@@ -700,5 +700,61 @@ class admin_settings_controller extends CI_Controller {
             echo "<script> document.location='" . base_url() . "/index.php/admin_settings_controller/settings_user#templates' </script>";
         }
     }
+
+    public function settings_knowledgebase()
+    {      
+        if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
+        {   
+            $data = array(
+                
+                'enable_kb' => $this->db->query("SELECT value FROM ost_config_test WHERE id='26'")->row('value'),
+                'enable_premade' => $this->db->query("SELECT value FROM ost_config_test WHERE id='27'")->row('value'),
+                'restrict_kb' => $this->db->query("SELECT value FROM ost_config_test WHERE id='115'")->row('value'),
+            );
+
+            $browser_id = $_SERVER["HTTP_USER_AGENT"];
+            if(strpos($browser_id,"Windows CE") || strpos($browser_id,"Windows NT 5.1") )
+            {
+
+                /*$this->load->view('WinCe/header');
+                $this->load->view('WinCe/po/po_main',$data);*/
+                
+            }
+            else
+            {
+                $this->load->view('headeradmin');
+                $this->load->view('admin_settings/admin_settings_knowledgebase', $data);
+                $this->load->view('footeradmin');
+            }    
+        }
+
+        else       
+        {
+           redirect('user_controller/superlogin');
+        }
+    }
+
+    public function settings_knowledgebase_process()
+    {      
+        if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
+        {   
+            $enable_kb = addslashes($this->input->post('enable_kb'));
+            $restrict_kb = addslashes($this->input->post('restrict_kb'));
+            $enable_premade = addslashes($this->input->post('enable_premade'));
+
+            $this->db->query("UPDATE ost_config_test SET value = '$enable_kb' WHERE id = '26' ");
+            $this->db->query("UPDATE ost_config_test SET value = '$restrict_kb' WHERE id = '115' ");
+            $this->db->query("UPDATE ost_config_test SET value = '$enable_premade' WHERE id = '27' ");
+
+            echo "<script> alert('Successfully updated Knowledgebase Settings.');</script>";
+            echo "<script> document.location='" . base_url() . "/index.php/admin_settings_controller/settings_knowledgebase' </script>";
+             
+        }
+
+        else       
+        {
+           redirect('user_controller/superlogin');
+        }
+    }
 }
 ?>
