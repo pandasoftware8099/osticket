@@ -141,9 +141,18 @@ input[type="button"], input[type="reset"], input[type="submit"] {
         <div class="clear"></div>
                 <section class="">
             <ol class="breadcrumb" id="navs" style="background-color:#ebeaea;">
-              <li><a class=" home" href="<?php echo site_url('welcome/index')?>">Support Center Home</a></li>
-<li><a class=" kb" href="<?php echo site_url('guide_controller/main')?>">Knowledgebase</a></li>
-<li><a class=" new" href="<?php echo site_url('open_controller/main')?>">Open a New Ticket</a></li>
-<li><a class=" tickets" href="<?php echo site_url('ticket_controller/main')?>">Tickets <!-- (2) --></a></li>
+                <li><a class=" home" href="<?php echo site_url('welcome/index')?>">Support Center Home</a></li>
+
+                <?php if (  
+                    
+                    $this->db->query("SELECT value FROM ost_config_test WHERE id='26'")->row('value') == '1'
+
+                ) {  ?>
+                <li><a class=" kb" href="<?php echo site_url('guide_controller/main')?>">Knowledgebase</a></li>
+
+                <?php } ?>
+
+                <li><a class=" new" href="<?php echo site_url('open_controller/main')?>">Open a New Ticket</a></li>
+                <li><a class=" tickets" href="<?php echo site_url('ticket_controller/main')?>">Tickets <!-- (2) --></a></li>
             </ol>
       </section>
