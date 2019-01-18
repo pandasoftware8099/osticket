@@ -17,19 +17,10 @@
             <?php foreach ($cinfo->result() as $info) { ?>
             <div class="form-group">
                 <label for="3936ff14708de280" class="col-sm-3 control-label">
-                    <span class="">Company Name</span>                
+                    <span class="">Contact Name</span>                
                 </label>
                 <div class="col-sm-9">
-                    <input type="text" class="form-control" id="_3936ff14708de280" size="40" maxlength="64" placeholder="" name="companyname" value="<?php echo $info->company_name;?>">
-                </div>            
-            </div>
-                    
-            <div class="form-group">
-                <label for="23898c318d438bd8" class="col-sm-3 control-label">
-                    <span class="required">Issue Summary<span class="error">*</span>
-                </label>
-                <div class="col-sm-9">
-                    <input type="text" class="form-control" id="_23898c318d438bd8" size="40" maxlength="50" placeholder="" name="issuesummary" value="<?php echo $info->issue_summary;?>">
+                    <input type="text" class="form-control" id="_3936ff14708de280" size="40" maxlength="64" placeholder="" name="companyname" value="<?php echo $info->contact;?>">
                 </div>            
             </div>
 

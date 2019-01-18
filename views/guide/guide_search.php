@@ -2,12 +2,12 @@
 
          <div class="col-lg-8">
     <h1>Frequently Asked Questions</h1>
-    <div><strong>Search Results</strong></div>
-<div id="faq">4 FAQs matched your search criteria.
+    <!-- <div><strong>Search Results</strong></div> -->
+<div id="faq"><?php echo $search->num_rows() ?> FAQs matched your search criteria.
     <ol>
 
         <?php foreach ($search->result() as $value) { ?>
-        <li><a href="<?php echo site_url('staff_faqs_controller/faqinfo');?>?id=<?php echo $value->faq_guid;?>" class="previewfaq"><?php echo $value->question;?></a></li>
+        <li><a href="<?php echo site_url('guide_controller/info')?>?id=<?php echo $value->faq_guid;?>" class="previewfaq"><?php echo $value->question;?></a></li>
         <?php } ?>
 
     </ol>
