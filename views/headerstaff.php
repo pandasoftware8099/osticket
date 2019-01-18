@@ -69,7 +69,7 @@
   <link rel="stylesheet" href="<?php echo base_url('asset/plugins/bower_components/datetime/bootstrap-datetimepicker.css');?>">
   <link rel="stylesheet" href="<?php echo base_url('asset/plugins/bower_components/datetime/bootstrap-datetimepicker.min.css');?>">
 
-<!-- include summernote css/js -->
+
 <link href="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.11/summernote.css" rel="stylesheet">
 <script src="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.11/summernote.js"></script>
 
