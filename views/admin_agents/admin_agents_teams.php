@@ -57,8 +57,8 @@
     <tbody>     <?php foreach ($team->result() as $value) { ?>
                 <tr>
                 <td align="center">
-                  <input id="tids" type="checkbox" class="ckb" name="tids[]" value="<?php echo $value->team_id?>"> </td>
-                <td><a href="<?php echo site_url('admin_agents_controller/agents_teams_info')?>?id=<?php echo $value->team_id ?>"><?php echo $value->name?></a> &nbsp;</td>
+                  <input id="tids" type="checkbox" class="ckb" name="tids[]" value="<?php echo $value->team_guid?>"> </td>
+                <td><a href="<?php echo site_url('admin_agents_controller/agents_teams_info')?>?id=<?php echo $value->team_guid ?>"><?php echo $value->name?></a> &nbsp;</td>
                 <td>&nbsp;<?php if ($value->flags == 1){ ?>
 
                       Active
@@ -69,7 +69,7 @@
 
                       <?php } ?></td>
                 <td style="text-align:right;padding-right:25px">&nbsp;&nbsp;
-                     <?php echo $this->db->query("SELECT COUNT(*) as total FROM ost_team_member_test WHERE team_id = '".$value->team_id."'")->row('total');?>
+                     <?php echo $this->db->query("SELECT COUNT(*) as total FROM ost_team_member_test WHERE team_guid = '".$value->team_guid."'")->row('total');?>
                                         &nbsp;
                 </td>
                 <td><a href="staff.php?id=0"><?php echo $value->firstname?> <?php echo $value->lastname?></a></td>

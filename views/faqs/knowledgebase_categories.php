@@ -45,12 +45,12 @@
             <tr>
               
               <!-- <td align="center" class="nohover">
-                <input class="ckb" type="checkbox" name="tids[]" value="<?php echo $value->category_id;?>"">
+                <input class="ckb" type="checkbox" name="tids[]" value="<?php echo $value->category_guid;?>"">
               </td> -->
               
               <td nowrap="">
 
-                <a href="<?php echo site_url('staff_faqs_controller/faqeditcate');?>?id=<?php echo $value->category_id;?>"><?php echo $value->name;?></a>
+                <a href="<?php echo site_url('staff_faqs_controller/faqeditcate');?>?id=<?php echo $value->category_guid;?>"><?php echo $value->name;?></a>
 
               </td>
               
@@ -77,7 +77,7 @@
               <td>
                 <?php
 
-                $count = $this->db->query("SELECT COUNT(*) AS count FROM ost_faq_test WHERE category_id = $value->category_id")->row('count');
+                $count = $this->db->query("SELECT COUNT(*) AS count FROM ost_faq_test WHERE category_guid = $value->category_guid")->row('count');
                 echo $count;
                 ?>
 

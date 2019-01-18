@@ -30,8 +30,8 @@
     <tbody>
         <?php foreach ($pages->result() as $pagesinfo) { ?>
         <tr>
-            <td align="center"><input type="checkbox" class="ckb" name="pids[]" value="<?php echo $pagesinfo->id;?>"></td>
-            <td>&nbsp;<a href="<?php echo site_url('admin_manage_controller/manage_pages_addupdate');?>?id=<?php echo $pagesinfo->id;?>"><?php echo $pagesinfo->name;?></a></td>
+            <td align="center"><input type="checkbox" class="ckb" name="pids[]" value="<?php echo $pagesinfo->content_guid;?>"></td>
+            <td>&nbsp;<a href="<?php echo site_url('admin_manage_controller/manage_pages_addupdate');?>?id=<?php echo $pagesinfo->content_guid;?>"><?php echo $pagesinfo->name;?></a></td>
             <td class="faded"><?php echo $pagesinfo->type;?></td>
             <td>&nbsp;<?php echo $pagesinfo->isactive == 1?"Active":"<b>Disabled</b>";?>&nbsp;&nbsp;<em><?php echo $pagesinfo->in_use == 1?"(in-use)":"";?></em></td>
             <td>&nbsp;<?php echo $pagesinfo->created;?></td>

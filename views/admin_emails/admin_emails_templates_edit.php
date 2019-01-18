@@ -3,7 +3,7 @@
 <h2>
     <div class="col-lg-6">
         <span>Email Template Set</span>
-        <small> — <a href="<?php echo site_url('admin_emails_controller/emails_templates_info');?>?id=<?php echo $email_template_info->row('tpl_id');?>">osTicket Default Template (HTML)</a></small>
+        <small> — <a href="<?php echo site_url('admin_emails_controller/emails_templates_info');?>?id=<?php echo $email_template_info->row('tpl_guid');?>">osTicket Default Template (HTML)</a></small>
     </div>
     <div class="col-lg-6">
         <div class="pull-right" style="overflow:auto;">
@@ -11,17 +11,17 @@
         <select id="tpl_options" name="id" style="width:250px;">
             <optgroup label="Ticket End-User Email Templates">
                 <?php foreach ($ticket_end_user_templates->result() as $ticket_end_user) { ?>
-                <option value="<?php echo $ticket_end_user->id;?>" <?php echo $ticket_end_user->id == $_REQUEST['id']?"selected":"";?>><?php echo $ticket_end_user->title;?></option>
+                <option value="<?php echo $ticket_end_user->email_tpl_guid;?>" <?php echo $ticket_end_user->email_tpl_guid == $_REQUEST['id']?"selected":"";?>><?php echo $ticket_end_user->title;?></option>
                 <?php } ?>
             </optgroup>
             <optgroup label="Ticket Agent Email Templates">
                 <?php foreach ($ticket_agent_templates->result() as $ticket_agent) { ?>
-                <option value="<?php echo $ticket_agent->id;?>" <?php echo $ticket_agent->id == $_REQUEST['id']?"selected":"";?>><?php echo $ticket_agent->title;?></option>
+                <option value="<?php echo $ticket_agent->email_tpl_guid;?>" <?php echo $ticket_agent->email_tpl_guid == $_REQUEST['id']?"selected":"";?>><?php echo $ticket_agent->title;?></option>
                 <?php } ?>
             </optgroup>
             <optgroup label="Task Email Templates">
                 <?php foreach ($task_templates->result() as $task) { ?>
-                <option value="<?php echo $task->id;?>" <?php echo $task->id == $_REQUEST['id']?"selected":"";?>><?php echo $task->title;?></option>
+                <option value="<?php echo $task->email_tpl_guid;?>" <?php echo $task->email_tpl_guid == $_REQUEST['id']?"selected":"";?>><?php echo $task->title;?></option>
                 <?php } ?>
             </optgroup>
         </select>
@@ -53,6 +53,7 @@
         </div>
     </div>
 </div>
+
 <p>**Please do not modify <b>%variable%</b></p>
 <p style="text-align:center">
     <input class="button" type="submit" name="submit" value="Save Changes">

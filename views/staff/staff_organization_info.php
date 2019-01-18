@@ -73,20 +73,20 @@ $(function() {
                     <?php 
                         if ($org->manager{0} == 'a')
                         { ?>
-                            <?php $staff_id = substr($org->manager, 1);?>
+                            <?php $staff_guid = substr($org->manager, 1);?>
 
                             <?php echo $this->db->query("SELECT * FROM ost_staff_test
-                                WHERE staff_id = '".$staff_id."'")->row('firstname');?> 
+                                WHERE staff_guid = '".$staff_guid."'")->row('firstname');?> 
                             <?php echo $this->db->query("SELECT * FROM ost_staff_test
-                                WHERE staff_id = '".$staff_id."'")->row('lastname');?>
+                                WHERE staff_guid = '".$staff_guid."'")->row('lastname');?>
                         <?php }
 
                         else if ($org->manager{0} == 't')
                         { ?>
-                            <?php $team_id = substr($org->manager, 1);?>
+                            <?php $team_guid = substr($org->manager, 1);?>
 
                             <?php echo $this->db->query("SELECT * FROM ost_team_test
-                                WHERE team_id = '".$team_id."'")->row('name');?>
+                                WHERE team_guid = '".$team_guid."'")->row('name');?>
                     <?php } ?>
                     <?php } ?>
                 </td>
@@ -162,16 +162,16 @@ $(function() {
                 <?php foreach ($userinfo->result() as $user) { ?>
                 <tr>
                     <td align="center">
-                        <input value="<?php echo $user->user_id;?>" type="checkbox" class="ckb" name="tids[]">
+                        <input value="<?php echo $user->user_guid;?>" type="checkbox" class="ckb" name="tids[]">
                     </td>
                     <td>
-                        <a class="preview" href="<?php echo site_url('staff_user_controller/user_info');?>?id=<?php echo $user->user_id;?>"><?php echo $user->user_name;?></a>&nbsp;
+                        <a class="preview" href="<?php echo site_url('staff_user_controller/user_info');?>?id=<?php echo $user->user_guid;?>"><?php echo $user->user_name;?></a>&nbsp;
 
                         <?php 
-                        if ($this->db->query("SELECT COUNT(*) as ttotal FROM ost_ticket_test WHERE user_id = '".$user->user_id."'")->row('ttotal') != '0')
+                        if ($this->db->query("SELECT COUNT(*) as ttotal FROM ost_ticket_test WHERE user_guid = '".$user->user_guid."'")->row('ttotal') != '0')
                         { ?>
                             <i class="icon-fixed-width icon-file-text-alt"></i>
-                            <small>(<?php echo $this->db->query("SELECT COUNT(*) as ttotal FROM ost_ticket_test WHERE user_id = '".$user->user_id."'")->row('ttotal');?>)</small>
+                            <small>(<?php echo $this->db->query("SELECT COUNT(*) as ttotal FROM ost_ticket_test WHERE user_guid = '".$user->user_guid."'")->row('ttotal');?>)</small>
                         <?php } ?>
                     </td>
                     <td><?php echo $user->user_email;?></td>
@@ -264,22 +264,22 @@ $(function() {
                 <td align="center">
                         <input type="checkbox" class="ckb" name="tidst[]"></td>
                 <td nowrap="">
-                    <a class="Icon phoneTicket preview" title="Preview Ticket" href="<?php echo site_url('staff_ticket_controller/ticketinfo');?>?id=<?php echo $orgt->ticket_id;?>"><?php echo $orgt->number;?></a></td>
+                    <a class="Icon phoneTicket preview" title="Preview Ticket" href="<?php echo site_url('staff_ticket_controller/ticketinfo');?>?id=<?php echo $orgt->ticket_guid;?>"><?php echo $orgt->number;?></a></td>
                 <td nowrap=""><?php echo $orgt->ticket_updated;?></td>
                 <td><?php echo $orgt->name;?></td>
                 <td>
-                    <a class="truncate " style="max-width: 230px;" href="<?php echo site_url('staff_ticket_controller/ticketinfo');?>?id=<?php echo $orgt->ticket_id;?>"><?php echo $orgt->topic;?></a>
+                    <a class="truncate " style="max-width: 230px;" href="<?php echo site_url('staff_ticket_controller/ticketinfo');?>?id=<?php echo $orgt->ticket_guid;?>"><?php echo $orgt->topic;?></a>
 
                     <?php 
-                    if ($this->db->query("SELECT COUNT(*) as ticketthread FROM ost_thread_entry_test WHERE ticket_id = '".$orgt->ticket_id."'")->row('ticketthread') != '0' && $this->db->query("SELECT COUNT(*) as ticketthread FROM ost_thread_entry_test WHERE ticket_id = '".$orgt->ticket_id."'")->row('ticketthread') != '1')
+                    if ($this->db->query("SELECT COUNT(*) as ticketthread FROM ost_thread_entry_test WHERE ticket_guid = '".$orgt->ticket_guid."'")->row('ticketthread') != '0' && $this->db->query("SELECT COUNT(*) as ticketthread FROM ost_thread_entry_test WHERE ticket_guid = '".$orgt->ticket_guid."'")->row('ticketthread') != '1')
                     { ?>
 
                     <span class="pull-right faded-more">
                         <i class="icon-comments-alt"></i>
-                            <small><?php echo $this->db->query("SELECT COUNT(*) as ticketthread FROM ost_thread_entry_test WHERE ticket_id = '".$orgt->ticket_id."'")->row('ticketthread');?></small>
+                            <small><?php echo $this->db->query("SELECT COUNT(*) as ticketthread FROM ost_thread_entry_test WHERE ticket_guid = '".$orgt->ticket_guid."'")->row('ticketthread');?></small>
                     </span>
                     <?php } ?>
-                <td><a class="truncate" style="max-width:250px" href="<?php echo site_url('staff_user_controller/user_info');?>?id=<?php echo $orgt->user_id;?>" 3=""><?php echo $orgt->user_name;?> <em>&lt;<?php echo $orgt->user_email;?>&gt;</em></a></td>
+                <td><a class="truncate" style="max-width:250px" href="<?php echo site_url('staff_user_controller/user_info');?>?id=<?php echo $orgt->user_guid;?>" 3=""><?php echo $orgt->user_name;?> <em>&lt;<?php echo $orgt->user_email;?>&gt;</em></a></td>
             </tr>
             <?php } ?>
         </tbody>
@@ -337,7 +337,8 @@ $(function() {
             <!-- /.box-header -->
             <div class="box-body pad">
                 
-                <textarea required="true" name="orgnote" id="task-response" class="textarea" placeholder="Start writing your note here" style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"></textarea>
+                <textarea required="true" name="orgnote" id="task-response" class="textarea" placeholder="Start writing your note here"
+                          style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"></textarea>
                 
               
             </div>
@@ -569,13 +570,13 @@ $(function() {
                                     <option value="">— None —</option>
                                         <optgroup label="Agents (<?php echo $orgstaff->num_rows();?>)">
                                         <?php foreach ($orgstaff->result() as $staff) { ?>
-                                            <option value="a<?php echo $staff->staff_id;?>" <?php echo $orgresult->row('manager') == "a$staff->staff_id"?"selected":""; ?>><?php echo $staff->firstname;?> <?php echo $staff->lastname;?></option>
+                                            <option value="a<?php echo $staff->staff_guid;?>" <?php echo $orgresult->row('manager') == "a$staff->staff_guid"?"selected":""; ?>><?php echo $staff->firstname;?> <?php echo $staff->lastname;?></option>
                                         <?php } ?>
                                         </optgroup>
 
                                         <optgroup label="Teams (<?php echo $orgteam->num_rows();?>)">
                                         <?php foreach ($orgteam->result() as $team) { ?>
-                                            <option value="t<?php echo $team->team_id;?>" <?php echo $orgresult->row('manager') == "t$team->team_id"?"selected":""; ?>><?php echo $team->name;?></option>
+                                            <option value="t<?php echo $team->team_guid;?>" <?php echo $orgresult->row('manager') == "t$team->team_guid"?"selected":""; ?>><?php echo $team->name;?></option>
                                         <?php } ?> 
                                         </optgroup>
                                 </select>
@@ -595,7 +596,7 @@ $(function() {
                             <div class="col-lg-9">
                                 <select name="contacts[]" class="form-control select2 select2-hidden-accessible" multiple="" data-placeholder="Select a State" style="width: 100%;" tabindex="-1" aria-hidden="true">
                                     <?php foreach ($userinfo->result() as $user) { ?>
-                                    <option value="<?php echo $user->user_id;?>" <?php echo $user->user_primary == 1?"selected":""; ?>><?php echo $user->user_name;?></option>
+                                    <option value="<?php echo $user->user_guid;?>" <?php echo $user->user_primary == 1?"selected":""; ?>><?php echo $user->user_name;?></option>
                                     <?php } ?>
                                 </select>
 
@@ -1029,6 +1030,7 @@ $(document).ready(function(){
 <script type="text/javascript">
     getConfig().resolve({"lock_time":3600,"html_thread":true,"date_format":"Y-MM-dd","lang":"en_US","short_lang":"en","has_rtl":false,"lang_flag":"us","primary_lang_flag":"us","primary_language":"en-US","secondary_languages":[],"page_size":25});
 </script>
+
 
 
 <ul class="typeahead dropdown-menu" style="display: none;"></ul><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-0 redactor-toolbar-tooltip-html" style="display: none;">HTML</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-0 redactor-toolbar-tooltip-formatting" style="display: none;">Formatting</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-0 redactor-toolbar-tooltip-bold" style="display: none;">Bold</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-0 redactor-toolbar-tooltip-italic" style="display: none;">Italic</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-0 redactor-toolbar-tooltip-underline" style="display: none;">Underline</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-0 redactor-toolbar-tooltip-deleted" style="display: none;">Deleted</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-0 redactor-toolbar-tooltip-unorderedlist" style="display: none;">• Unordered List</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-0 redactor-toolbar-tooltip-orderedlist" style="display: none;">1. Ordered List</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-0 redactor-toolbar-tooltip-outdent" style="display: none;">&lt; Outdent</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-0 redactor-toolbar-tooltip-indent" style="display: none;">&gt; Indent</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-0 redactor-toolbar-tooltip-link" style="display: none;">Link</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-0 redactor-toolbar-tooltip-alignment" style="display: none;">Alignment</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-0 redactor-toolbar-tooltip-horizontalrule" style="display: none;">Insert Horizontal Rule</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-0 redactor-toolbar-tooltip-table" style="display: none;">Table</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-0 redactor-toolbar-tooltip-video" style="display: none;">Insert Video</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-0 redactor-toolbar-tooltip-fontcolor" style="top: 304px; left: 414.781px; display: none;">Font Color</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-0 redactor-toolbar-tooltip-backcolor" style="display: none;">Back Color</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-0 redactor-toolbar-tooltip-fontfamily" style="display: none;">Change Font Family</span></body></html>

@@ -172,10 +172,10 @@
       <tbody>
         <tr>
           <td style="vertical-align:top">
-            <select name="dept_id" id="department">
+            <select name="dept_guid" id="department">
               <option value="" selected="">— Select Department—</option>
               <?php foreach ($department as $depart) { ?>   
-                  <option value="<?php echo $depart['depart_id']?>" <?php echo ($depart['depart_id'] == $staffinfo->dept_id )?"selected":""; ?>><?php echo $depart['depart_name']?></option>
+                  <option value="<?php echo $depart['depart_id']?>" <?php echo ($depart['depart_id'] == $staffinfo->dept_guid )?"selected":""; ?>><?php echo $depart['depart_name']?></option>
               <?php }?>
               <option value="0">— Add New —</option>
             </select>
@@ -183,10 +183,10 @@
             <div class="error"></div>
           </td>
           <td style="vertical-align:top">
-            <select name="role_id" data-quick-add="role">
+            <select name="role_guid" data-quick-add="role">
               <option value="0">— Select Role —</option>
               <?php foreach ($role->result() as $role1) { ?>   
-                <option value="<?php echo $role1->id?>" <?php echo ($role1->id == $staffinfo->role_id )?"selected":""; ?>><?php echo $role1->name?></option>
+                <option value="<?php echo $role1->role_guid?>" <?php echo ($role1->role_guid == $staffinfo->role_guid )?"selected":""; ?>><?php echo $role1->name?></option>
               <?php } ?>
             </select>
             <i class="offset help-tip icon-question-sign" href="#primary_role"></i>
@@ -204,11 +204,11 @@
       <tbody>
         <tr id="extended_access_template" class="hidden">
           <td>
-          <input type="hidden" data-name="ext_dept_id[]" value="">
+          <input type="hidden" data-name="ext_dept_guid[]" value="">
         </td>
 
           <td>
-            <select data-name="ext_role_id" data-quick-add="role" name="ext_role_id[]">
+            <select data-name="ext_role_guid" data-quick-add="role" name="ext_role_guid[]">
               <option value="0">— Select Role —</option>
               <?php foreach ($role->result() as $role2) { ?>   
                         <option value="<?php echo $role2->id?>"><?php echo $role2->name?></option>
@@ -359,7 +359,7 @@
             <select id="add_team" data-quick-add="team">
               <option value="0">— Select Team —</option>
               <?php foreach ($team1->result() as $team) { ?> 
-              <option value="<?php echo $team->team_id ?>"><?php echo $team->name ?></option>              
+              <option value="<?php echo $team->team_guid ?>"><?php echo $team->name ?></option>              
               <?php } ?> 
             </select>
             <button type="button" class="green button">
@@ -433,7 +433,7 @@
                                     <select class="form-control" name="department_email">
                                         <option value="0">— System Default —</option>
                                         <?php foreach ($department_email->result() as $email) {?>
-                                        <option value="<?php echo $email->email_id;?>"><?php echo $email->email;?></option>
+                                        <option value="<?php echo $email->email_guid;?>"><?php echo $email->email;?></option>
                                         <?php }?>
                                     </select>
                                 </fieldset>
@@ -478,14 +478,14 @@ var addAccess = function(daid, name, role, alerts, error) {
   if (!daid) return;
   var copy = $('#extended_access_template').clone();
 
-  copy.find('[data-name=ext_dept_id\\[\\]]')
-    .attr('name', 'ext_dept_id[]')
+  copy.find('[data-name=ext_dept_guid\\[\\]]')
+    .attr('name', 'ext_dept_guid[]')
     .val(daid);
-  copy.find('[data-name^=ext_role_id]')
-    .attr('name', 'ext_role_id['+daid+']')
+  copy.find('[data-name^=ext_role_guid]')
+    .attr('name', 'ext_role_guid['+daid+']')
     .val(role || 0);
-  copy.find('[data-name^=ext_dept_id_alerts]')
-    .attr('name', 'ext_dept_id_alerts['+daid+']')
+  copy.find('[data-name^=ext_dept_guid_alerts]')
+    .attr('name', 'ext_dept_guid_alerts['+daid+']')
     .prop('checked', alerts);
   copy.find('td:first').append(document.createTextNode(name));
   copy.attr('id', '').show().insertBefore($('#add_extended_access'));
@@ -495,7 +495,7 @@ var addAccess = function(daid, name, role, alerts, error) {
   copy.find('a.drop-access').click(function() {
     $('#add_access').append(
       $('<option>')
-        .attr('value', copy.find('input[name^=ext_dept_id][type=hidden]').val())
+        .attr('value', copy.find('input[name^=ext_dept_guid][type=hidden]').val())
         .text(copy.find('td:first').text())
     );
     copy.fadeOut(function() { $(this).remove(); });
@@ -631,14 +631,14 @@ var addAccess = function(daid, name, role, alerts, error) {
   if (!daid) return;
   var copy = $('#extended_access_template').clone();
 
-  copy.find('[data-name=ext_dept_id\\[\\]]')
-    .attr('name', 'ext_dept_id[]')
+  copy.find('[data-name=ext_dept_guid\\[\\]]')
+    .attr('name', 'ext_dept_guid[]')
     .val(daid);
-  copy.find('[data-name^=ext_role_id]')
-    .attr('name', 'ext_role_id['+daid+']')
+  copy.find('[data-name^=ext_role_guid]')
+    .attr('name', 'ext_role_guid['+daid+']')
     .val(role || 0);
-  copy.find('[data-name^=ext_dept_id_alerts]')
-    .attr('name', 'ext_dept_id_alerts['+daid+']')
+  copy.find('[data-name^=ext_dept_guid_alerts]')
+    .attr('name', 'ext_dept_guid_alerts['+daid+']')
     .prop('checked', alerts);
   copy.find('td:first').append(document.createTextNode(name));
   copy.attr('id', '').show().insertBefore($('#add_extended_access'));
@@ -648,7 +648,7 @@ var addAccess = function(daid, name, role, alerts, error) {
   copy.find('a.drop-access').click(function() {
     $('#add_access').append(
       $('<option>')
-        .attr('value', copy.find('input[name^=ext_dept_id][type=hidden]').val())
+        .attr('value', copy.find('input[name^=ext_dept_guid][type=hidden]').val())
         .text(copy.find('td:first').text())
     );
     copy.fadeOut(function() { $(this).remove(); });
@@ -703,11 +703,11 @@ $('#join_team').find('button').on('click', function() {
 });
 
 <?php foreach ($staffextdept->result() as $value) { ?>
-  addAccess(<?php echo $value->dept_id?>, "<?php echo $value->name?>", <?php echo $value->role_id?>, <?php echo $value->flags?>, null);
+  addAccess(<?php echo $value->dept_guid?>, "<?php echo $value->name?>", <?php echo $value->role_guid?>, <?php echo $value->flags?>, null);
 <?php } ?>
 
 <?php foreach ($staffteam->result() as $value) { ?>
-joinTeam(<?php echo $value->team_id?>, "<?php echo $value->name?>", <?php echo $value->flags?>, null);
+joinTeam(<?php echo $value->team_guid?>, "<?php echo $value->name?>", <?php echo $value->flags?>, null);
 <?php } ?>
 
 

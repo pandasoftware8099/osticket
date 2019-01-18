@@ -8,10 +8,10 @@
 <div class="form-group">
     <label class="col-lg-2 control-label"><span class="error">*</span>From :</label>
     <div class="col-lg-10">
-        <select name="email_id" class="form-control">
+        <select name="email_guid" class="form-control">
                     <option value="0">— Select FROM Email —</option>
                     <?php foreach($email_list->result() as $value){
-                        echo '<option value="'.$value->email_id.'">'.$value->email.'</option>';
+                        echo '<option value="'.$value->email_guid.'">'.$value->email.'</option>';
                     }?>      </select>
                 &nbsp;<span class="error"></span>
     </div>

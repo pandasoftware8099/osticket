@@ -18,7 +18,7 @@ class insertdepartment_c extends CI_Controller {
 
 	public function main()
     {
-	$insert = $this->db->query("SELECT * FROM osticket.ost_staff_test WHERE CONCAT('\'',staff_id, '\'') NOT IN (SELECT CONCAT('\'',staff_id, '\'') FROM osticket.ost_staff_dept_access_test WHERE dept_id = '".$_REQUEST['id']."') AND dept_id = '".$_REQUEST['id1']."'");
+	$insert = $this->db->query("SELECT * FROM osticket.ost_staff_test WHERE CONCAT('\'',staff_guid, '\'') NOT IN (SELECT CONCAT('\'',staff_guid, '\'') FROM osticket.ost_staff_dept_access_test WHERE dept_guid = '".$_REQUEST['id']."') AND dept_guid = '".$_REQUEST['id1']."'");
 	
 	$a = array(
 		'a' => array(),

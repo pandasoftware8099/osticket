@@ -18,7 +18,7 @@
 
 <p>Please use the new password to reset your password in below link.</p>
 
-<p>Click <a href="<?php echo site_url('user_controller/reset_forgot_pw');?>?id=<?php echo $value->staff_id;?>">here</a> to reset your password for Panda Ticketing System.</p> 
+<p>Click <a href="<?php echo site_url('user_controller/reset_forgot_pw');?>?id=<?php echo $value->staff_guid;?>">here</a> to reset your password for Panda Ticketing System.</p> 
 
 <p>Thanks for using and have a great day.</p>
 

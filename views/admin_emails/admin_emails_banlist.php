@@ -54,9 +54,9 @@
         <tbody><?php foreach ($filter->result() as $value) { ?>
                     <tr>
                     <td align="center">
-                      <input type="checkbox" class="ckb" id="tids" name="tids[]" value="<?php echo $value->id?>">
+                      <input type="checkbox" class="ckb" id="tids" name="tids[]" value="<?php echo $value->rule_guid?>">
                     </td>
-                    <td>&nbsp;<a href="<?php echo site_url('admin_emails_controller/emails_banlist_info')?>?id=<?php echo $value->id?>"><?php echo $value->val?></a></td>
+                    <td>&nbsp;<a href="<?php echo site_url('admin_emails_controller/emails_banlist_info')?>?id=<?php echo $value->rule_guid?>"><?php echo $value->val?></a></td>
                     <td><?php if ($value->isactive == 1){ ?>
 
                       Active

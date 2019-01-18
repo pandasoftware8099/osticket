@@ -9,7 +9,7 @@
             
 
 
-                <h4><a href="<?php echo site_url('guide_controller/category')?>?id=<?php echo $value->category_id;?>"><?php echo $value->name ?> (<?php echo $this->db->query("SELECT COUNT(*) as total FROM ost_faq_test WHERE category_id = '".$value->category_id."'")->row('total');?>)</a></h4>
+                <h4><a href="<?php echo site_url('guide_controller/category')?>?id=<?php echo $value->category_guid;?>"><?php echo $value->name ?> (<?php echo $this->db->query("SELECT COUNT(*) as total FROM ost_faq_test WHERE category_guid = '".$value->category_guid."'")->row('total');?>)</a></h4>
                 <div class="faded" style="margin:10px 0">
                 <?php echo $value->description ?></div>
 

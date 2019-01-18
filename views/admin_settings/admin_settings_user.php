@@ -126,7 +126,7 @@
             </div>
             <div class="modal-body form">
                 <!-- <div class="col-md-12"> -->
-                <form action="<?php echo site_url('admin_settings_controller/templates_update');?>?id=<?php echo $usertemplate->id;?>&direct=user" method="POST" id="form" class="form-horizontal">
+                <form action="<?php echo site_url('admin_settings_controller/templates_update');?>?id=<?php echo $usertemplate->content_guid;?>&direct=user" method="POST" id="form" class="form-horizontal">
                     <input name="topic" class="form-control" type="text" style="width:100%;font-size: 20px"  value="<?php echo $usertemplate->name;?>">
                     <div>
                         <span class="help-block"></span>

@@ -39,7 +39,7 @@ max-width: fit-content;
             <select name="searchtopic" class="nowarn" style="width:70%">
                 <option value="">— All Help Topics —</option>
                 <?php foreach ($helptopic->result() as $helptopic) { ?>
-                    <option value="<?php echo $helptopic->topic_id?>"><?php echo $helptopic->topic?></option>
+                    <option value="<?php echo $helptopic->topic_guid?>"><?php echo $helptopic->topic?></option>
                 <?php } ?> 
                 </select>
         </div>
@@ -93,12 +93,12 @@ max-width: fit-content;
                 <tr id="12">
                 <td>
                 <!-- <a class="Icon webTicket" title="hugh@pandasoftware.my" href="tickets.php?id=12">201810556863</a> -->
-                <a class="Icon webTicket" title="hugh@pandasoftware.my" href="<?php echo site_url('ticket_controller/info');?>?id=<?php echo $value->ticket_id;?>"><?php echo $value->number;?></a>
+                <a class="Icon webTicket" title="hugh@pandasoftware.my" href="<?php echo site_url('ticket_controller/info');?>?id=<?php echo $value->ticket_guid;?>"><?php echo $value->number;?></a>
                 </td>
                 <td><?php echo $value->created_at;?></td>
                 <td><?php echo $value->name;?></td>
                 <td>
-                    <div style="max-height: 1.2em; max-width: 350px;" class="link truncate" href="<?php echo site_url('ticket_controller/info');?>?id=<?php echo $value->ticket_id;?>"><?php echo $value->topic;?></div>
+                    <div style="max-height: 1.2em; max-width: 350px;" class="link truncate" href="<?php echo site_url('ticket_controller/info');?>?id=<?php echo $value->ticket_guid;?>"><?php echo $value->topic;?></div>
                 </td>
                 <td><span class="truncate"><?php echo $value->department;?></span></td>
             </tr>

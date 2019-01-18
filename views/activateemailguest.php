@@ -14,7 +14,7 @@
 
 <p>Hi <?php echo $value->user_name;?>,</p> 
 
-<p>Click <a href="<?php echo site_url('user_controller/activateuserguest');?>?id=<?php echo $value->user_id;?>">here</a> to activate your account for Panda Ticketing System.</p> 
+<p>Click <a href="<?php echo site_url('user_controller/activateuserguest');?>?id=<?php echo $value->user_guid;?>">here</a> to activate your account for Panda Ticketing System.</p> 
 
 <p>Thanks for using and have a great day.</p>
 

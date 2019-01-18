@@ -11,10 +11,10 @@
         <select name="default_template_id" class="form-control" required>
             <option value="">— Select Default Email Template Set —</option>
             <?php foreach($templategroup->result() as $template){
-                if($template->tpl_id == $default_template){
-                    echo '<option value="'.$template->tpl_id.'" selected="selected">'.$template->name.'</option>';
+                if($template->tpl_guid == $default_template){
+                    echo '<option value="'.$template->tpl_guid.'" selected="selected">'.$template->name.'</option>';
                 }else{
-                    echo '<option value="'.$template->tpl_id.'">'.$template->name.'</option>';
+                    echo '<option value="'.$template->tpl_guid.'">'.$template->name.'</option>';
             }}?>
         </select>&nbsp;<font class="error"></font>
     </div>
@@ -22,13 +22,13 @@
 <div class="form-group">
     <label class="col-lg-4 control-label"><i class="help-tip icon-question-sign" href="#default_system_email"></i> Default System Email <font class="error">*</font> :</label>
     <div class="col-lg-8">
-        <select name="default_email_id" class="form-control" required>
+        <select name="default_email_guid" class="form-control" required>
             <option value="0" disabled="">Select One</option>
             <?php foreach($email_list->result() as $email){
-                if($email->email_id == $default_email){
-                    echo '<option value="'.$email->email_id.'" selected="selected">'.$email->name.' ('.$email->email.') </option>';
+                if($email->email_guid == $default_email){
+                    echo '<option value="'.$email->email_guid.'" selected="selected">'.$email->name.' ('.$email->email.') </option>';
                 }else{
-                     echo '<option value="'.$email->email_id.'">'.$email->name.' ('.$email->email.') </option>';
+                     echo '<option value="'.$email->email_guid.'">'.$email->name.' ('.$email->email.') </option>';
                 }
             } ?>
                          </select>
@@ -38,7 +38,7 @@
 <div class="form-group">
     <label class="col-lg-4 control-label"><i class="help-tip icon-question-sign" href="#default_alert_email"></i> Default Alert Email <font class="error">*</font> :</label>
     <div class="col-lg-8">
-        <select name="alert_email_id" class="form-control" required>
+        <select name="alert_email_guid" class="form-control" required>
             <option value="<?php echo $default_email?>" selected="selected">Use Default System Email (above)</option>
             <?php foreach($email_list->result() as $email){
                 if($email->id != $default_email){

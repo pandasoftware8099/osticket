@@ -81,22 +81,22 @@
                 <th class="flush-left"><?php echo $department->name;?></th>
                     <td><?php echo $this->db->query("
                         SELECT COUNT(*) as departopen FROM ost_ticket_test AS a 
-                        INNER JOIN ost_ticket_status_test AS b ON a.status_id = b.id 
+                        INNER JOIN ost_ticket_status_test AS b ON a.status_guid = b.status_guid 
                         WHERE b.state = 'open' AND a.department = '".$department->name."'")->row('departopen');?></td>
                     <td><?php echo $this->db->query("
                         SELECT COUNT(*) as departassigned FROM ost_ticket_test AS a 
-                        INNER JOIN ost_ticket_status_test AS b ON a.status_id = b.id 
+                        INNER JOIN ost_ticket_status_test AS b ON a.status_guid = b.status_guid 
                         WHERE b.state = 'open' AND assigned_to != '0' AND a.department = '".$department->name."'")->row('departassigned');?></td>
                     <td><?php echo $this->db->query("
                         SELECT COUNT(*) as departdue FROM ost_ticket_test AS a 
-                        INNER JOIN ost_ticket_status_test AS b ON a.status_id = b.id 
+                        INNER JOIN ost_ticket_status_test AS b ON a.status_guid = b.status_guid 
                         WHERE b.state = 'open' AND duedate <= now() AND a.department = '".$department->name."'")->row('departdue');?></td>
                     <td><?php echo $this->db->query("
                         SELECT COUNT(*) as departclose FROM ost_ticket_test
-                        WHERE status_id = '3' AND department = '".$department->name."'")->row('departclose');?></td>
+                        WHERE status_guid = '3' AND department = '".$department->name."'")->row('departclose');?></td>
                     <td><?php echo $this->db->query("
                         SELECT COUNT(*) as departreopen FROM ost_ticket_test AS a 
-                        INNER JOIN ost_ticket_status_test AS b ON a.status_id = b.id 
+                        INNER JOIN ost_ticket_status_test AS b ON a.status_guid = b.status_guid 
                         WHERE b.state = 'open' AND reopened != '0' AND a.department = '".$department->name."'")->row('departreopen');?></td>
                     <td>12.4</td>
                     <td>0.0</td>
@@ -133,23 +133,23 @@
                     <th class="flush-left"><?php echo $topics->topic;?></th>
                         <td><?php echo $this->db->query("
                         SELECT COUNT(*) as topicopen FROM ost_ticket_test AS a 
-                        INNER JOIN ost_ticket_status_test AS b ON a.status_id = b.id 
-                        WHERE b.state = 'open' AND a.topic_id = '".$topics->topic_id."'")->row('topicopen');?></td>
+                        INNER JOIN ost_ticket_status_test AS b ON a.status_guid = b.status_guid 
+                        WHERE b.state = 'open' AND a.topic_guid = '".$topics->topic_guid."'")->row('topicopen');?></td>
                         <td><?php echo $this->db->query("
                         SELECT COUNT(*) as topicassigned FROM ost_ticket_test AS a 
-                        INNER JOIN ost_ticket_status_test AS b ON a.status_id = b.id 
-                        WHERE b.state = 'open' AND a.assigned_to != '0' AND topic_id = '".$topics->topic_id."'")->row('topicassigned');?></td>
+                        INNER JOIN ost_ticket_status_test AS b ON a.status_guid = b.status_guid 
+                        WHERE b.state = 'open' AND a.assigned_to != '0' AND topic_guid = '".$topics->topic_guid."'")->row('topicassigned');?></td>
                         <td><?php echo $this->db->query("
                         SELECT COUNT(*) as topicdue FROM ost_ticket_test AS a 
-                        INNER JOIN ost_ticket_status_test AS b ON a.status_id = b.id 
-                        WHERE b.state = 'open' AND duedate <= now() AND a.topic_id = '".$topics->topic_id."'")->row('topicdue');?></td>
+                        INNER JOIN ost_ticket_status_test AS b ON a.status_guid = b.status_guid 
+                        WHERE b.state = 'open' AND duedate <= now() AND a.topic_guid = '".$topics->topic_guid."'")->row('topicdue');?></td>
                         <td><?php echo $this->db->query("
                         SELECT COUNT(*) as topicclose FROM ost_ticket_test
-                        WHERE status_id = '3' AND topic_id = '".$topics->topic_id."'")->row('topicclose');?></td>
+                        WHERE status_guid = '3' AND topic_guid = '".$topics->topic_guid."'")->row('topicclose');?></td>
                         <td><?php echo $this->db->query("
                         SELECT COUNT(*) as topicreopen FROM ost_ticket_test AS a 
-                        INNER JOIN ost_ticket_status_test AS b ON a.status_id = b.id 
-                        WHERE b.state = 'open' AND reopened != '0' AND a.topic_id = '".$topics->topic_id."'")->row('topicreopen');?></td>
+                        INNER JOIN ost_ticket_status_test AS b ON a.status_guid = b.status_guid 
+                        WHERE b.state = 'open' AND reopened != '0' AND a.topic_guid = '".$topics->topic_guid."'")->row('topicreopen');?></td>
                         <td>31.0</td>
                         <td>0.0</td>
                 </tr>
@@ -183,23 +183,23 @@
                     <th class="flush-left"><?php echo $agent->firstname;?> <?php echo $agent->lastname;?></th>
                         <td><?php echo $this->db->query("
                         SELECT COUNT(*) as agentopen FROM ost_ticket_test AS a 
-                        INNER JOIN ost_ticket_status_test AS b ON a.status_id = b.id 
-                        WHERE b.state = 'open' AND a.assigned_to = '".$agent->staff_id."'")->row('agentopen');?></td>                
+                        INNER JOIN ost_ticket_status_test AS b ON a.status_guid = b.status_guid 
+                        WHERE b.state = 'open' AND a.assigned_to = '".$agent->staff_guid."'")->row('agentopen');?></td>                
                         <td><?php echo $this->db->query("
                         SELECT COUNT(*) as agentassigned FROM ost_ticket_test AS a 
-                        INNER JOIN ost_ticket_status_test AS b ON a.status_id = b.id 
-                        WHERE b.state = 'open' AND a.assigned_to = '".$agent->staff_id."'")->row('agentassigned');?></td>
+                        INNER JOIN ost_ticket_status_test AS b ON a.status_guid = b.status_guid 
+                        WHERE b.state = 'open' AND a.assigned_to = '".$agent->staff_guid."'")->row('agentassigned');?></td>
                         <td><?php echo $this->db->query("
                         SELECT COUNT(*) as agentdue FROM ost_ticket_test AS a 
-                        INNER JOIN ost_ticket_status_test AS b ON a.status_id = b.id 
-                        WHERE b.state = 'open' AND duedate <= now() AND a.assigned_to = '".$agent->staff_id."'")->row('agentdue');?></td>                
+                        INNER JOIN ost_ticket_status_test AS b ON a.status_guid = b.status_guid 
+                        WHERE b.state = 'open' AND duedate <= now() AND a.assigned_to = '".$agent->staff_guid."'")->row('agentdue');?></td>                
                         <td><?php echo $this->db->query("
                         SELECT COUNT(*) as agentclose FROM ost_ticket_test
-                        WHERE status_id = '3' AND assigned_to = '".$agent->staff_id."'")->row('agentclose');?></td>               
+                        WHERE status_guid = '3' AND assigned_to = '".$agent->staff_guid."'")->row('agentclose');?></td>               
                         <td><?php echo $this->db->query("
                         SELECT COUNT(*) as agentreopen FROM ost_ticket_test AS a 
-                        INNER JOIN ost_ticket_status_test AS b ON a.status_id = b.id 
-                        WHERE b.state = 'open' AND reopened != '0' AND a.assigned_to = '".$agent->staff_id."'")->row('agentreopen');?></td>               
+                        INNER JOIN ost_ticket_status_test AS b ON a.status_guid = b.status_guid 
+                        WHERE b.state = 'open' AND reopened != '0' AND a.assigned_to = '".$agent->staff_guid."'")->row('agentreopen');?></td>               
                         <td>0.0</td>              
                         <td>0.0</td>
                 </tr> 

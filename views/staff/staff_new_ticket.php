@@ -135,7 +135,7 @@
             <select name="topicId" class="form-control" id="topic" required>
             <option value="" selected="">— Select Help Topic —</option>
             <?php foreach ($stafftopic->result() as $topic) { ?>   
-              <option value="<?php echo $topic->topic_id?>" <?php echo $topic->topic_id == $default_help_topic->row('value')?"selected":"";?>><?php echo $topic->topic?></option>
+              <option value="<?php echo $topic->topic_guid?>" <?php echo $topic->topic_guid == $default_help_topic->row('value')?"selected":"";?>><?php echo $topic->topic?></option>
             <?php }?>
             </select>
                 &nbsp;<font class="error">&nbsp;</font>
@@ -151,7 +151,7 @@
             <select class="form-control" name="subId" id="sub" data-placeholder="Select" required>
             <?php if ($default_help_topic->row('value') != '0') { ?>
             <?php foreach ($current_sub->result() as $sub) { ?>
-                <option value="<?php echo $sub->id;?>"><?php echo $sub->value;?></option>
+                <option value="<?php echo $sub->list_item_guid;?>"><?php echo $sub->value;?></option>
             <?php } ?>
             <?php } ?>
             </select>
@@ -166,7 +166,7 @@
             <select name="deptId" class="form-control" required>
                 <option value="" selected="">— Select Department—</option>
                 <?php foreach ($staffdepart->result() as $depart) { ?>   
-                <option value="<?php echo $depart->id?>"><?php echo $depart->name?></option>
+                <option value="<?php echo $depart->department_guid?>"><?php echo $depart->name?></option>
                 <?php }?>
             </select>
                 &nbsp;<font class="error"></font>
@@ -182,7 +182,7 @@
         <select class="form-control" name="priorityId" id="priorityId" data-placeholder="Select" required>
             <option value="">— Select —</option>
             <?php foreach ($priority->result() as $ticket_priority) { ?>
-            <option value="<?php echo $ticket_priority->priority_id;?>" <?php echo $ticket_priority->priority_id == $defaultpriorityid->row('value')?"selected":"";?>><?php echo $ticket_priority->priority_desc;?></option>
+            <option value="<?php echo $ticket_priority->priority_guid;?>" <?php echo $ticket_priority->priority_guid == $defaultpriorityid->row('value')?"selected":"";?>><?php echo $ticket_priority->priority_desc;?></option>
             <?php } ?>
         </select>
             &nbsp;<font class="error">&nbsp;</font>
@@ -195,7 +195,7 @@
         <div class="col-sm-10">
             <select name="statusId" class="form-control">
                 <?php foreach ($status->result() as $sticket) { ?>   
-                <option value="<?php echo $sticket->id?>" <?php echo $sticket->id == $defaultstatusid->row('value')?"selected":"";?>><?php echo $sticket->name?></option>
+                <option value="<?php echo $sticket->status_guid?>" <?php echo $sticket->id == $defaultstatusid->row('value')?"selected":"";?>><?php echo $sticket->name?></option>
                 <?php }?>
             </select>
                 &nbsp;<font class="error">&nbsp;</font>
@@ -209,7 +209,7 @@
             <select name="slaId" class="form-control">
                 <option value="0" selected="selected">— System Default —</option>
                 <?php foreach ($sla->result() as $default) { ?>   
-                   <option value="<?php echo $default->id?>" <?php echo $default->id == $defaultslaid->row('value')?"selected":"";?>><?php echo $default->sla_name?></option>
+                   <option value="<?php echo $default->sla_guid?>" <?php echo $default->sla_guid == $defaultslaid->row('value')?"selected":"";?>><?php echo $default->sla_name?></option>
                 <?php }?>          
             </select>
                 &nbsp;<font class="error">&nbsp;</font>
@@ -246,13 +246,13 @@
                 <?php if ($_REQUEST['id'] != "" && $userinfo->row('autoassignment') == '1') {?>
                     <optgroup label="Agents (<?php echo $agent->num_rows();?>)">
                     <?php foreach ($agent->result() as $staff) { ?>
-                        <option value="a<?php echo $staff->staff_id?>" <?php echo $userinfo->row('manager') == "a$staff->staff_id"?"selected":""; ?>><?php echo $staff->firstname?> <?php echo $staff->lastname?></option>
+                        <option value="a<?php echo $staff->staff_guid?>" <?php echo $userinfo->row('manager') == "a$staff->staff_guid"?"selected":""; ?>><?php echo $staff->firstname?> <?php echo $staff->lastname?></option>
                     <?php }?>
                     </optgroup>
 
                     <optgroup label="Teams (<?php echo $team->num_rows();?>)">
                     <?php foreach ($team->result() as $teams) { ?>
-                        <option value="t<?php echo $teams->team_id?>" <?php echo $userinfo->row('manager') == "t$teams->team_id"?"selected":""; ?>><?php echo $teams->name?></option>
+                        <option value="t<?php echo $teams->team_guid?>" <?php echo $userinfo->row('manager') == "t$teams->team_guid"?"selected":""; ?>><?php echo $teams->name?></option>
                     <?php }?>
                     </optgroup>
                 <?php }
@@ -260,13 +260,13 @@
                 else {?>
                     <optgroup label="Agents (<?php echo $agent->num_rows();?>)">
                     <?php foreach ($agent->result() as $staff) { ?>
-                        <option value="a<?php echo $staff->staff_id?>"><?php echo $staff->firstname?> <?php echo $staff->lastname?></option>
+                        <option value="a<?php echo $staff->staff_guid?>"><?php echo $staff->firstname?> <?php echo $staff->lastname?></option>
                     <?php }?>
                     </optgroup>
 
                     <optgroup label="Teams (<?php echo $team->num_rows();?>)">
                     <?php foreach ($team->result() as $teams) { ?>
-                        <option value="t<?php echo $teams->team_id?>"><?php echo $teams->name?></option>
+                        <option value="t<?php echo $teams->team_guid?>"><?php echo $teams->name?></option>
                     <?php }?>
                     </optgroup>
                 <?php }?>

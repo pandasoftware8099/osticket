@@ -68,7 +68,7 @@
                 <div class="col-sm-9">
                     <select class="form-control" name="subinventory" id="_625cf22b29d9dc5b" data-placeholder="Select">
                         <?php foreach ($inventory->result() as $sub) { ?>
-                            <option value="<?php echo $sub->id?>" <?php echo $sub->id == $cinfo->row('subtopic_id')?"selected":"";?>><?php echo $sub->value?><?php echo $sub->id == $cinfo->row('subtopic_id')?" (Current Selection)":"";?></option>
+                            <option value="<?php echo $sub->list_item_guid?>" <?php echo $sub->list_item_guid == $cinfo->row('subtopic_guid')?"selected":"";?>><?php echo $sub->value?><?php echo $sub->list_item_guid == $cinfo->row('subtopic_guid')?" (Current Selection)":"";?></option>
                         <?php }?>
                     </select>
                 </div>            

@@ -6,7 +6,7 @@
         <div class="content" style="width: 908px;">
             <div class="pull-left flush-left">
                 <?php foreach ($task->result() as $taskinfo) { ?>
-                <h2><a id="reload-task" href="<?php echo site_url('staff_task_controller/taskinfo');?>?id=<?php echo $taskinfo->task_id;?>"><i class="icon-refresh"></i>&nbsp;Task #<?php echo $taskinfo->task_id;?></a></h2>
+                <h2><a id="reload-task" href="<?php echo site_url('staff_task_controller/taskinfo');?>?id=<?php echo $taskinfo->task_guid;?>"><i class="icon-refresh"></i>&nbsp;Task #<?php echo $taskinfo->task_guid;?></a></h2>
             </div>
         <?php if ($editallow != 0 ) { ?>
             <div class="pull-right flush-right">
@@ -21,7 +21,7 @@
             <span id="task-edit" class="action-button pull-right" data-toggle="modal" data-target="#edit"><a data-placement="bottom" data-toggle="tooltip" title="" data-original-title="Edit"><i class="icon-edit"></i></a></span>
           
            <?php foreach ($task->result() as $value) { ?> 
-                <a class="action-button pull-right" href="<?php echo site_url('staff_task_controller/printpreviewstafftask');?>?id=<?php echo $value->task_id;?>" id="ticket-print"><i class="icon-print"></i></a>
+                <a class="action-button pull-right" href="<?php echo site_url('staff_task_controller/printpreviewstafftask');?>?id=<?php echo $value->task_guid;?>" id="ticket-print"><i class="icon-print"></i></a>
             
             <?php } ?>
                         
@@ -137,7 +137,7 @@
                 
                 <tr>
                     <th>Ticket Number</th>
-                    <td><a href="<?php echo site_url('staff_ticket_controller/ticketinfo');?>?id=<?php echo $taskinfo->ticket_id;?>"> <span id="t22-collaborators">: <?php if ($taskinfo->number != "") {?>#<?php echo $taskinfo->number;?><?php }?></span>
+                    <td><a href="<?php echo site_url('staff_ticket_controller/ticketinfo');?>?id=<?php echo $taskinfo->ticket_guid;?>"> <span id="t22-collaborators">: <?php if ($taskinfo->number != "") {?>#<?php echo $taskinfo->number;?><?php }?></span>
                     </td>
                 </tr>
             </tbody>
@@ -210,8 +210,8 @@
     <?php 
         $file = $this->db->query("SELECT * FROM ost_file_test AS b
             INNER JOIN ost_thread_entry_test AS a
-            ON a.id = b.thread_entry_id
-            WHERE b.thread_entry_id = '".$thread->id."'");
+            ON a.thread_entry_guid = b.thread_entry_guid
+            WHERE b.thread_entry_guid = '".$thread->thread_entry_guid."'");
     ?>
 
     <?php
@@ -488,7 +488,7 @@ $(function() {
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">×</span></button>
                 <?php foreach ($task->result() as $number) { ?>
-                <h3 class="drag-handle">Close Task #<?php echo $number->task_id?></h3>
+                <h3 class="drag-handle">Close Task #<?php echo $number->task_guid?></h3>
                 <?php }?>
               </div>
 
@@ -500,7 +500,7 @@ $(function() {
 
                 <table width="100%">
 
-                <input type="hidden" name="status_id" id="status_id" value="0">
+                <input type="hidden" name="status_guid" id="status_guid" value="0">
                 <tbody>
                 
                 <tr>
@@ -539,7 +539,7 @@ $(function() {
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">×</span></button>
                 <?php foreach ($task->result() as $number) { ?>
-                <h3 class="drag-handle">Reopen Task #<?php echo $number->task_id?></h3>
+                <h3 class="drag-handle">Reopen Task #<?php echo $number->task_guid?></h3>
                 <?php }?>
               </div>
 
@@ -551,7 +551,7 @@ $(function() {
 
                 <table width="100%">
 
-                <input type="hidden" name="status_id" id="status_id" value="1">
+                <input type="hidden" name="status_guid" id="status_guid" value="1">
                 <tbody>
                 
                 <tr>
@@ -590,7 +590,7 @@ $(function() {
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">×</span></button>
                 <?php foreach ($task->result() as $number) { ?>
-                <h3 class="drag-handle">Task #<?php echo $number->task_id?>: Assign to Agent/Team</h3>
+                <h3 class="drag-handle">Task #<?php echo $number->task_guid?>: Assign to Agent/Team</h3>
                 <?php }?>
             </div>
 
@@ -615,12 +615,12 @@ $(function() {
                                             <option value="">— Select an Agent —</option>
                                             <optgroup label="Agents (<?php echo $staff->num_rows()?>)">
                                             <?php foreach ($staff->result() as $staff) { ?>
-                                                <option value="a<?php echo $staff->staff_id;?>" <?php echo $staff->staff_id == $task->row('staff_id')?"selected":"";?>><?php echo $staff->firstname;?> <?php echo $staff->lastname;?></option>
+                                                <option value="a<?php echo $staff->staff_guid;?>" <?php echo $staff->staff_guid == $task->row('staff_guid')?"selected":"";?>><?php echo $staff->firstname;?> <?php echo $staff->lastname;?></option>
                                             <?php } ?> 
                                             </optgroup>    
                                             <optgroup label="Team (<?php echo $team->num_rows()?>)">         
                                             <?php foreach ($team->result() as $team) { ?>
-                                                <option value="t<?php echo $team->team_id;?>" <?php echo $team->team_id == $task->row('team_id')?"selected":"";?>><?php echo $team->name;?></option>
+                                                <option value="t<?php echo $team->team_guid;?>" <?php echo $team->team_guid == $task->row('team_guid')?"selected":"";?>><?php echo $team->name;?></option>
                                             <?php } ?> 
                                             </optgroup>  
                                         </select>
@@ -688,7 +688,7 @@ $(function() {
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">×</span></button>
                 <?php foreach ($task->result() as $number) { ?>
-                <h3 class="drag-handle">Task #<?php echo $number->task_id?>: Transfer</h3>
+                <h3 class="drag-handle">Task #<?php echo $number->task_guid?>: Transfer</h3>
                 <?php }?>
               </div>
               <div class="modal-body">
@@ -711,7 +711,7 @@ $(function() {
                 <select class="form-control" name="departmentid" id="departmentid" data-placeholder="Select">
                   <option value="">— Select —</option>
                   <?php foreach ($department->result() as $department) { ?>
-                    <option value="<?php echo $department->id;?>" <?php echo $department->id == $task->row('taskdept')?"selected":""; ?>><?php echo $department->name;?></option>
+                    <option value="<?php echo $department->department_guid;?>" <?php echo $department->department_guid == $task->row('taskdept')?"selected":""; ?>><?php echo $department->name;?></option>
                   <?php } ?>
                 </select>
                 </div>
@@ -780,7 +780,7 @@ $(function() {
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">×</span></button>
                 <?php foreach ($task->result() as $number) { ?>
-                    <h3 class="drag-handle">Edit Task #<?php echo $number->task_id;?></h3>
+                    <h3 class="drag-handle">Edit Task #<?php echo $number->task_guid;?></h3>
                 <?php }?>
             </div>
 
@@ -849,7 +849,7 @@ $(function() {
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">×</span></button>
                 <?php foreach ($task->result() as $number) { ?>
-                    <h3 class="drag-handle">Task #<?php echo $number->task_id?>: Delete</h3>
+                    <h3 class="drag-handle">Task #<?php echo $number->task_guid?>: Delete</h3>
                 <?php }?>
               </div>
               <div class="modal-body">
@@ -903,10 +903,10 @@ $(document).ready(function () {
       checked = $("input[type=checkbox]:checked").length;
 
 
-      $("#status_id").attr('required', true);
+      $("#status_guid").attr('required', true);
       $("#departmentid").attr('required', false);
       $("#assignto").attr('required', false);
-      $("#status_id").attr('name', 'status_id');
+      $("#status_guid").attr('name', 'status_guid');
       $("#departmentid").attr('name', true);
       $("#assignto").attr('name', true);
       $("#delete").attr('name', true);
@@ -920,10 +920,10 @@ $(document).ready(function () {
       checked = $("input[type=checkbox]:checked").length;
 
 
-      $("#status_id").attr('required', false);
+      $("#status_guid").attr('required', false);
       $("#departmentid").attr('required', false);
       $("#departmentid").attr('name', true);
-      $("#status_id").attr('name', true);
+      $("#status_guid").attr('name', true);
       $("#assignto").attr('required', true);
       $("#assignto").attr('name', 'assignto');
       $("#delete").attr('name', true);
@@ -938,10 +938,10 @@ $(document).ready(function () {
       checked = $("input[type=checkbox]:checked").length;
 
 
-      $("#status_id").attr('required', false);
+      $("#status_guid").attr('required', false);
       $("#assignto").attr('required', false);
       $("#departmentid").attr('required', true);
-      $("#status_id").attr('name', true);
+      $("#status_guid").attr('name', true);
       $("#departmentid").attr('name', 'departmentid');
       $("#assignto").attr('name', true);
       $("#delete").attr('name', true);
@@ -955,10 +955,10 @@ $(document).ready(function () {
       checked = $("input[type=checkbox]:checked").length;
 
 
-      $("#status_id").attr('required', false);
+      $("#status_guid").attr('required', false);
       $("#assignto").attr('required', false);
       $("#departmentid").attr('required', false);
-      $("#status_id").attr('name', true);
+      $("#status_guid").attr('name', true);
       $("#departmentid").attr('name', true);
       $("#assignto").attr('name', true);
       $("#delete").attr('name', 'delete');
@@ -972,10 +972,10 @@ $(document).ready(function () {
       checked = $("input[type=checkbox]:checked").length;
 
 
-      $("#status_id").attr('required', false);
+      $("#status_guid").attr('required', false);
       $("#assignto").attr('required', false);
       $("#departmentid").attr('required', false);
-      $("#status_id").attr('name', true);
+      $("#status_guid").attr('name', true);
       $("#departmentid").attr('name', true);
       $("#assignto").attr('name', true);
       $("#delete").attr('name', true);
@@ -1037,4 +1037,3 @@ $(document).on('change', '.file', function(){
 </script>
 
 
-<span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-0 redactor-toolbar-tooltip-html" style="display: none;">HTML</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-0 redactor-toolbar-tooltip-formatting" style="display: none;">Formatting</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-0 redactor-toolbar-tooltip-bold" style="display: none;">Bold</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-0 redactor-toolbar-tooltip-italic" style="display: none;">Italic</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-0 redactor-toolbar-tooltip-underline" style="display: none;">Underline</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-0 redactor-toolbar-tooltip-deleted" style="display: none;">Deleted</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-0 redactor-toolbar-tooltip-unorderedlist" style="display: none;">• Unordered List</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-0 redactor-toolbar-tooltip-orderedlist" style="display: none;">1. Ordered List</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-0 redactor-toolbar-tooltip-outdent" style="display: none;">&lt; Outdent</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-0 redactor-toolbar-tooltip-indent" style="display: none;">&gt; Indent</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-0 redactor-toolbar-tooltip-image" style="display: none;">Insert Image</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-0 redactor-toolbar-tooltip-link" style="display: none;">Link</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-0 redactor-toolbar-tooltip-alignment" style="display: none;">Alignment</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-0 redactor-toolbar-tooltip-horizontalrule" style="display: none;">Insert Horizontal Rule</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-0 redactor-toolbar-tooltip-table" style="display: none;">Table</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-0 redactor-toolbar-tooltip-video" style="display: none;">Insert Video</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-0 redactor-toolbar-tooltip-fontcolor" style="display: none;">Font Color</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-0 redactor-toolbar-tooltip-backcolor" style="display: none;">Back Color</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-0 redactor-toolbar-tooltip-fontfamily" style="display: none;">Change Font Family</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-0 redactor-toolbar-tooltip-deleteDraft" style="display: none;">Delete Draft</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-1 redactor-toolbar-tooltip-html" style="display: none;">HTML</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-1 redactor-toolbar-tooltip-formatting" style="display: none;">Formatting</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-1 redactor-toolbar-tooltip-bold" style="display: none;">Bold</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-1 redactor-toolbar-tooltip-italic" style="display: none;">Italic</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-1 redactor-toolbar-tooltip-underline" style="display: none;">Underline</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-1 redactor-toolbar-tooltip-deleted" style="display: none;">Deleted</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-1 redactor-toolbar-tooltip-unorderedlist" style="display: none;">• Unordered List</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-1 redactor-toolbar-tooltip-orderedlist" style="display: none;">1. Ordered List</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-1 redactor-toolbar-tooltip-outdent" style="display: none;">&lt; Outdent</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-1 redactor-toolbar-tooltip-indent" style="display: none;">&gt; Indent</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-1 redactor-toolbar-tooltip-image" style="display: none;">Insert Image</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-1 redactor-toolbar-tooltip-link" style="display: none;">Link</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-1 redactor-toolbar-tooltip-alignment" style="display: none;">Alignment</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-1 redactor-toolbar-tooltip-horizontalrule" style="display: none;">Insert Horizontal Rule</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-1 redactor-toolbar-tooltip-table" style="display: none;">Table</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-1 redactor-toolbar-tooltip-video" style="display: none;">Insert Video</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-1 redactor-toolbar-tooltip-fontcolor" style="display: none;">Font Color</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-1 redactor-toolbar-tooltip-backcolor" style="display: none;">Back Color</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-1 redactor-toolbar-tooltip-fontfamily" style="display: none;">Change Font Family</span><span class="redactor-toolbar-tooltip redactor-toolbar-tooltip-1 redactor-toolbar-tooltip-deleteDraft" style="display: none;">Delete Draft</span></body></html>

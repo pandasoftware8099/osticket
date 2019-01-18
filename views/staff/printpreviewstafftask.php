@@ -66,7 +66,7 @@
       <!-- /.col -->
       <div class="col-sm-4 invoice-col">
         <?php foreach ($result->result() as $value) { ?>
-        <b>TASK #<?php foreach ($result->result() as $value) { ?><?php echo $value->task_id;?><?php } ?></b>
+        <b>TASK #<?php foreach ($result->result() as $value) { ?><?php echo $value->task_guid;?><?php } ?></b>
         <br>
         <b>Status:</b> <?php echo $status;?><br>
         <b>Department:</b> <?php echo $value->name;?><br>
@@ -80,12 +80,12 @@
           <?php foreach ($user->result() as $value1) { ?>
           <strong>Assigned To: 
             <?php 
-              if ($value1->staff_id != '0')
+              if ($value1->staff_guid != '0')
               { ?>
                 <?php echo $value1->firstname;?> 
                 <?php echo $value1->lastname;?>
               <?php }
-              if ($value1->team_id != '0')
+              if ($value1->team_guid != '0')
               { ?>
                 <?php echo $value1->name;?>
             <?php } ?>

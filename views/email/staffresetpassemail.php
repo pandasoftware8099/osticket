@@ -14,7 +14,7 @@
 
 <p>Hi <?php echo $value->firstname;?> <?php echo $value->lastname;?>,</p> 
 
-<p>Click <a href="<?php echo site_url('user_controller/reset_forgot_pw');?>?id=<?php echo $value->staff_id;?>">here</a> to activate your account for Panda Ticketing System.</p> 
+<p>Click <a href="<?php echo site_url('user_controller/reset_forgot_pw');?>?id=<?php echo $value->staff_guid;?>">here</a> to activate your account for Panda Ticketing System.</p> 
 
 <p>Thanks for using and have a great day.</p>
 

@@ -33,7 +33,7 @@
         :: Click on the title to edit.</em>
 </div>
 <?php foreach ($ticket_end_user_templates->result() as $ticket_end_user) { ?>
-    <strong><a href="<?php echo site_url('admin_emails_controller/emails_templates_edit')?>?id=<?php echo $ticket_end_user->id?>"><?php echo $ticket_end_user->title;?></a></strong><br>
+    <strong><a href="<?php echo site_url('admin_emails_controller/emails_templates_edit')?>?id=<?php echo $ticket_end_user->email_tpl_guid?>"><?php echo $ticket_end_user->title;?></a></strong><br>
     <p><?php echo $ticket_end_user->notes;?></p>
 <?php } ?>
 <div class="section-break" style="margin-bottom:10px;">
@@ -41,7 +41,7 @@
         :: Click on the title to edit.</em>
 </div>
 <?php foreach ($ticket_agent_templates->result() as $ticket_agent) { ?>
-    <strong><a href="<?php echo site_url('admin_emails_controller/emails_templates_edit')?>?id=<?php echo $ticket_agent->id?>"><?php echo $ticket_agent->title;?></a></strong><br>
+    <strong><a href="<?php echo site_url('admin_emails_controller/emails_templates_edit')?>?id=<?php echo $ticket_agent->email_tpl_guid?>"><?php echo $ticket_agent->title;?></a></strong><br>
     <p><?php echo $ticket_agent->notes;?></p>
 <?php } ?>
 <div class="section-break" style="margin-bottom:10px;">
@@ -49,7 +49,7 @@
         :: Click on the title to edit.</em>
 </div>
 <?php foreach ($task_templates->result() as $task) { ?>
-    <strong><a href="<?php echo site_url('admin_emails_controller/emails_templates_edit')?>?id=<?php echo $task->id?>"><?php echo $task->title;?></a></strong><br>
+    <strong><a href="<?php echo site_url('admin_emails_controller/emails_templates_edit')?>?id=<?php echo $task->email_tpl_guid?>"><?php echo $task->title;?></a></strong><br>
     <p><?php echo $task->notes;?></p>
 <?php } ?>
 <br><div class="section-break" style="margin-bottom:10px;">

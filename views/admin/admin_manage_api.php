@@ -57,10 +57,10 @@
       <?php foreach ($api->result() as $value) { ?>
                 <tr>
                   <td align="center">
-                    <input type="checkbox" class="ckb" name="tids[]" value="<?php echo $value->id;?>">
+                    <input type="checkbox" class="ckb" name="tids[]" value="<?php echo $value->api_key_id;?>">
                   </td>
                   <td>
-                  <a href="<?php echo site_url('admin_manage_controller/manage_api_info');?>?id=<?php echo $value->id;?>"><?php echo $value->apikey;?></a>&nbsp;
+                  <a href="<?php echo site_url('admin_manage_controller/manage_api_info');?>?id=<?php echo $value->api_key_id;?>"><?php echo $value->apikey;?></a>&nbsp;
                   </td>
                   <td>
                   <?php echo $value->ipaddr;?>

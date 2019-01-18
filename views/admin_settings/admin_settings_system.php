@@ -43,10 +43,10 @@
         Default Department <font class="error">*</font> :
     </label>
     <div class="col-lg-9">
-        <select required="true" name="default_dept_id" class="form-control" id="department">
+        <select required="true" name="default_dept_guid" class="form-control" id="department">
             <?php foreach ($department as $value) { ?>
             <?php if ($value['depart_public'] == '1') { ?>
-            <option <?php echo ($default_dept_id->value == $value['depart_id'])?"selected":""; ?> value="<?php echo $value['depart_id'];?>"><?php echo $value['depart_name'];?></option>
+            <option <?php echo ($default_dept_guid->value == $value['depart_id'])?"selected":""; ?> value="<?php echo $value['depart_id'];?>"><?php echo $value['depart_name'];?></option>
             <?php } ?>
             <?php } ?>
             <option value="0">— Add New —</option>
@@ -206,7 +206,7 @@
                                     <select class="form-control" name="department_email">
                                         <option value="0">— System Default —</option>
                                         <?php foreach ($department_email->result() as $email) {?>
-                                        <option value="<?php echo $email->email_id;?>"><?php echo $email->email;?></option>
+                                        <option value="<?php echo $email->email_guid;?>"><?php echo $email->email;?></option>
                                         <?php }?>
                                     </select>
                                 </fieldset>

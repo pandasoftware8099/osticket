@@ -12,7 +12,7 @@
          <div id="faq">
             <ol>
                 <?php foreach ($faq->result() as $value) { ?>    
-                    <li><a href="<?php echo site_url('guide_controller/info')?>?id=<?php echo $value->faq_id;?>"><?php echo $value->question ?> &nbsp;</a></li>  
+                    <li><a href="<?php echo site_url('guide_controller/info')?>?id=<?php echo $value->faq_guid;?>"><?php echo $value->question ?> &nbsp;</a></li>  
                 <?php } ?>    
             </ol>
          </div></div>

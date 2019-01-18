@@ -56,10 +56,10 @@ select {
 
             <tr id="23">
                 <td nowrap="" align="center">
-                    <input type="checkbox" name="tids[]" value="<?php echo $org->id;?>" class="ckb mass nowarn">
+                    <input type="checkbox" name="tids[]" value="<?php echo $org->organization_guid;?>" class="ckb mass nowarn">
                 </td>
-                <td>&nbsp;<a href="<?php echo site_url('staff_user_controller/org_info');?>?id=<?php echo $org->id;?>"><?php echo $org->name;?></a></td>
-                <td>&nbsp;<?php echo $this->db->query("SELECT COUNT(*) as totalusers FROM ost_user_test WHERE user_org_id = '".$org->id."'")->row('totalusers');?></td>
+                <td>&nbsp;<a href="<?php echo site_url('staff_user_controller/org_info');?>?id=<?php echo $org->organization_guid;?>"><?php echo $org->name;?></a></td>
+                <td>&nbsp;<?php echo $this->db->query("SELECT COUNT(*) as totalusers FROM ost_user_test WHERE user_org_guid = '".$org->organization_guid."'")->row('totalusers');?></td>
                 <td>&nbsp;<?php echo $org->created;?></td>
                 <td>&nbsp;<?php echo $org->updated;?></td>
             </tr>

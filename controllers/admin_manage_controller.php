@@ -65,7 +65,7 @@ class admin_manage_controller extends CI_Controller {
 
             $this->db->query("UPDATE ost_help_topic_test
                             SET isactive = '$status'
-                            WHERE topic_id = '$value'");
+                            WHERE topic_guid = '$value'");
         }
 
             echo "<script> alert('Status of help topic changed');</script>";
@@ -75,7 +75,7 @@ class admin_manage_controller extends CI_Controller {
         elseif ($status == 2) {
             foreach ($check as $value) {
 
-            $this->db->query("DELETE FROM ost_help_topic_test WHERE topic_id='$value' ");
+            $this->db->query("DELETE FROM ost_help_topic_test WHERE topic_guid='$value' ");
 
             //have to do delete child list item too
         }
@@ -128,8 +128,8 @@ class admin_manage_controller extends CI_Controller {
          $ispublic = $this->input->post('ispublic');
          $notes = $this->input->post('notes');
 
-         $this->db->query("INSERT ost_help_topic_test ( topic, isactive , ispublic, notes, created, updated )
-                        VALUES ( '$topic', '$isactive', '$ispublic', '$notes', NOW(), NOW() ) ");
+         $this->db->query("INSERT ost_help_topic_test ( topic_guid, topic, isactive , ispublic, notes, created, updated )
+                        VALUES ( REPLACE(UPPER(UUID()),'-',''), '$topic', '$isactive', '$ispublic', '$notes', NOW(), NOW() ) ");
 
          echo "<script> alert('Help topic added');</script>";
         echo "<script> document.location='" . base_url() . "/index.php/admin_manage_controller/manage_helptopics' </script>";
@@ -143,7 +143,7 @@ class admin_manage_controller extends CI_Controller {
             $helptopicid = $_REQUEST['id'];
             $data = array(
 
-                'helptopic' => $this->db->query("SELECT * FROM ost_help_topic_test WHERE topic_id = '$helptopicid' " )->row(),
+                'helptopic' => $this->db->query("SELECT * FROM ost_help_topic_test WHERE topic_guid = '$helptopicid' " )->row(),
                 
 
 
@@ -185,7 +185,7 @@ class admin_manage_controller extends CI_Controller {
                             isactive = '$isactive', 
                             ispublic = '$ispublic',
                             notes = '$notes'
-                            WHERE topic_id = '$topicid';");
+                            WHERE topic_guid = '$topicid';");
 
          echo "<script> alert('Help topic edited');</script>";
         echo "<script> document.location='" . base_url() . "/index.php/admin_manage_controller/manage_helptopics_info?id=$topicid' </script>";
@@ -198,7 +198,7 @@ class admin_manage_controller extends CI_Controller {
         {   
             $data = array(
 
-                'listitem' => $this->db->query("SELECT * FROM ost_list_items_test WHERE topic_id != '' "),
+                'listitem' => $this->db->query("SELECT * FROM ost_list_items_test WHERE topic_guid != '' "),
                 'max_page_size' => $this->db->query("SELECT value FROM ost_config_test WHERE id = '21'")->row('value'),
 
             );
@@ -235,7 +235,7 @@ class admin_manage_controller extends CI_Controller {
         if ($status == 2) {
             foreach ($check as $value) {
 
-            $this->db->query("DELETE FROM ost_list_items_test WHERE id='$value' ");
+            $this->db->query("DELETE FROM ost_list_items_test WHERE list_item_guid='$value' ");
 
             
         }
@@ -289,8 +289,8 @@ class admin_manage_controller extends CI_Controller {
 
      
 
-         $this->db->query("INSERT ost_list_items_test ( value, topic_id, notes ,created ,updated)
-                        VALUES ( '$name','$helptopic', '$notes',NOW(),NOW()) ");
+         $this->db->query("INSERT ost_list_items_test ( list_item_guid, value, topic_guid, notes ,created ,updated)
+                        VALUES ( REPLACE(UPPER(UUID()),'-',''), '$name', '$helptopic', '$notes',NOW(),NOW()) ");
 
          echo "<script> alert('Subtopics added');</script>";
         echo "<script> document.location='" . base_url() . "/index.php/admin_manage_controller/manage_subtopics' </script>";
@@ -304,7 +304,7 @@ class admin_manage_controller extends CI_Controller {
             $subtopicid = $_REQUEST['id'];
             $data = array(
 
-                'subtopic' => $this->db->query("SELECT * FROM ost_list_items_test WHERE id = '$subtopicid' " )->row(),
+                'subtopic' => $this->db->query("SELECT * FROM ost_list_items_test WHERE list_item_guid = '$subtopicid' " )->row(),
                 'topic' => $this->db->query("SELECT * FROM ost_help_topic_test ORDER BY topic"),
                 
 
@@ -343,9 +343,9 @@ class admin_manage_controller extends CI_Controller {
          
          $this->db->query("UPDATE ost_list_items_test
                             SET value = '$name', 
-                            topic_id = '$topic',
+                            topic_guid = '$topic',
                             notes = '$notes'
-                            WHERE id = '$subtopicid';");
+                            WHERE list_item_guid = '$subtopicid';");
 
          echo "<script> alert('Sub Topic edited');</script>";
         echo "<script> document.location='" . base_url() . "/index.php/admin_manage_controller/manage_subtopics_info?id=$subtopicid' </script>";
@@ -398,7 +398,7 @@ class admin_manage_controller extends CI_Controller {
 
             $this->db->query("UPDATE ost_sla_test
                             SET isactive = '$status'
-                            WHERE id = '$value'");
+                            WHERE sla_guid = '$value'");
         }
 
             echo "<script> alert('Status of SLA changed');</script>";
@@ -408,7 +408,7 @@ class admin_manage_controller extends CI_Controller {
         elseif ($status == 2) {
             foreach ($check as $value) {
 
-            $this->db->query("DELETE FROM ost_sla_test WHERE id='$value' ");
+            $this->db->query("DELETE FROM ost_sla_test WHERE sla_guid='$value' ");
 
             
         }
@@ -464,8 +464,8 @@ class admin_manage_controller extends CI_Controller {
          $isactive = $this->input->post('isactive');
          $notes = $this->input->post('notes');
 
-         $this->db->query("INSERT ost_sla_test ( sla_name, grace_period , isactive, notes, created, updated )
-                        VALUES ( '$name', '$grace_period', '$isactive', '$notes', NOW(), NOW() ) ");
+         $this->db->query("INSERT ost_sla_test ( sla_guid, sla_name, grace_period , isactive, notes, created, updated )
+                        VALUES ( REPLACE(UPPER(UUID()),'-',''), '$name', '$grace_period', '$isactive', '$notes', NOW(), NOW() ) ");
 
          echo "<script> alert('SLA added');</script>";
         echo "<script> document.location='" . base_url() . "/index.php/admin_manage_controller/manage_sla' </script>";
@@ -479,7 +479,7 @@ class admin_manage_controller extends CI_Controller {
             $subtopicid = $_REQUEST['id'];
             $data = array(
 
-                'sla' => $this->db->query("SELECT * FROM ost_sla_test WHERE id = '$subtopicid' " )->row(),
+                'sla' => $this->db->query("SELECT * FROM ost_sla_test WHERE sla_guid = '$subtopicid' " )->row(),
                 
 
 
@@ -522,7 +522,7 @@ class admin_manage_controller extends CI_Controller {
                             grace_period = '$grace_period',
                             isactive = '$isactive',
                             notes = '$notes'
-                            WHERE id = '$slaid';");
+                            WHERE sla_guid = '$slaid';");
 
          echo "<script> alert('SLA edited');</script>";
         echo "<script> document.location='" . base_url() . "/index.php/admin_manage_controller/manage_sla_info?id=$slaid' </script>";
@@ -575,7 +575,7 @@ class admin_manage_controller extends CI_Controller {
 
             $this->db->query("UPDATE ost_api_key_test
                             SET isactive = '$status'
-                            WHERE id = '$value'");
+                            WHERE api_key_id = '$value'");
         }
 
             echo "<script> alert('Status of API key changed');</script>";
@@ -585,7 +585,7 @@ class admin_manage_controller extends CI_Controller {
         elseif ($status == 2) {
             foreach ($check as $value) {
 
-            $this->db->query("DELETE FROM ost_api_key_test WHERE id='$value' ");
+            $this->db->query("DELETE FROM ost_api_key_test WHERE api_key_id='$value' ");
 
             
         }
@@ -640,8 +640,9 @@ class admin_manage_controller extends CI_Controller {
          $notes = $this->input->post('notes');
          $key = implode(str_split(substr(strtolower(md5(microtime().rand(1000, 9999))), 0, 30), 6));
 
-         $this->db->query("INSERT ost_api_key_test ( isactive, ipaddr , can_create_tickets, can_exec_cron,notes, updated, created, apikey )
-                        VALUES ( '$isactive', '$ipaddr', '$can_create_tickets','$can_exec_cron', '$notes', NOW(), NOW(), '$key'  ) ");
+         $api_key_id = $this->db->query("SELECT REPLACE(UPPER(UUID()),'-','') AS guid")->row('guid');
+         $this->db->query("INSERT ost_api_key_test ( api_key_id, isactive, ipaddr , can_create_tickets, can_exec_cron,notes, updated, created, apikey )
+                        VALUES ( '$api_key_id', '$isactive', '$ipaddr', '$can_create_tickets','$can_exec_cron', '$notes', NOW(), NOW(), '$key'  ) ");
 
          echo "<script> alert('API key added');</script>";
         echo "<script> document.location='" . base_url() . "/index.php/admin_manage_controller/manage_api' </script>";
@@ -655,7 +656,7 @@ class admin_manage_controller extends CI_Controller {
             $apiid = $_REQUEST['id'];
             $data = array(
 
-                'api' => $this->db->query("SELECT * FROM ost_api_key_test WHERE id = '$apiid' " )->row(),
+                'api' => $this->db->query("SELECT * FROM ost_api_key_test WHERE api_key_id = '$apiid' " )->row(),
                 
 
 
@@ -697,7 +698,7 @@ class admin_manage_controller extends CI_Controller {
                             can_create_tickets = '$can_create_tickets',
                             can_exec_cron = '$can_exec_cron',
                             notes = '$notes'
-                            WHERE id = '$apiid';");
+                            WHERE api_key_id = '$apiid';");
 
          echo "<script> alert('API key edited');</script>";
         echo "<script> document.location='" . base_url() . "/index.php/admin_manage_controller/manage_api_info?id=$apiid' </script>";
@@ -742,17 +743,17 @@ class admin_manage_controller extends CI_Controller {
 
         foreach ($pids as $pagesid)
         {
-            $inuse = $this->db->query("SELECT * FROM ost_content_test WHERE id = '$pagesid'")->row('in_use');
+            $inuse = $this->db->query("SELECT * FROM ost_content_test WHERE content_guid = '$pagesid'")->row('in_use');
 
             if ($enable == '1')
             {
-                $this->db->query("UPDATE ost_content_test SET isactive = '1' WHERE id = '$pagesid'");
+                $this->db->query("UPDATE ost_content_test SET isactive = '1' WHERE content_guid = '$pagesid'");
             }
             elseif ($disable == '1')
             {
                 if ($inuse == '0')
                 {
-                    $this->db->query("UPDATE ost_content_test SET isactive = '0' WHERE id = '$pagesid'");
+                    $this->db->query("UPDATE ost_content_test SET isactive = '0' WHERE content_guid = '$pagesid'");
                 }
                 else
                 {
@@ -763,7 +764,7 @@ class admin_manage_controller extends CI_Controller {
             {
                 if ($inuse == '0')
                 {
-                    $this->db->query("DELETE FROM ost_content_test WHERE id = '$pagesid'");
+                    $this->db->query("DELETE FROM ost_content_test WHERE content_guid = '$pagesid'");
                 }
                 else
                 {
@@ -782,7 +783,7 @@ class admin_manage_controller extends CI_Controller {
             $pagesid = $_REQUEST['id'];
 
             $data = array(
-                'pages' => $this->db->query("SELECT * FROM ost_content_test WHERE id = '$pagesid'"),
+                'pages' => $this->db->query("SELECT * FROM ost_content_test WHERE content_guid = '$pagesid'"),
             );
 
             $browser_id = $_SERVER["HTTP_USER_AGENT"];
@@ -813,8 +814,9 @@ class admin_manage_controller extends CI_Controller {
         $content = addslashes($this->input->post('content'));
         $notes = addslashes($this->input->post('notes'));
 
-        $this->db->query("INSERT INTO ost_content_test (isactive, field, type, name, body, notes, created, updated)
-        VALUES ('$isactive', 'pages', '$type', '$name', '$content', '$notes', now(), now())");
+        $content_guid = $this->db->query("SELECT REPLACE(UPPER(UUID()),'-','') AS guid")->row('guid');
+        $this->db->query("INSERT INTO ost_content_test (content_guid, isactive, field, type, name, body, notes, created, updated)
+        VALUES ('$content_guid', '$isactive', 'pages', '$type', '$name', '$content', '$notes', now(), now())");
 
         redirect('admin_manage_controller/manage_pages');
     }
@@ -828,7 +830,7 @@ class admin_manage_controller extends CI_Controller {
         $content = addslashes($this->input->post('content'));
         $notes = addslashes($this->input->post('notes'));
 
-        $this->db->query("UPDATE ost_content_test SET isactive = '$isactive', type = '$type', name = '$name', body = '$content', notes = '$notes', updated = now() WHERE id = '$pagesid'");
+        $this->db->query("UPDATE ost_content_test SET isactive = '$isactive', type = '$type', name = '$name', body = '$content', notes = '$notes', updated = now() WHERE content_guid = '$pagesid'");
 
         redirect('admin_manage_controller/manage_pages');
     }

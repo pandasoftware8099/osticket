@@ -26,7 +26,7 @@ class Open_controller extends CI_Controller {
             $data = array(
                 'topic' => $this->db->query("SELECT * FROM ost_help_topic_test ORDER BY topic"),
                 'default_help_topic' => $default_topic,
-                'current_sub' => $this->db->query("SELECT id, value FROM ost_list_items_test WHERE topic_id = '".$default_topic->row('value')."' ORDER BY value"),
+                'current_sub' => $this->db->query("SELECT list_item_guid, value FROM ost_list_items_test WHERE topic_guid = '".$default_topic->row('value')."' ORDER BY value"),
                 'max_file_size' => $this->db->query("SELECT value FROM ost_config_test WHERE id = '77'")->row('value'),
                 'max_files' => $this->db->query("SELECT value FROM ost_config_test WHERE id = '119'")->row('value'),
             );
@@ -64,7 +64,7 @@ class Open_controller extends CI_Controller {
             $userid = $_SESSION['userid'];
             $username = $_SESSION['username'];
             $userdepname = $_SESSION['userdepname'];
-            $count_user_tickets = $this->db->query("SELECT COUNT(*) AS count FROM ost_ticket_test a INNER JOIN ost_ticket_status_test b ON a.status_id = b.id WHERE a.user_id = '$userid' AND b.state = 'open'")->row('count');
+            $count_user_tickets = $this->db->query("SELECT COUNT(*) AS count FROM ost_ticket_test a INNER JOIN ost_ticket_status_test b ON a.status_guid = b.status_guid WHERE a.user_guid = '$userid' AND b.state = 'open'")->row('count');
             $max_open_tickets = $this->db->query("SELECT value FROM ost_config_test WHERE id = '22'")->row('value');
             $ticket_autoresponder = $this->db->query("SELECT value FROM ost_config_test WHERE id='36'")->row('value');
             $overlimit_notice_active = $this->db->query("SELECT value FROM ost_config_test WHERE id='68'")->row('value');
@@ -75,7 +75,7 @@ class Open_controller extends CI_Controller {
                 $result = $this->Open_model->add_process($subject, $subtopic, $description, $userid, $userdepname, $username);
 
                 $ticket_info = $this->db->query("SELECT b.user_name, b.user_email FROM ost_ticket_test AS a
-                    INNER JOIN ost_user_test AS b ON a.user_id = b.user_id 
+                    INNER JOIN ost_user_test AS b ON a.user_guid = b.user_guid 
                     WHERE number = '$result'");
 
                 if(isset($_POST['submit']))
@@ -89,15 +89,15 @@ class Open_controller extends CI_Controller {
 
                         if ($_FILES['file']['name'][0] != "") {
 
-                            $thread_id = $this->db->query("SELECT id FROM ost_thread_entry_test WHERE created = now() ")->row('id');
+                            $thread_id = $this->db->query("SELECT thread_entry_guid FROM ost_thread_entry_test WHERE created = now() ")->row('thread_entry_guid');
 
                             $filename = $thread_id.'_'.$_FILES['file']['name'][$i];
 
                                 // Upload file
                             move_uploaded_file($_FILES['file']['tmp_name'][$i],'../helpme/uploads/'.$filename);
 
-                            $this->db->query("INSERT ost_file_test ( name, created , thread_entry_id )
-                            VALUES ( '$filename', NOW(), '$thread_id' ) ");
+                            $this->db->query("INSERT ost_file_test (file_guid, name, created , thread_entry_guid )
+                            VALUES ( REPLACE(UPPER(UUID()),'-',''), '$filename', NOW(), '$thread_id' ) ");
 
                             echo "<script> alert('$i File(s) and message successfully sent.');</script>";
                         }
@@ -115,20 +115,20 @@ class Open_controller extends CI_Controller {
                 {
                     $body_ticket_autoresponder = $this->db->query("SELECT REPLACE(subject, '%number%', '$result') AS email_subject,
                         REPLACE(REPLACE(body, '%user_name%', '".$ticket_info->row('user_name')."'), '%number%', '$result') AS email
-                        FROM ost_email_template_test WHERE code_name = 'ticket.autoresp' AND tpl_id = '$default_template_id'");
+                        FROM ost_email_template_test WHERE code_name = 'ticket.autoresp' AND tpl_guid = '$default_template_id'");
                     array_push($body, $body_ticket_autoresponder);
                 }
                 if ($overlimit_notice_active == '1' && $count_user_tickets + 1 == $max_open_tickets)
                 {
-                    $body_overlimit_notice_active = $this->db->query("SELECT subject AS email_subject, REPLACE(body, '%user_name%', '".$ticket_info->row('user_name')."') AS email FROM ost_email_template_test WHERE code_name = 'ticket.overlimit' AND tpl_id = '$default_template_id'");
+                    $body_overlimit_notice_active = $this->db->query("SELECT subject AS email_subject, REPLACE(body, '%user_name%', '".$ticket_info->row('user_name')."') AS email FROM ost_email_template_test WHERE code_name = 'ticket.overlimit' AND tpl_guid = '$default_template_id'");
                     array_push($body, $body_overlimit_notice_active);
                 }
 
                 if ($ticket_autoresponder == '1' || ($overlimit_notice_active == '1' && $count_user_tickets + 1 == $max_open_tickets))
                 {
                     $this->load->library('email');
-                    $thread_id = $this->db->query("SELECT * FROM ost_thread_entry_test INNER JOIN ost_ticket_test WHERE number = '$result' AND type ='S'")->row('id');
-                    $file_id = $this->db->query("SELECT name FROM ost_file_test WHERE thread_entry_id='$thread_id'");
+                    $thread_id = $this->db->query("SELECT * FROM ost_thread_entry_test INNER JOIN ost_ticket_test WHERE number = '$result' AND type ='S'")->row('thread_entry_guid');
+                    $file_id = $this->db->query("SELECT name FROM ost_file_test WHERE thread_entry_guid='$thread_id'");
                     $email_attach = $this->db->query("SELECT value FROM ost_config_test WHERE id='69'")->row('value');
                     
                     foreach ($body as $email_body)
@@ -139,7 +139,7 @@ class Open_controller extends CI_Controller {
                         );
 
                         $default_email = $this->db->query("SELECT value FROM ost_config_test WHERE id='83'")->row('value');
-                        $sender_email = $this->db->query("SELECT * FROM ost_email_test WHERE email_id='$default_email'")->row();
+                        $sender_email = $this->db->query("SELECT * FROM ost_email_test WHERE email_guid='$default_email'")->row();
 
                         $config = array(
             
@@ -189,12 +189,12 @@ class Open_controller extends CI_Controller {
         if($this->session->userdata('loginuser') == true && $this->session->userdata('username') != '')
         {
             $ticket_number = $_REQUEST['number'];
-            $ticket_info = $this->db->query("SELECT a.ticket_id, b.value, a.number FROM ost_ticket_test AS a 
-                INNER JOIN ost_list_items_test AS b ON a.subtopic_id = b.id
+            $ticket_info = $this->db->query("SELECT a.ticket_guid, b.value, a.number FROM ost_ticket_test AS a 
+                INNER JOIN ost_list_items_test AS b ON a.subtopic_guid = b.list_item_guid
                 WHERE number = '$ticket_number'");
 
             $data = array(
-                'thank_you_page' => $this->db->query("SELECT REPLACE(body, '%ticket_id%', '".$ticket_info->row('ticket_id')."') AS content FROM ost_content_test WHERE type = 'thank-you' AND in_use = '1' AND field = 'pages'"),
+                'thank_you_page' => $this->db->query("SELECT REPLACE(body, '%ticket_guid%', '".$ticket_info->row('ticket_guid')."') AS content FROM ost_content_test WHERE type = 'thank-you' AND in_use = '1' AND field = 'pages'"),
                 'ticket_info' => $ticket_info,
             );
 
@@ -226,7 +226,7 @@ class Open_controller extends CI_Controller {
         if($this->session->userdata('loginuser') == true && $this->session->userdata('username') != '')
         {   
             $id= $_REQUEST['id'];
-            $data = $this->db->query("SELECT id, VALUE FROM ost_list_items_test AS a INNER JOIN ost_help_topic_test AS b ON a.`topic_id` = b.`topic_id` WHERE b.topic_id = '$id' ORDER BY value")->result();
+            $data = $this->db->query("SELECT list_item_guid, VALUE FROM ost_list_items_test AS a INNER JOIN ost_help_topic_test AS b ON a.`topic_guid` = b.`topic_guid` WHERE b.topic_guid = '$id' ORDER BY value")->result();
             echo json_encode($data);
         }
 

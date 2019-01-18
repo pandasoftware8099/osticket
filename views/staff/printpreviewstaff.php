@@ -68,7 +68,7 @@
         <?php foreach ($result->result() as $value) { ?>
         <b>TICKET #<?php echo $value->number;?></b>
         <br>
-        <b>Status:</b> <?php echo $this->db->query("SELECT * FROM ost_ticket_status_test AS a INNER JOIN ost_ticket_test AS b ON a.id = b.status_id WHERE b.ticket_id = '".$value->ticket_id."'")->row('name');?><br>
+        <b>Status:</b> <?php echo $this->db->query("SELECT * FROM ost_ticket_status_test AS a INNER JOIN ost_ticket_test AS b ON a.status_guid = b.status_guid WHERE b.ticket_guid = '".$value->ticket_guid."'")->row('name');?><br>
         <b>Priority:</b> <?php echo $value->priority_desc;?><br>
         <b>Help Topic:</b> <?php echo $value->topic;?> <br>
         <b>Department:</b> <?php echo $value->department;?><br>
@@ -82,7 +82,7 @@
               <?php echo $value->firstname;?> 
               <?php echo $value->lastname;?>
             <?php }
-            if ($value->team_id != '0')
+            if ($value->team_guid != '0')
             { ?>
               <?php echo $value->name;?>
           <?php } ?>

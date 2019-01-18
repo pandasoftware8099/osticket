@@ -27,10 +27,10 @@
     <div class="form-group" style="overflow:auto;margin-bottom:0px;">
         <label class="col-lg-3 control-label"><i class="help-tip icon-question-sign" href="#new_ticket_department"></i> Department <span class="error">*</span></label>
         <div class="col-lg-9">
-            <select required="true" name="dept_id" class="form-control">
+            <select required="true" name="dept_guid" class="form-control">
                 <option value="0" selected="selected">— System Default —</option>
                 <?php foreach ($department->result() as $value) { ?>
-                <option <?php echo ($value->id == $email->dept_id )?"selected":""; ?> value="<?php echo $value->id?>"><?php echo $value->name?></option>
+                <option <?php echo ($value->department_guid == $email->dept_guid )?"selected":""; ?> value="<?php echo $value->department_guid?>"><?php echo $value->name?></option>
                 <?php } ?>
 
             </select>
@@ -41,10 +41,10 @@
         <label class="col-lg-3 control-label"><i class="help-tip icon-question-sign" href="#new_ticket_priority"></i> Priority <span class="error">*</span></label>
         <div class="col-lg-9">
             <span>
-                <select required="true" name="priority_id" class="form-control">
+                <select required="true" name="priority_guid" class="form-control">
                     <option value="0" selected="selected">— System Default —</option>
                     <?php foreach ($priority->result() as $value) { ?>
-                <option <?php echo ($value->priority_id == $email->priority_id )?"selected":""; ?> value="<?php echo $value->priority_id?>"><?php echo $value->priority_desc?></option>
+                <option <?php echo ($value->priority_guid == $email->priority_guid )?"selected":""; ?> value="<?php echo $value->priority_guid?>"><?php echo $value->priority_desc?></option>
                 <?php } ?></select>
             </span>
             &nbsp;<span class="error"></span>
@@ -53,10 +53,10 @@
     <div class="form-group" style="overflow:auto;margin-bottom:0px;">
         <label class="col-lg-3 control-label"><i class="help-tip icon-question-sign" href="#new_ticket_help_topic"></i> Help Topic</label>
         <div class="col-lg-9">
-            <select name="topic_id" class="form-control">
+            <select name="topic_guid" class="form-control">
                 <option value="0" selected="selected">— System Default —</option>
                                         <?php foreach ($topic->result() as $value) { ?>
-                <option <?php echo ($value->topic_id == $email->topic_id )?"selected":""; ?> value="<?php echo $value->topic_id?>"><?php echo $value->topic?></option>
+                <option <?php echo ($value->topic_guid == $email->topic_guid )?"selected":""; ?> value="<?php echo $value->topic_guid?>"><?php echo $value->topic?></option>
                 <?php } ?></select>
                                 </select>
             <span class="error">

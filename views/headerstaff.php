@@ -154,7 +154,7 @@ div.dataTables_wrapper div.dataTables_paginate ul.pagination {
 </head>
 <body style="overflow: auto;">
     <?php
-        $admin = $this->db->query("SELECT isadmin FROM ost_staff_test WHERE staff_id = '".$_SESSION['staffid']."'");
+        $admin = $this->db->query("SELECT isadmin FROM ost_staff_test WHERE staff_guid = '".$_SESSION['staffid']."'");
         $data = array(
             'offline' => $this->db->query("SELECT value FROM ost_config_test WHERE id = '12'"),
         );
@@ -243,7 +243,7 @@ div.dataTables_wrapper div.dataTables_paginate ul.pagination {
 <?php 
 
 $staffid = $_SESSION["staffid"];
-$userdirallow = $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_id = ' $staffid' AND permissions LIKE '%user.dir%'")->num_rows() ;
+$userdirallow = $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = ' $staffid' AND permissions LIKE '%user.dir%'")->num_rows() ;
 
 if ($userdirallow != 0 ) { 
 ?> 
@@ -272,27 +272,27 @@ if ($userdirallow != 0 ) {
 
 <li><a class="Ticket active" href="<?php echo site_url('staff_ticket_controller/main?title=Open&direct=open')?>" title="Open Tickets" id="subnav2">Open (<?php
     $userdeptid = $_SESSION['staffdept'];
-    $staff_id = $_SESSION["staffid"];  
-    $userdeptname = $this->db->query("SELECT name FROM ost_department_test WHERE id = '$userdeptid' ")->row('name');
+    $staff_guid = $_SESSION["staffid"];  
+    $userdeptname = $this->db->query("SELECT name FROM ost_department_test WHERE department_guid = '$userdeptid' ")->row('name');
     $show_assigned_tickets = $this->db->query("SELECT value FROM ost_config_test WHERE id = '65'")->row('value');
     $show_answered_tickets = $this->db->query("SELECT value FROM ost_config_test WHERE id = '66'")->row('value');
 
     echo $this->db->query("SELECT COUNT(*) AS count FROM  ost_ticket_test AS a  
-        INNER JOIN ost_help_topic_test AS b  ON b.topic_id = a.topic_id 
-        INNER JOIN ost_ticket_status_test AS c  ON c.id = a.status_id 
-        INNER JOIN ost_user_test AS d  ON a.user_id = d.user_id 
-        INNER JOIN ost_ticket_priority_test AS e  ON e.priority_id = a.priority_id
+        INNER JOIN ost_help_topic_test AS b  ON b.topic_guid = a.topic_guid 
+        INNER JOIN ost_ticket_status_test AS c  ON c.status_guid = a.status_guid 
+        INNER JOIN ost_user_test AS d  ON a.user_guid = d.user_guid 
+        INNER JOIN ost_ticket_priority_test AS e  ON e.priority_guid = a.priority_guid
         WHERE c.state = 'open'
-        AND department IN (SELECT NAME FROM ost_department_test a INNER JOIN ost_staff_dept_access_test b ON a.id = b.`dept_id` WHERE B.`staff_id` = '$staff_id' UNION SELECT NAME FROM ost_department_test WHERE id = '$userdeptid')
-        AND (($show_assigned_tickets = '1' AND NOT ((a.assigned_to IS NOT NULL AND a.assigned_to != '0') OR (a.team_id IS NOT NULL AND a.team_id != '0'))) OR ($show_assigned_tickets = '0'))
-        AND (($show_answered_tickets = '1' AND a.ticket_id NOT IN (SELECT ticket_id FROM ost_thread_entry_test AS f WHERE f.type = 'S' AND a.created_at != f.created)) OR ($show_answered_tickets = '0'))")->row('count');?>)</a></li>
+        AND department IN (SELECT NAME FROM ost_department_test a INNER JOIN ost_staff_dept_access_test b ON a.department_guid = b.`dept_guid` WHERE B.`staff_guid` = '$staff_guid' UNION SELECT NAME FROM ost_department_test WHERE department_guid = '$userdeptid')
+        AND (($show_assigned_tickets = '1' AND NOT ((a.assigned_to IS NOT NULL AND a.assigned_to != '0') OR (a.team_guid IS NOT NULL AND a.team_guid != '0'))) OR ($show_assigned_tickets = '0'))
+        AND (($show_answered_tickets = '1' AND a.ticket_guid NOT IN (SELECT ticket_guid FROM ost_thread_entry_test AS f WHERE f.type = 'S' AND a.created_at != f.created)) OR ($show_answered_tickets = '0'))")->row('count');?>)</a></li>
 <?php 
 $show_answered_tickets = $this->db->query("SELECT value FROM ost_config_test WHERE id = '66'");
 if ($show_answered_tickets->row('value') == '1') { ?>
-<li><a class="answeredTickets active" href="<?php echo site_url('staff_ticket_controller/main?title=Open&direct=answered')?>" title="Answered Tickets" id="subnav4">Answered (<?php echo $this->db->query("SELECT * FROM ost_ticket_test AS a INNER JOIN ost_help_topic_test AS b ON b.topic_id = a.topic_id INNER JOIN ost_ticket_status_test AS c ON c.id = a.status_id INNER JOIN ost_user_test AS d ON a.user_id = d.user_id INNER JOIN ost_ticket_priority_test AS e ON e.priority_id = a.priority_id INNER JOIN ost_thread_entry_test AS f ON a.ticket_id = f.ticket_id WHERE f.type = 'S' AND a.created_at != f.created GROUP BY a.ticket_id")->num_rows();?>)</a></li>
+<li><a class="answeredTickets active" href="<?php echo site_url('staff_ticket_controller/main?title=Open&direct=answered')?>" title="Answered Tickets" id="subnav4">Answered (<?php echo $this->db->query("SELECT * FROM ost_ticket_test AS a INNER JOIN ost_help_topic_test AS b ON b.topic_guid = a.topic_guid INNER JOIN ost_ticket_status_test AS c ON c.status_guid = a.status_guid INNER JOIN ost_user_test AS d ON a.user_guid = d.user_guid INNER JOIN ost_ticket_priority_test AS e ON e.priority_guid = a.priority_guid INNER JOIN ost_thread_entry_test AS f ON a.ticket_guid = f.ticket_guid WHERE f.type = 'S' AND a.created_at != f.created GROUP BY a.ticket_guid")->num_rows();?>)</a></li>
 <?php } ?>
-<li><a class="assignedTickets active" href="<?php echo site_url('staff_ticket_controller/mytickets?title=My')?>" title="Assigned Tickets" id="subnav4">My Tickets (<?php echo $this->db->query("SELECT * FROM  ost_ticket_test AS a INNER JOIN ost_help_topic_test AS b  ON b.topic_id = a.topic_id INNER JOIN ost_ticket_status_test AS c  ON c.id = a.status_id INNER JOIN ost_user_test AS d  ON a.user_id = d.user_id INNER JOIN ost_ticket_priority_test AS e  ON e.priority_id = a.priority_id WHERE c.state = 'open' AND assigned_to = '$staff_id'")->num_rows();?>)</a></li>
-<li><a class="overdueTickets" href="<?php echo site_url('staff_ticket_controller/overdue?title=Overdue')?>" title="Stale Tickets" id="subnav3">Overdue (<?php echo $this->db->query("SELECT * FROM  ost_ticket_test AS a INNER JOIN ost_help_topic_test AS b  ON b.topic_id = a.topic_id INNER JOIN ost_ticket_status_test AS c  ON c.id = a.status_id INNER JOIN ost_user_test AS d  ON a.user_id = d.user_id INNER JOIN ost_ticket_priority_test AS e  ON e.priority_id = a.priority_id WHERE c.state = 'open' AND duedate <= now()")->num_rows();?>)</a></li>
+<li><a class="assignedTickets active" href="<?php echo site_url('staff_ticket_controller/mytickets?title=My')?>" title="Assigned Tickets" id="subnav4">My Tickets (<?php echo $this->db->query("SELECT * FROM  ost_ticket_test AS a INNER JOIN ost_help_topic_test AS b  ON b.topic_guid = a.topic_guid INNER JOIN ost_ticket_status_test AS c  ON c.status_guid = a.status_guid INNER JOIN ost_user_test AS d  ON a.user_guid = d.user_guid INNER JOIN ost_ticket_priority_test AS e  ON e.priority_guid = a.priority_guid WHERE c.state = 'open' AND assigned_to = '$staff_guid'")->num_rows();?>)</a></li>
+<li><a class="overdueTickets" href="<?php echo site_url('staff_ticket_controller/overdue?title=Overdue')?>" title="Stale Tickets" id="subnav3">Overdue (<?php echo $this->db->query("SELECT * FROM  ost_ticket_test AS a INNER JOIN ost_help_topic_test AS b  ON b.topic_guid = a.topic_guid INNER JOIN ost_ticket_status_test AS c  ON c.status_guid = a.status_guid INNER JOIN ost_user_test AS d  ON a.user_guid = d.user_guid INNER JOIN ost_ticket_priority_test AS e  ON e.priority_guid = a.priority_guid WHERE c.state = 'open' AND duedate <= now()")->num_rows();?>)</a></li>
 <li><a class="closedTickets" href="<?php echo site_url('staff_ticket_controller/closed?title=Closed')?>" title="Closed Tickets" id="subnav4">Closed</a></li>
 <li><a class="newTicket" href="<?php echo site_url('staff_ticket_controller/newticket?id=')?>" title="Open a New Ticket" id="new-ticket">New Ticket</a></li>
 
@@ -302,7 +302,7 @@ if ($show_answered_tickets->row('value') == '1') { ?>
 <li class="inactive  dropdown"><a href="#" helpdesk="" scp="" kb.php="" class="dropdown-toggle" data-toggle="dropdown">Knowledgebase <span class="caret"></span></a><ul class="dropdown-menu">
 <li><a class="kb" href="<?php echo site_url('staff_faqs_controller/main')?>" title="" id="nav0">FAQs</a></li>
 
-<?php $faqallow = $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_id = ' $staffid' AND permissions LIKE '%faq.manage%'")->num_rows();
+<?php $faqallow = $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = ' $staffid' AND permissions LIKE '%faq.manage%'")->num_rows();
 
     if ($faqallow != 0 ) {
 ?>

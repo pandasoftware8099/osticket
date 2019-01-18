@@ -15,18 +15,18 @@ class user_model extends CI_Model
         $namecheck = $this->db->query("SELECT * FROM ost_user_test WHERE user_name = '$user_name' ");
       
         if($usercheck->num_rows() == 0){
-    		$this->db->query("INSERT INTO osticket.ost_user_test ( user_name , user_pas, user_created_at, user_updated_at, user_depart, user_email, user_phone, user_phoneext, status, active )
-    		VALUES ( '$user_name', '$user_pas', now(), now(), '1', '$user_email', '$user_phone', '$user_phoneext', '3', '0' )");
+    		$this->db->query("INSERT INTO osticket.ost_user_test (user_guid, user_name , user_pas, user_created_at, user_updated_at, user_depart, user_email, user_phone, user_phoneext, status, active )
+    		VALUES (REPLACE(UPPER(UUID()),'-',''), '$user_name', '$user_pas', now(), now(), '1', '$user_email', '$user_phone', '$user_phoneext', '3', '0' )");
 
     		$splitemail = explode('@', $user_email);
             $domain = '@'.$splitemail[1];
             $org = $this->db->query("SELECT * FROM ost_organization_test");
-            $user_id = $this->db->query("SELECT * FROM ost_user_test WHERE user_name = '$user_name'")->row('user_id');
+            $user_guid = $this->db->query("SELECT * FROM ost_user_test WHERE user_name = '$user_name'")->row('user_guid');
 
             foreach ($org->result() as $orgdomain)
             {
                 if ($orgdomain->domain == $domain)
-                    $this->db->query("UPDATE ost_user_test SET user_org_id = '$orgdomain->id' WHERE user_id = '$user_id' ");
+                    $this->db->query("UPDATE ost_user_test SET user_org_guid = '$orgdomain->organization_guid' WHERE user_guid = '$user_guid' ");
             }
         }
         else if ($emailcheck->num_rows() !== 0 && $namecheck->num_rows() !== 0)
@@ -57,7 +57,7 @@ class user_model extends CI_Model
     public function checkpass($userid, $userpass)
     {
         //data is retrive from this query
-        $sql = "SELECT * FROM osticket.ost_user_test WHERE user_id='$userid' AND user_pas='$userpass'";
+        $sql = "SELECT * FROM osticket.ost_user_test WHERE user_guid='$userid' AND user_pas='$userpass'";
 
         $query = $this->db->query($sql);
         return $query->num_rows();

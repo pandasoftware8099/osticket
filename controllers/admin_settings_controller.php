@@ -22,20 +22,20 @@ class admin_settings_controller extends CI_Controller {
     {      
         if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
         {   
-            $deparment_info = $this->db->query("SELECT id, ispublic FROM ost_department_test");
+            $deparment_info = $this->db->query("SELECT department_guid, ispublic FROM ost_department_test");
             foreach ($deparment_info->result() as $depart_info)
             {
-                $depart_child = $this->db->query("SELECT name, pid FROM ost_department_test WHERE id = '".$depart_info->id."'");
+                $depart_child = $this->db->query("SELECT name, pid FROM ost_department_test WHERE department_guid = '".$depart_info->department_guid."'");
                 $concat = $depart_child->row('name');
                 while (!empty($depart_child->row('pid')))
                 {       
-                    $depart_main = $this->db->query("SELECT name, pid FROM ost_department_test WHERE id = '".$depart_child->row('pid')."'");
+                    $depart_main = $this->db->query("SELECT name, pid FROM ost_department_test WHERE department_guid = '".$depart_child->row('pid')."'");
                     $concat = $depart_main->row('name').' / '.$concat;
 
                     $depart_child = $depart_main;
                 }
 
-                $depart_name[] = array('depart_name' => $concat, 'depart_id' => $depart_info->id, 'depart_public' => $depart_info->ispublic);
+                $depart_name[] = array('depart_name' => $concat, 'depart_id' => $depart_info->department_guid, 'depart_public' => $depart_info->ispublic);
             }
             usort($depart_name, function($a, $b)
             {
@@ -47,8 +47,8 @@ class admin_settings_controller extends CI_Controller {
                 'helpdesk_url' => $this->db->query("SELECT * FROM ost_config_test WHERE id ='2'"),
                 'helpdesk_title' => $this->db->query("SELECT * FROM ost_config_test WHERE id ='3'")->row(),
                 'department' => $depart_name,
-                'department_email' => $this->db->query("SELECT email_id, email FROM ost_email_test"),
-                'default_dept_id' => $this->db->query("SELECT * FROM ost_config_test WHERE id ='85'")->row(),
+                'department_email' => $this->db->query("SELECT email_guid, email FROM ost_email_test"),
+                'default_dept_guid' => $this->db->query("SELECT * FROM ost_config_test WHERE id ='85'")->row(),
                 'autolock_minutes' => $this->db->query("SELECT * FROM ost_config_test WHERE id ='23'"),
                 'max_page_size' => $this->db->query("SELECT * FROM ost_config_test WHERE id ='21'"),
                 'enable_avatars' => $this->db->query("SELECT * FROM ost_config_test WHERE id ='93'"),
@@ -83,7 +83,7 @@ class admin_settings_controller extends CI_Controller {
         $isonline = $this->input->post('isonline');
         $helpdesk_url = $this->input->post('helpdesk_url');
         $helpdesk_title = $this->input->post('helpdesk_title');
-        $default_dept_id = $this->input->post('default_dept_id');
+        $default_dept_guid = $this->input->post('default_dept_guid');
         $autolock_minutes = $this->input->post('autolock_minutes');
         $max_page_size = $this->input->post('max_page_size');
         $enable_avatars = $this->input->post('enable_avatars');
@@ -93,7 +93,7 @@ class admin_settings_controller extends CI_Controller {
         $this->db->query("UPDATE ost_config_test SET value = '$isonline', updated = NOW() WHERE id='12' ");
         $this->db->query("UPDATE ost_config_test SET value = '$helpdesk_url', updated = NOW() WHERE id='2' ");
         $this->db->query("UPDATE ost_config_test SET value = '$helpdesk_title', updated = NOW() WHERE id='3' ");
-        $this->db->query("UPDATE ost_config_test SET value = '$default_dept_id', updated = NOW() WHERE id='85' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$default_dept_guid', updated = NOW() WHERE id='85' ");
         $this->db->query("UPDATE ost_config_test SET value = '$autolock_minutes', updated = NOW() WHERE id='23' ");
         $this->db->query("UPDATE ost_config_test SET value = '$max_page_size', updated = NOW() WHERE id='21' ");
         $this->db->query("UPDATE ost_config_test SET value = '$enable_avatars', updated = NOW() WHERE id='93' ");
@@ -111,27 +111,28 @@ class admin_settings_controller extends CI_Controller {
         $department_email = $this->input->post('department_email');
         $department_internal = $this->input->post('department_internal');
         $direct = $_REQUEST['direct'];
-        $staff_id = $_REQUEST['id'];
+        $staff_guid = $_REQUEST['id'];
         $count_department_name = $this->db->query("SELECT COUNT(*) AS count FROM ost_department_test WHERE name = '$department_name'");
 
         if (empty($count_department_name->row('count')))
         {
-            $this->db->query("INSERT INTO ost_department_test (pid, email_id, name, ispublic, updated, created)
-            VALUES ('$main_department', '$department_email', '$department_name', '$department_internal', now(), now())");
+            $department_guid = $this->db->query("SELECT REPLACE(UPPER(UUID()),'-','') AS guid")->row('guid');
+            $this->db->query("INSERT INTO ost_department_test (department_guid, pid, email_guid, name, ispublic, updated, created)
+            VALUES ('$department_guid', '$main_department', '$department_email', '$department_name', '$department_internal', now(), now())");
 
-            $department_info = $this->db->query("SELECT id, pid FROM ost_department_test WHERE name = '$department_name'");
-            $path = '/'.$department_info->row('id').'/';
+            $department_info = $this->db->query("SELECT department_guid, pid FROM ost_department_test WHERE name = '$department_name'");
+            $path = '/'.$department_info->row('department_guid').'/';
             while (!empty($department_info->row('pid')))
             {
                 $path_pid = '/'.$department_info->row('pid');
                 
                 $path = $path_pid.$path;
 
-                $department_info = $this->db->query("SELECT id, pid FROM ost_department_test WHERE id = '".$department_info->row('pid')."'");
+                $department_info = $this->db->query("SELECT department_guid, pid FROM ost_department_test WHERE department_guid = '".$department_info->row('pid')."'");
             }
 
-            $department_id = $this->db->query("SELECT id FROM ost_department_test WHERE name = '$department_name'");        
-            $this->db->query("UPDATE ost_department_test SET path = '$path' WHERE id = '".$department_id->row('id')."'");
+            $department_id = $this->db->query("SELECT department_guid FROM ost_department_test WHERE name = '$department_name'");        
+            $this->db->query("UPDATE ost_department_test SET path = '$path' WHERE department_guid = '".$department_id->row('department_guid')."'");
         }
         else
         {
@@ -148,7 +149,7 @@ class admin_settings_controller extends CI_Controller {
         }
         else if ($direct == 'admin_agents_agents_info')
         {
-            echo "<script> document.location='" . base_url() . "/index.php/admin_agents_controller/agents_agents_info?id=$staff_id' </script>";
+            echo "<script> document.location='" . base_url() . "/index.php/admin_agents_controller/agents_agents_info?id=$staff_guid' </script>";
         }
     }
 
@@ -164,10 +165,10 @@ class admin_settings_controller extends CI_Controller {
                 'orilandpages' => $this->db->query("SELECT * FROM ost_content_test WHERE type = 'landing' AND in_use = '1' AND isactive = '1' AND field = 'pages'"),
                 'orioffpages' => $this->db->query("SELECT * FROM ost_content_test WHERE type = 'offline' AND in_use = '1' AND isactive = '1' AND field = 'pages'"),
                 'oritypages' => $this->db->query("SELECT * FROM ost_content_test WHERE type = 'thank-you' AND in_use = '1' AND isactive = '1' AND field = 'pages'"),
-                'logo' => $this->db->query("SELECT * FROM ost_file_test WHERE type = 'logo' ORDER BY id"),
+                'logo' => $this->db->query("SELECT * FROM ost_file_test WHERE type = 'logo' ORDER BY file_guid"),
                 'defclientlogo' => $this->db->query("SELECT * FROM ost_file_test WHERE type = 'logo' AND default_client = '1'"),
                 'defstafflogo' => $this->db->query("SELECT * FROM ost_file_test WHERE type = 'logo' AND default_staff = '1'"),
-                'backdrop' => $this->db->query("SELECT * FROM ost_file_test WHERE type = 'backdrop' ORDER BY id"),
+                'backdrop' => $this->db->query("SELECT * FROM ost_file_test WHERE type = 'backdrop' ORDER BY file_guid"),
                 'defstaffbackdrop' => $this->db->query("SELECT * FROM ost_file_test WHERE type = 'backdrop' AND default_staff = '1'"),
                 'max_file_size' => $this->db->query("SELECT value FROM ost_config_test WHERE id = '77'")->row('value'),
                 'max_files' => $this->db->query("SELECT value FROM ost_config_test WHERE id = '119'")->row('value'),
@@ -200,9 +201,9 @@ class admin_settings_controller extends CI_Controller {
         $cwebsite = $this->input->post('cwebsite');
         $cphone = $this->input->post('cphone');
         $caddress = $this->input->post('caddress');
-        $landing_page_id = $this->input->post('landing_page_id');
-        $offline_page_id = $this->input->post('offline_page_id');
-        $ty_page_id = $this->input->post('thank-you_page_id');
+        $landing_page_guid = $this->input->post('landing_page_guid');
+        $offline_page_guid = $this->input->post('offline_page_guid');
+        $ty_page_guid = $this->input->post('thank-you_page_guid');
         $clientlogo = $this->input->post('selected-logo');
         $stafflogo = $this->input->post('selected-logo-scp');
         $staffbackdrop = $this->input->post('selected-backdrop');
@@ -210,14 +211,14 @@ class admin_settings_controller extends CI_Controller {
         $delbackdrop = $this->input->post('delbackdrop[]');
 
         $this->db->query("UPDATE ost_company_test SET name_template = '$cname', web_template = '$cwebsite', phone_template = '$cphone', address_template = '$caddress', company_updated = now()");
-        $this->db->query("UPDATE ost_content_test SET in_use = '1', updated = now() WHERE id IN ($landing_page_id, $offline_page_id, $ty_page_id)");
-        $this->db->query("UPDATE ost_content_test SET in_use = '0', updated = now() WHERE field = 'pages' AND id NOT IN ($landing_page_id, $offline_page_id, $ty_page_id)");
-        $this->db->query("UPDATE ost_file_test SET default_client = '1' WHERE id = '$clientlogo'");
-        $this->db->query("UPDATE ost_file_test SET default_client = '0' WHERE id != '$clientlogo' AND type = 'logo'");
-        $this->db->query("UPDATE ost_file_test SET default_staff = '1' WHERE id = '$stafflogo'");
-        $this->db->query("UPDATE ost_file_test SET default_staff = '0' WHERE id != '$stafflogo' AND type = 'logo'");
-        $this->db->query("UPDATE ost_file_test SET default_staff = '1' WHERE id = '$staffbackdrop'");
-        $this->db->query("UPDATE ost_file_test SET default_staff = '0' WHERE id != '$staffbackdrop' AND type = 'backdrop'");
+        $this->db->query("UPDATE ost_content_test SET in_use = '1', updated = now() WHERE content_guid IN ($landing_page_guid, $offline_page_guid, $ty_page_guid)");
+        $this->db->query("UPDATE ost_content_test SET in_use = '0', updated = now() WHERE field = 'pages' AND content_guid NOT IN ($landing_page_guid, $offline_page_guid, $ty_page_guid)");
+        $this->db->query("UPDATE ost_file_test SET default_client = '1' WHERE file_guid = '$clientlogo'");
+        $this->db->query("UPDATE ost_file_test SET default_client = '0' WHERE file_guid != '$clientlogo' AND type = 'logo'");
+        $this->db->query("UPDATE ost_file_test SET default_staff = '1' WHERE file_guid = '$stafflogo'");
+        $this->db->query("UPDATE ost_file_test SET default_staff = '0' WHERE file_guid != '$stafflogo' AND type = 'logo'");
+        $this->db->query("UPDATE ost_file_test SET default_staff = '1' WHERE file_guid = '$staffbackdrop'");
+        $this->db->query("UPDATE ost_file_test SET default_staff = '0' WHERE file_guid != '$staffbackdrop' AND type = 'backdrop'");
 
         if(isset($_POST['submit-button'])){
             // Count total files
@@ -235,7 +236,7 @@ class admin_settings_controller extends CI_Controller {
                     move_uploaded_file($_FILES['logo']['tmp_name'][$i],'../helpme/uploads/'.$filename);
 
                     $this->db->query("INSERT ost_file_test ( name, type, created )
-                    VALUES ( '$filename', 'logo', NOW() ) ");
+                    VALUES ( REPLACE(UPPER(UUID()),'-',''), '$filename', 'logo', NOW() ) ");
                 }
             }
 
@@ -258,8 +259,8 @@ class admin_settings_controller extends CI_Controller {
                     // Upload file
                     move_uploaded_file($_FILES['backdrop']['tmp_name'][$i],'../helpme/uploads/'.$filename);
 
-                    $this->db->query("INSERT ost_file_test ( name, type, created )
-                    VALUES ( '$filename', 'backdrop', NOW() ) ");
+                    $this->db->query("INSERT ost_file_test (file_guid, name, type, created )
+                    VALUES ( REPLACE(UPPER(UUID()),'-',''),'$filename', 'backdrop', NOW() ) ");
                 }
             }
 
@@ -273,7 +274,7 @@ class admin_settings_controller extends CI_Controller {
         {
             foreach ($dellogo as $deletelogo)
             {
-                $this->db->query("DELETE FROM ost_file_test WHERE id = '$deletelogo'");
+                $this->db->query("DELETE FROM ost_file_test WHERE file_guid = '$deletelogo'");
             }
         }
 
@@ -281,7 +282,7 @@ class admin_settings_controller extends CI_Controller {
         {
             foreach ($delbackdrop as $deletebackdrop)
             {
-                $this->db->query("DELETE FROM ost_file_test WHERE id = '$deletebackdrop'");
+                $this->db->query("DELETE FROM ost_file_test WHERE file_guid = '$deletebackdrop'");
             }
         }
 
@@ -372,24 +373,24 @@ class admin_settings_controller extends CI_Controller {
         $padding = $this->input->post('padding');   
         $id = $this->input->post('id');
         $namecheck = end($name);    
-        $all_id = $this->db->query("SELECT id FROM ost_sequence_test")->result();
+        $all_id = $this->db->query("SELECT sequence_guid FROM ost_sequence_test")->result();
         $status = $_REQUEST['status'];  
 
         foreach($id as $key=>$value){  
             if($value != ''){   
-            $this->db->query("UPDATE ost_sequence_test SET name='$name[$key]',next='$next[$key]',increment='$increment[$key]',padding='$padding[$key]' WHERE id='$value'"); 
+            $this->db->query("UPDATE ost_sequence_test SET name='$name[$key]',next='$next[$key]',increment='$increment[$key]',padding='$padding[$key]' WHERE sequence_guid='$value'"); 
 
             }   
             else if($value == '' && $name[$key] != $namecheck)  
             {   
-                $this->db->query("INSERT INTO ost_sequence_test (name,next,increment,padding) VALUES('$name[$key]','$next[$key]','$increment[$key]','$padding[$key]')");    
+                $this->db->query("INSERT INTO ost_sequence_test (sequence_guid,name,next,increment,padding) VALUES(REPLACE(UPPER(UUID()),'-',''),'$name[$key]','$next[$key]','$increment[$key]','$padding[$key]')");    
 
             };
         }
 
         foreach($all_id as $value){
-            if(!in_array($value->id,$id)){
-                $this->db->query("DELETE FROM ost_sequence_test WHERE id='$value->id'");
+            if(!in_array($value->sequence_guid,$id)){
+                $this->db->query("DELETE FROM ost_sequence_test WHERE sequence_guid='$value->sequence_guid'");
             }
         }
 
@@ -410,7 +411,7 @@ class admin_settings_controller extends CI_Controller {
         if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
         {   
             $id= $_REQUEST['id'];
-            $data = $this->db->query("SELECT next,padding FROM ost_sequence_test WHERE id='$id'")->result();
+            $data = $this->db->query("SELECT next,padding FROM ost_sequence_test WHERE sequence_guid='$id'")->result();
             echo json_encode($data);
         }
 
@@ -425,7 +426,7 @@ class admin_settings_controller extends CI_Controller {
     public function ticket_update()
     {   
         $ticket_number_format = $this->input->post('ticket_number_format');
-        $ticket_sequence_id = $this->input->post('ticket_sequence_id');
+        $ticket_sequence_guid = $this->input->post('ticket_sequence_guid');
         $default_status = $this->input->post('default_ticket_status');
         $default_priority = $this->input->post('default_priority');
         $default_sla = $this->input->post('default_sla');
@@ -467,7 +468,7 @@ class admin_settings_controller extends CI_Controller {
         $overdue_alert_dept_members = $this->input->post('overdue_alert_dept_members');
 
         $this->db->query("UPDATE ost_config_test SET value = '$ticket_number_format', updated = NOW() WHERE id='70' ");
-        $this->db->query("UPDATE ost_config_test SET value = '$ticket_sequence_id', updated = NOW() WHERE id='71' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$ticket_sequence_guid', updated = NOW() WHERE id='71' ");
         $this->db->query("UPDATE ost_config_test SET value = '$default_status', updated = NOW() WHERE id='103' ");
         $this->db->query("UPDATE ost_config_test SET value = '$default_priority', updated = NOW() WHERE id='9' ");
         $this->db->query("UPDATE ost_config_test SET value = '$default_sla', updated = NOW() WHERE id='86' ");
@@ -518,7 +519,7 @@ class admin_settings_controller extends CI_Controller {
         {   
             $data = array(
                 'task_info' => $this->db->query("SELECT * FROM ost_task_test"),
-                'default_task_priority_id' => $this->db->query("SELECT * FROM ost_config_test WHERE id ='141'"),
+                'default_task_priority_guid' => $this->db->query("SELECT * FROM ost_config_test WHERE id ='141'"),
                 'ticket_number_format' => $this->db->query("SELECT * FROM ost_config_test WHERE id ='72'"),
                 'ticket_seq_list' => $this->db->query("SELECT * FROM ost_sequence_test"),
                 'ticket_seq' => $this->db->query("SELECT value FROM ost_config_test WHERE id='73'")->row('value'),
@@ -549,10 +550,10 @@ class admin_settings_controller extends CI_Controller {
     public function task_update()
     {   
         $ticket_number_format = $this->input->post('ticket_number_format');
-        $ticket_sequence_id = $this->input->post('ticket_sequence_id');
+        $ticket_sequence_guid = $this->input->post('ticket_sequence_guid');
 
         $this->db->query("UPDATE ost_config_test SET value = '$ticket_number_format', updated = NOW() WHERE id='72' ");
-        $this->db->query("UPDATE ost_config_test SET value = '$ticket_sequence_id', updated = NOW() WHERE id='73' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$ticket_sequence_guid', updated = NOW() WHERE id='73' ");
 
         echo "<script> alert('Successfully change settings');</script>";
         echo "<script> document.location='" . base_url() . "/index.php/admin_settings_controller/settings_user' </script>";
@@ -686,7 +687,7 @@ class admin_settings_controller extends CI_Controller {
         $topic = addslashes($this->input->post('topic'));
         $body = addslashes($this->input->post('body'));
 
-        $this->db->query("UPDATE ost_content_test SET name = '$topic', updated = NOW(), body = '$body' WHERE id='$id' ");
+        $this->db->query("UPDATE ost_content_test SET name = '$topic', updated = NOW(), body = '$body' WHERE content_guid='$id' ");
        
         echo "<script> alert('Successfully update template.');</script>";
 

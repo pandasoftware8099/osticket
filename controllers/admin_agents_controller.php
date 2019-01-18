@@ -22,20 +22,20 @@ class admin_agents_controller extends CI_Controller {
     {      
         if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
         {   
-            $deparment_info = $this->db->query("SELECT id FROM ost_department_test");
+            $deparment_info = $this->db->query("SELECT department_guid FROM ost_department_test");
             foreach ($deparment_info->result() as $depart_info)
             {
-                $depart_child = $this->db->query("SELECT name, pid FROM ost_department_test WHERE id = '".$depart_info->id."'");
+                $depart_child = $this->db->query("SELECT name, pid FROM ost_department_test WHERE department_guid = '".$depart_info->department_guid."'");
                 $concat = $depart_child->row('name');
                 while (!empty($depart_child->row('pid')))
                 {       
-                    $depart_main = $this->db->query("SELECT name, pid FROM ost_department_test WHERE id = '".$depart_child->row('pid')."'");
+                    $depart_main = $this->db->query("SELECT name, pid FROM ost_department_test WHERE department_guid = '".$depart_child->row('pid')."'");
                     $concat = $depart_main->row('name').' / '.$concat;
 
                     $depart_child = $depart_main;
                 }
 
-                $depart_name[] = array('depart_name' => $concat, 'depart_id' => $depart_info->id);
+                $depart_name[] = array('depart_name' => $concat, 'depart_id' => $depart_info->department_guid);
             }
             usort($depart_name, function($a, $b)
             {
@@ -43,7 +43,7 @@ class admin_agents_controller extends CI_Controller {
             });
 
             $data = array(
-                'agent' => $this->db->query("SELECT * FROM ost_staff_test INNER JOIN ost_department_test ON ost_staff_test.dept_id = ost_department_test.id"),
+                'agent' => $this->db->query("SELECT * FROM ost_staff_test INNER JOIN ost_department_test ON ost_staff_test.dept_guid = ost_department_test.department_guid"),
                 'department' => $depart_name,
                 'role' => $this->db->query("SELECT * FROM ost_role_test"),
                 'max_page_size' => $this->db->query("SELECT value FROM ost_config_test WHERE id = '21'")->row('value'),
@@ -88,7 +88,7 @@ class admin_agents_controller extends CI_Controller {
 
             $this->db->query("UPDATE ost_staff_test
                             SET isactive = '$status'
-                            WHERE staff_id = '$value'");
+                            WHERE staff_guid = '$value'");
         }
 
             echo "<script> alert('Status of agent/s changed');</script>";
@@ -98,8 +98,8 @@ class admin_agents_controller extends CI_Controller {
         elseif ($status == 2) {
             foreach ($tids as $value) {
 
-            $this->db->query("DELETE FROM ost_staff_test WHERE staff_id='$value' ");;
-            $this->db->query("DELETE FROM ost_staff_dept_access_test WHERE staff_id='$value' ");
+            $this->db->query("DELETE FROM ost_staff_test WHERE staff_guid='$value' ");;
+            $this->db->query("DELETE FROM ost_staff_dept_access_test WHERE staff_guid='$value' ");
 
             
         }
@@ -115,7 +115,7 @@ class admin_agents_controller extends CI_Controller {
                             permissions = '$perms'
 
                                 
-                            WHERE staff_id = '$value' ;");
+                            WHERE staff_guid = '$value' ;");
 
             
         }
@@ -130,14 +130,14 @@ class admin_agents_controller extends CI_Controller {
 
                     {
                 
-                $staffdept = $this->db->query("SELECT dept_id FROM ost_staff_test WHERE staff_id = '$value' ")->row('dept_id');
-                $roledept = $this->db->query("SELECT role_id FROM ost_staff_test WHERE staff_id = '$value' ")->row('role_id');
+                $staffdept = $this->db->query("SELECT dept_guid FROM ost_staff_test WHERE staff_guid = '$value' ")->row('dept_guid');
+                $roledept = $this->db->query("SELECT role_guid FROM ost_staff_test WHERE staff_guid = '$value' ")->row('role_guid');
 
-                $this->db->query("DELETE FROM ost_staff_dept_access_test WHERE staff_id='$value' AND dept_id = '$dept_id' ");
+                $this->db->query("DELETE FROM ost_staff_dept_access_test WHERE staff_guid='$value' AND dept_guid = '$dept_guid' ");
 
-                $this->db->query("UPDATE ost_staff_test SET dept_id = '$dept_id', role_id = '$role_id' WHERE staff_id = '$value';");
+                $this->db->query("UPDATE ost_staff_test SET dept_guid = '$dept_guid', role_guid = '$role_guid' WHERE staff_guid = '$value';");
 
-                $this->db->query("INSERT INTO ost_staff_dept_access_test (staff_id, dept_id, role_id) VALUES 
+                $this->db->query("INSERT INTO ost_staff_dept_access_test (staff_guid, dept_guid, role_guid) VALUES 
                     ('$value', '$staffdept', '$roledept') ");
 
                     }
@@ -153,10 +153,10 @@ class admin_agents_controller extends CI_Controller {
                 $this->db->query("UPDATE ost_staff_test
 
                             SET 
-                            dept_id = '$dept_id', 
-                            role_id = '$role_id'
+                            dept_guid = '$dept_guid', 
+                            role_guid = '$role_guid'
                                 
-                            WHERE staff_id = '$value' ;");
+                            WHERE staff_guid = '$value' ;");
 
             
                     }
@@ -175,20 +175,20 @@ class admin_agents_controller extends CI_Controller {
     {      
         if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
         {
-            $deparment_info = $this->db->query("SELECT id FROM ost_department_test");
+            $deparment_info = $this->db->query("SELECT department_guid FROM ost_department_test");
             foreach ($deparment_info->result() as $depart_info)
             {
-                $depart_child = $this->db->query("SELECT name, pid FROM ost_department_test WHERE id = '".$depart_info->id."'");
+                $depart_child = $this->db->query("SELECT name, pid FROM ost_department_test WHERE department_guid = '".$depart_info->department_guid."'");
                 $concat = $depart_child->row('name');
                 while (!empty($depart_child->row('pid')))
                 {       
-                    $depart_main = $this->db->query("SELECT name, pid FROM ost_department_test WHERE id = '".$depart_child->row('pid')."'");
+                    $depart_main = $this->db->query("SELECT name, pid FROM ost_department_test WHERE department_guid = '".$depart_child->row('pid')."'");
                     $concat = $depart_main->row('name').' / '.$concat;
 
                     $depart_child = $depart_main;
                 }
 
-                $depart_name[] = array('depart_name' => $concat, 'depart_id' => $depart_info->id);
+                $depart_name[] = array('depart_name' => $concat, 'depart_id' => $depart_info->department_guid);
             }
             usort($depart_name, function($a, $b)
             {
@@ -198,7 +198,7 @@ class admin_agents_controller extends CI_Controller {
             $data = array(
 
                 'department' => $depart_name,
-                'department_email' => $this->db->query("SELECT email_id, email FROM ost_email_test"),
+                'department_email' => $this->db->query("SELECT email_guid, email FROM ost_email_test"),
                 'role' => $this->db->query("SELECT * FROM ost_role_test"),
                 'role1' => $this->db->query("SELECT * FROM ost_role_test"),
                 'role2' => $this->db->query("SELECT * FROM ost_role_test"),
@@ -250,10 +250,10 @@ class admin_agents_controller extends CI_Controller {
         $assigned_only = $this->input->post('assigned_only');
         $onvacation = $this->input->post('onvacation');
         $notes = $this->input->post('notes');
-        $dept_id = $this->input->post('dept_id');
-        $role_id = $this->input->post('role_id');
-        $ext_role_id = $this->input->post('ext_role_id[]');
-        $ext_dept_id = $this->input->post('ext_dept_id[]');
+        $dept_guid = $this->input->post('dept_guid');
+        $role_guid = $this->input->post('role_guid');
+        $ext_role_guid = $this->input->post('ext_role_guid[]');
+        $ext_dept_guid = $this->input->post('ext_dept_guid[]');
         $dept_access_alerts = $this->input->post('dept_access_alerts[]');
         $perms = $this->input->post('perms[]');
         $perms = implode(", ", $perms);
@@ -264,7 +264,7 @@ class admin_agents_controller extends CI_Controller {
 
         $team = $this->input->post('teams[]');
 
-        array_shift($ext_role_id);
+        array_shift($ext_role_guid);
 
         $emailcheck = $this->db->query("SELECT * FROM ost_staff_test WHERE email = '$email' ");
         $namecheck = $this->db->query("SELECT * FROM ost_staff_test WHERE username = '$username' ");
@@ -288,7 +288,7 @@ class admin_agents_controller extends CI_Controller {
                 </script>";
         }
 
-        else if (isset($ext_dept_id) && in_array($dept_id, $ext_dept_id)){
+        else if (isset($ext_dept_guid) && in_array($dept_guid, $ext_dept_guid)){
 
                  echo "<script> alert('Extended department cannot be the same with primary department');</script>";
 
@@ -300,7 +300,7 @@ class admin_agents_controller extends CI_Controller {
             
         }
 
-        else if ($role_id == '0') {
+        else if ($role_guid == '0') {
 
             echo "<script> alert('Primary Department role cannot leave blank');</script>";
 
@@ -309,7 +309,7 @@ class admin_agents_controller extends CI_Controller {
 
         }
 
-         else if (in_array(0, $ext_role_id)) {
+         else if (in_array(0, $ext_role_guid)) {
 
             echo "<script> alert('Extended Department role cannot leave blank');</script>";
 
@@ -325,19 +325,19 @@ class admin_agents_controller extends CI_Controller {
             $token = bin2hex(openssl_random_pseudo_bytes(16));
 
             $this->db->query("INSERT INTO 
-            ost_staff_test (firstname, lastname, email, phone, phone_ext, mobile, username, isactive, isadmin, assigned_only, change_passwd, onvacation, notes, dept_id, role_id, user_created, permissions, token, token_expire, updated, passwdreset)
+            ost_staff_test (staff_guid, firstname, lastname, email, phone, phone_ext, mobile, username, isactive, isadmin, assigned_only, change_passwd, onvacation, notes, dept_guid, role_guid, user_created, permissions, token, token_expire, updated, passwdreset)
             VALUES 
-            ('$firstname', '$lastname', '$email', '$phone', '$phone_ext', '$mobile', '$username', '$islocked', '$isadmin', '$assigned_only', '$change_passwd', '$onvacation', '$notes','$dept_id', '$role_id', NOW(), '$perms', '$token', '$expiretime', NOW(), '$expiry_date')");
+            (REPLACE(UPPER(UUID()),'-',''), '$firstname', '$lastname', '$email', '$phone', '$phone_ext', '$mobile', '$username', '$islocked', '$isadmin', '$assigned_only', '$change_passwd', '$onvacation', '$notes','$dept_guid', '$role_guid', NOW(), '$perms', '$token', '$expiretime', NOW(), '$expiry_date')");
 
             $result = $this->db->query("SELECT * FROM ost_staff_test WHERE email = '$email'");
 
             $data = array(
-                'body' => $this->db->query("SELECT REPLACE(REPLACE(REPLACE(body, '%firstname%', '".$result->row('firstname')."'), '%token%', '$token'), '%staff_id%', '".$result->row('staff_id')."') AS email, name FROM ost_content_test WHERE type = 'pwreset-staff'"),
+                'body' => $this->db->query("SELECT REPLACE(REPLACE(REPLACE(body, '%firstname%', '".$result->row('firstname')."'), '%token%', '$token'), '%staff_guid%', '".$result->row('staff_guid')."') AS email, name FROM ost_content_test WHERE type = 'pwreset-staff'"),
                 'template' => $this->db->query("SELECT * FROM ost_company_test"),
             );
 
             $default_email = $this->db->query("SELECT value FROM ost_config_test WHERE id='83'")->row('value');
-            $sender_email = $this->db->query("SELECT * FROM ost_email_test WHERE email_id='$default_email'")->row();
+            $sender_email = $this->db->query("SELECT * FROM ost_email_test WHERE email_guid='$default_email'")->row();
 
             $config = array(
                 
@@ -358,24 +358,24 @@ class admin_agents_controller extends CI_Controller {
                 ->message($bodyContent)
                 ->send();
 
-            $staff_id = $this->db->query("SELECT staff_id FROM ost_staff_test WHERE user_created = NOW()")->row('staff_id');
+            $staff_guid = $this->db->query("SELECT staff_guid FROM ost_staff_test WHERE user_created = NOW()")->row('staff_guid');
 
             if (isset($team))
             {
                 foreach ($team as $value) {
                     $this->db->query("INSERT INTO 
-                    ost_team_member_test (team_id, staff_id)
+                    ost_team_member_test (team_guid, staff_guid)
                     VALUES 
-                    ('$value', '$staff_id') ");
+                    ('$value', '$staff_guid') ");
                 }
             }
 
-            foreach ( $ext_role_id as $index => $ext_role_id1 ) 
+            foreach ( $ext_role_guid as $index => $ext_role_guid1 ) 
             {
                 $this->db->query("INSERT INTO 
-                ost_staff_dept_access_test (staff_id, dept_id, role_id)
+                ost_staff_dept_access_test (staff_guid, dept_guid, role_guid)
                 VALUES 
-                ('$staff_id', '$ext_dept_id[$index]', '$ext_role_id1') ");
+                ('$staff_guid', '$ext_dept_guid[$index]', '$ext_role_guid1') ");
             }
 
             echo "<script> alert('Successfully add agents');</script>";
@@ -395,30 +395,30 @@ class admin_agents_controller extends CI_Controller {
 
         else {
             $this->db->query("INSERT INTO 
-            ost_staff_test (firstname, lastname, passwd,  email, phone, phone_ext, mobile, username, isactive, isadmin, assigned_only, change_passwd, onvacation, notes, dept_id, role_id, permissions, user_created, updated, passwdreset)
+            ost_staff_test (staff_guid, firstname, lastname, passwd,  email, phone, phone_ext, mobile, username, isactive, isadmin, assigned_only, change_passwd, onvacation, notes, dept_guid, role_guid, permissions, user_created, updated, passwdreset)
             VALUES 
-            ('$firstname', '$lastname', '$password2', '$email', '$phone', '$phone_ext', '$mobile', '$username', '$islocked', '$isadmin', '$assigned_only', '$change_passwd', '$onvacation', '$notes','$dept_id', '$role_id', '$perms', NOW(), NOW(), '$expiry_date')");
+            (REPLACE(UPPER(UUID()),'-',''), '$firstname', '$lastname', '$password2', '$email', '$phone', '$phone_ext', '$mobile', '$username', '$islocked', '$isadmin', '$assigned_only', '$change_passwd', '$onvacation', '$notes','$dept_guid', '$role_guid', '$perms', NOW(), NOW(), '$expiry_date')");
 
-            $staff_id = $this->db->query("SELECT staff_id FROM ost_staff_test WHERE user_created = NOW()")->row('staff_id');
+            $staff_guid = $this->db->query("SELECT staff_guid FROM ost_staff_test WHERE user_created = NOW()")->row('staff_guid');
 
 
             if ($team != '') {
                 foreach ($team as $value) {
                     $this->db->query("INSERT INTO 
-                    ost_team_member_test (team_id, staff_id)
+                    ost_team_member_test (team_guid, staff_guid)
                     VALUES 
-                    ('$value', '$staff_id') ");
+                    ('$value', '$staff_guid') ");
                 }
             }
                 
-            foreach ( $ext_role_id as $index => $ext_role_id1 ) 
+            foreach ( $ext_role_guid as $index => $ext_role_guid1 ) 
 
             {
             
                 $this->db->query("INSERT INTO 
-                ost_staff_dept_access_test (staff_id, dept_id, role_id)
+                ost_staff_dept_access_test (staff_guid, dept_guid, role_guid)
                 VALUES 
-                ('$staff_id', '$ext_dept_id[$index]', '$ext_role_id1') ");
+                ('$staff_guid', '$ext_dept_guid[$index]', '$ext_role_guid1') ");
 
             }
 
@@ -434,20 +434,20 @@ class admin_agents_controller extends CI_Controller {
     {      
         if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
         {   
-            $deparment_info = $this->db->query("SELECT id FROM ost_department_test");
+            $deparment_info = $this->db->query("SELECT department_guid FROM ost_department_test");
             foreach ($deparment_info->result() as $depart_info)
             {
-                $depart_child = $this->db->query("SELECT name, pid FROM ost_department_test WHERE id = '".$depart_info->id."'");
+                $depart_child = $this->db->query("SELECT name, pid FROM ost_department_test WHERE department_guid = '".$depart_info->department_guid."'");
                 $concat = $depart_child->row('name');
                 while (!empty($depart_child->row('pid')))
                 {       
-                    $depart_main = $this->db->query("SELECT name, pid FROM ost_department_test WHERE id = '".$depart_child->row('pid')."'");
+                    $depart_main = $this->db->query("SELECT name, pid FROM ost_department_test WHERE department_guid = '".$depart_child->row('pid')."'");
                     $concat = $depart_main->row('name').' / '.$concat;
 
                     $depart_child = $depart_main;
                 }
 
-                $depart_name[] = array('depart_name' => $concat, 'depart_id' => $depart_info->id);
+                $depart_name[] = array('depart_name' => $concat, 'depart_id' => $depart_info->department_guid);
             }
             usort($depart_name, function($a, $b)
             {
@@ -458,23 +458,23 @@ class admin_agents_controller extends CI_Controller {
             $data = array(
 
                 'department' => $depart_name,
-                'department_email' => $this->db->query("SELECT email_id, email FROM ost_email_test"),
+                'department_email' => $this->db->query("SELECT email_guid, email FROM ost_email_test"),
                 'role' => $this->db->query("SELECT * FROM ost_role_test"),
                 'team' => $this->db->query("SELECT * FROM ost_team_test"),
-                'team1' => $this->db->query("SELECT * FROM ost_team_test WHERE team_id NOT IN (SELECT ost_team_test.team_id FROM ost_team_test INNER JOIN ost_team_member_test ON ost_team_test.team_id = ost_team_member_test.team_id WHERE staff_id = '$staffid')"),
-                'staffinfo' => $this->db->query("SELECT * FROM ost_staff_test WHERE staff_id = '$staffid' ")->row(),
-                'staffpermissions' => $this->db->query("SELECT * FROM ost_staff_permissions_test WHERE staff_id = '$staffid' ")->row(),
-                'staffextdept' => $this->db->query("SELECT * FROM ost_staff_dept_access_test INNER JOIN ost_department_test ON ost_staff_dept_access_test.dept_id = ost_department_test.id WHERE staff_id = '$staffid' "),
-                'staffteam' => $this->db->query("SELECT * FROM ost_team_member_test INNER JOIN ost_team_test ON ost_team_member_test.team_id = ost_team_test.team_id WHERE staff_id = '$staffid' "),
-                'adduserallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_id = ' $staffid' AND permissions LIKE '%user.add%'")->num_rows(),
-                'edituserallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_id = ' $staffid' AND permissions LIKE '%user.edit%'")->num_rows(),
-                'deleteuserallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_id = ' $staffid' AND permissions LIKE '%user.delete%'")->num_rows(),
-                'activeallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_id = ' $staffid' AND permissions LIKE '%user.manage%'")->num_rows(),
-                'dirallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_id = ' $staffid' AND permissions LIKE '%user.dir%'")->num_rows(),
-                'addorgallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_id = ' $staffid' AND permissions LIKE '%org.create%'")->num_rows(),
-                'editorgallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_id = ' $staffid' AND permissions LIKE '%org.edit%'")->num_rows(),
-                'deleteorgallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_id = ' $staffid' AND permissions LIKE '%org.delete%'")->num_rows(),
-                'managefaqallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_id = ' $staffid' AND permissions LIKE '%faq.manage%'")->num_rows(),
+                'team1' => $this->db->query("SELECT * FROM ost_team_test WHERE team_guid NOT IN (SELECT ost_team_test.team_guid FROM ost_team_test INNER JOIN ost_team_member_test ON ost_team_test.team_guid = ost_team_member_test.team_guid WHERE staff_guid = '$staffid')"),
+                'staffinfo' => $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = '$staffid' ")->row(),
+                'staffpermissions' => $this->db->query("SELECT * FROM ost_staff_permissions_test WHERE staff_guid = '$staffid' ")->row(),
+                'staffextdept' => $this->db->query("SELECT * FROM ost_staff_dept_access_test INNER JOIN ost_department_test ON ost_staff_dept_access_test.dept_guid = ost_department_test.department_guid WHERE staff_guid = '$staffid' "),
+                'staffteam' => $this->db->query("SELECT * FROM ost_team_member_test INNER JOIN ost_team_test ON ost_team_member_test.team_guid = ost_team_test.team_guid WHERE staff_guid = '$staffid' "),
+                'adduserallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = ' $staffid' AND permissions LIKE '%user.add%'")->num_rows(),
+                'edituserallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = ' $staffid' AND permissions LIKE '%user.edit%'")->num_rows(),
+                'deleteuserallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = ' $staffid' AND permissions LIKE '%user.delete%'")->num_rows(),
+                'activeallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = ' $staffid' AND permissions LIKE '%user.manage%'")->num_rows(),
+                'dirallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = ' $staffid' AND permissions LIKE '%user.dir%'")->num_rows(),
+                'addorgallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = ' $staffid' AND permissions LIKE '%org.create%'")->num_rows(),
+                'editorgallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = ' $staffid' AND permissions LIKE '%org.edit%'")->num_rows(),
+                'deleteorgallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = ' $staffid' AND permissions LIKE '%org.delete%'")->num_rows(),
+                'managefaqallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = ' $staffid' AND permissions LIKE '%faq.manage%'")->num_rows(),
 
             );
         $browser_id = $_SERVER["HTTP_USER_AGENT"];
@@ -521,19 +521,19 @@ class admin_agents_controller extends CI_Controller {
         $assigned_only = $this->input->post('assigned_only');
         $onvacation = $this->input->post('onvacation');
         $notes = $this->input->post('notes');
-        $dept_id = $this->input->post('dept_id');
-        $role_id = $this->input->post('role_id');
-        $ext_role_id = $this->input->post('ext_role_id[]');
-        $ext_dept_id = $this->input->post('ext_dept_id[]');
+        $dept_guid = $this->input->post('dept_guid');
+        $role_guid = $this->input->post('role_guid');
+        $ext_role_guid = $this->input->post('ext_role_guid[]');
+        $ext_dept_guid = $this->input->post('ext_dept_guid[]');
         $dept_access_alerts = $this->input->post('dept_access_alerts[]');
         $perms = !empty($this->input->post('perms[]'))?"".implode(", ", $this->input->post('perms[]'))."":"";
         $team = $this->input->post('teams[]');
         $staffid = $_REQUEST['id'];
 
-        array_shift($ext_role_id);
+        array_shift($ext_role_guid);
 
-        $emailcheck = $this->db->query("SELECT * FROM ost_staff_test WHERE email = '$email' AND staff_id != '$staffid' ");
-        $namecheck = $this->db->query("SELECT * FROM ost_staff_test WHERE username = '$username' AND staff_id != '$staffid' ");
+        $emailcheck = $this->db->query("SELECT * FROM ost_staff_test WHERE email = '$email' AND staff_guid != '$staffid' ");
+        $namecheck = $this->db->query("SELECT * FROM ost_staff_test WHERE username = '$username' AND staff_guid != '$staffid' ");
 
         if ($emailcheck->num_rows() != 0){
 
@@ -551,7 +551,7 @@ class admin_agents_controller extends CI_Controller {
 
         }        
 
-        else if (isset($ext_dept_id) && in_array($dept_id, $ext_dept_id))
+        else if (isset($ext_dept_guid) && in_array($dept_guid, $ext_dept_guid))
         {
 
             echo "<script> alert('Extended department cannot be the same with primary department');</script>";
@@ -559,7 +559,7 @@ class admin_agents_controller extends CI_Controller {
             echo "<script> document.location='" . base_url() . "/index.php/admin_agents_controller/agents_agents_info?id=$staffid' </script>";
         }
 
-        else if (in_array(0, $ext_role_id)) {
+        else if (in_array(0, $ext_role_guid)) {
 
             echo "<script> alert('Extended Department role cannot leave blank');</script>";
 
@@ -567,7 +567,7 @@ class admin_agents_controller extends CI_Controller {
 
         }
 
-        else if ($role_id == '0') {
+        else if ($role_guid == '0') {
 
             echo "<script> alert('Primary Department role cannot leave blank');</script>";
 
@@ -596,23 +596,23 @@ class admin_agents_controller extends CI_Controller {
                 assigned_only = '$assigned_only', 
                 onvacation = '$onvacation', 
                 notes = '$notes', 
-                dept_id = '$dept_id', 
-                role_id = '$role_id', 
+                dept_guid = '$dept_guid', 
+                role_guid = '$role_guid', 
                 permissions =  '$perms',
                 token = '$token',
                 token_expire = '$expiretime',
                 updated = NOW()
-            WHERE staff_id = '$staffid';");
+            WHERE staff_guid = '$staffid';");
 
         $result = $this->db->query("SELECT * FROM ost_staff_test WHERE email = '$email'");
 
         $data = array(
-            'body' => $this->db->query("SELECT REPLACE(REPLACE(REPLACE(body, '%firstname%', '".$result->row('firstname')."'), '%token%', '$token'), '%staff_id%', '".$result->row('staff_id')."') AS email, name FROM ost_content_test WHERE type = 'pwreset-staff'"),
+            'body' => $this->db->query("SELECT REPLACE(REPLACE(REPLACE(body, '%firstname%', '".$result->row('firstname')."'), '%token%', '$token'), '%staff_guid%', '".$result->row('staff_guid')."') AS email, name FROM ost_content_test WHERE type = 'pwreset-staff'"),
             'template' => $this->db->query("SELECT * FROM ost_company_test"),
         );
 
         $default_email = $this->db->query("SELECT value FROM ost_config_test WHERE id='83'")->row('value');
-        $sender_email = $this->db->query("SELECT * FROM ost_email_test WHERE email_id='$default_email'")->row();
+        $sender_email = $this->db->query("SELECT * FROM ost_email_test WHERE email_guid='$default_email'")->row();
 
         $config = array(
             
@@ -633,27 +633,27 @@ class admin_agents_controller extends CI_Controller {
             ->message($bodyContent)
             ->send();
 
-        $this->db->query("DELETE FROM ost_team_member_test WHERE staff_id='$staffid' ");
+        $this->db->query("DELETE FROM ost_team_member_test WHERE staff_guid='$staffid' ");
 
         if (isset($team))
         {
             foreach ($team as $value) {
                 $this->db->query("INSERT INTO 
-                ost_team_member_test (team_id, staff_id)
+                ost_team_member_test (team_guid, staff_guid)
                 VALUES 
                 ('$value', '$staffid') ");
             }
         }
 
-        $this->db->query("DELETE FROM ost_staff_dept_access_test WHERE staff_id='$staffid' ");
-        foreach ( $ext_role_id as $index => $ext_role_id1 ) 
+        $this->db->query("DELETE FROM ost_staff_dept_access_test WHERE staff_guid='$staffid' ");
+        foreach ( $ext_role_guid as $index => $ext_role_guid1 ) 
 
             {
 
                 $this->db->query("INSERT INTO 
-                ost_staff_dept_access_test (staff_id, dept_id, role_id)
+                ost_staff_dept_access_test (staff_guid, dept_guid, role_guid)
                 VALUES 
-                ('$staffid', '$ext_dept_id[$index]', '$ext_role_id1') ");
+                ('$staffid', '$ext_dept_guid[$index]', '$ext_role_guid1') ");
 
             }
 
@@ -688,32 +688,32 @@ class admin_agents_controller extends CI_Controller {
                 onvacation = '$onvacation', 
                 change_passwd ='$change_passwd',
                 notes = '$notes', 
-                dept_id = '$dept_id', 
-                role_id = '$role_id', 
+                dept_guid = '$dept_guid', 
+                role_guid = '$role_guid', 
                 permissions =  '$perms',
                 updated = NOW()
-                WHERE staff_id = '$staffid';");
+                WHERE staff_guid = '$staffid';");
 
-            $this->db->query("DELETE FROM ost_team_member_test WHERE staff_id='$staffid' ");
+            $this->db->query("DELETE FROM ost_team_member_test WHERE staff_guid='$staffid' ");
 
             if ($team != '') {
                 foreach ($team as $value) {
                 $this->db->query("INSERT INTO 
-                ost_team_member_test (team_id, staff_id)
+                ost_team_member_test (team_guid, staff_guid)
                 VALUES 
                 ('$value', '$staffid') ");
             }
             }
 
-            $this->db->query("DELETE FROM ost_staff_dept_access_test WHERE staff_id='$staffid' ");
-            foreach ( $ext_role_id as $index => $ext_role_id1 ) 
+            $this->db->query("DELETE FROM ost_staff_dept_access_test WHERE staff_guid='$staffid' ");
+            foreach ( $ext_role_guid as $index => $ext_role_guid1 ) 
 
             {
 
                 $this->db->query("INSERT INTO 
-                ost_staff_dept_access_test (staff_id, dept_id, role_id)
+                ost_staff_dept_access_test (staff_guid, dept_guid, role_guid)
                 VALUES 
-                ('$staffid', '$ext_dept_id[$index]', '$ext_role_id1') ");
+                ('$staffid', '$ext_dept_guid[$index]', '$ext_role_guid1') ");
 
             }
 
@@ -739,34 +739,34 @@ class admin_agents_controller extends CI_Controller {
                 onvacation = '$onvacation', 
                 change_passwd ='$change_passwd',
                 notes = '$notes', 
-                dept_id = '$dept_id', 
-                role_id = '$role_id', 
+                dept_guid = '$dept_guid', 
+                role_guid = '$role_guid', 
                 permissions =  '$perms',
                 updated = NOW()
-                WHERE staff_id = '$staffid';");
+                WHERE staff_guid = '$staffid';");
 
 
-            $this->db->query("DELETE FROM ost_team_member_test WHERE staff_id='$staffid' ");
+            $this->db->query("DELETE FROM ost_team_member_test WHERE staff_guid='$staffid' ");
 
             if ($team != '') {
                 foreach ($team as $value) {
                 $this->db->query("INSERT INTO 
-                ost_team_member_test (team_id, staff_id)
+                ost_team_member_test (team_guid, staff_guid)
                 VALUES 
                 ('$value', '$staffid') ");
             }
             }
 
-            $this->db->query("DELETE FROM ost_staff_dept_access_test WHERE staff_id='$staffid' ");
-        foreach ( $ext_role_id as $index => $ext_role_id1 ) 
+            $this->db->query("DELETE FROM ost_staff_dept_access_test WHERE staff_guid='$staffid' ");
+        foreach ( $ext_role_guid as $index => $ext_role_guid1 ) 
 
             {
 
             
                 $this->db->query("INSERT INTO 
-                ost_staff_dept_access_test (staff_id, dept_id, role_id)
+                ost_staff_dept_access_test (staff_guid, dept_guid, role_guid)
                 VALUES 
-                ('$staffid', '$ext_dept_id[$index]', '$ext_role_id1') ");
+                ('$staffid', '$ext_dept_guid[$index]', '$ext_role_guid1') ");
                 
             }
 
@@ -784,7 +784,7 @@ class admin_agents_controller extends CI_Controller {
         {   
             $data = array(
 
-                'team' => $this->db->query("SELECT * FROM ost_team_test left JOIN ost_staff_test ON ost_team_test.lead_id = ost_staff_test.staff_id"),
+                'team' => $this->db->query("SELECT * FROM ost_team_test left JOIN ost_staff_test ON ost_team_test.lead_guid = ost_staff_test.staff_guid"),
                 'max_page_size' => $this->db->query("SELECT value FROM ost_config_test WHERE id = '21'")->row('value'),
 
             );
@@ -825,7 +825,7 @@ class admin_agents_controller extends CI_Controller {
 
             $this->db->query("UPDATE ost_team_test
                             SET flags = '$status'
-                            WHERE team_id = '$value'");
+                            WHERE team_guid = '$value'");
         }
 
             echo "<script> alert('Status of Team changed');</script>";
@@ -835,7 +835,7 @@ class admin_agents_controller extends CI_Controller {
         elseif ($status == 2) {
             foreach ($check as $value) {
 
-            $this->db->query("DELETE FROM ost_team_test WHERE team_id='$value' ");
+            $this->db->query("DELETE FROM ost_team_test WHERE team_guid='$value' ");
 
             
         }
@@ -887,7 +887,7 @@ class admin_agents_controller extends CI_Controller {
     {  
         $name = $this->input->post('name');
         $isenabled = $this->input->post('isenabled');
-        $lead_id = $this->input->post('lead_id');
+        $lead_guid = $this->input->post('lead_guid');
         $notes = $this->input->post('notes');
         $members = $this->input->post('members[]');
 
@@ -904,21 +904,21 @@ class admin_agents_controller extends CI_Controller {
 
         else {
 
-        if ($lead_id != '0') {
+        if ($lead_guid != '0') {
 
             $this->db->query("INSERT INTO ost_team_test 
-            (name, flags, lead_id, notes, created, updated)
-            VALUES ('$name', '$isenabled', '$lead_id', '$notes', NOW(), NOW() )");
+            (team_guid, name, flags, lead_guid, notes, created, updated)
+            VALUES (REPLACE(UPPER(UUID()),'-',''), '$name', '$isenabled', '$lead_guid', '$notes', NOW(), NOW() )");
 
-        $team_id = $this->db->query("SELECT team_id FROM ost_team_test WHERE created = NOW()")->row('team_id');
+        $team_guid = $this->db->query("SELECT team_guid FROM ost_team_test WHERE created = NOW()")->row('team_guid');
 
         if ($members != ""){
 
         foreach ($members as $value) {
                 $this->db->query("INSERT INTO 
-                ost_team_member_test (team_id, staff_id)
+                ost_team_member_test (team_guid, staff_guid)
                 VALUES 
-                ('$team_id', '$value') ");
+                ('$team_guid', '$value') ");
             }
 
         }
@@ -930,18 +930,18 @@ class admin_agents_controller extends CI_Controller {
         else {
 
             $this->db->query("INSERT INTO ost_team_test 
-            (name, flags, notes, created, updated)
-            VALUES ('$name', '$isenabled', '$notes', NOW(), NOW() )");
+            (team_guid, name, flags, notes, created, updated)
+            VALUES (REPLACE(UPPER(UUID()),'-',''), '$name', '$isenabled', '$notes', NOW(), NOW() )");
 
-        $team_id = $this->db->query("SELECT team_id FROM ost_team_test WHERE created = NOW()")->row('team_id');
+        $team_guid = $this->db->query("SELECT team_guid FROM ost_team_test WHERE created = NOW()")->row('team_guid');
 
         if ($members != ""){
 
         foreach ($members as $value) {
                 $this->db->query("INSERT INTO 
-                ost_team_member_test (team_id, staff_id)
+                ost_team_member_test (team_guid, staff_guid)
                 VALUES 
-                ('$team_id', '$value') ");
+                ('$team_guid', '$value') ");
             }
 
         }
@@ -960,16 +960,16 @@ class admin_agents_controller extends CI_Controller {
         {   $teamid = $_REQUEST['id'];
             $data = array(
 
-                'team' => $this->db->query("SELECT * FROM ost_team_test WHERE team_id ='$teamid' ")->row(),
+                'team' => $this->db->query("SELECT * FROM ost_team_test WHERE team_guid ='$teamid' ")->row(),
 
-                'notteammember' => $this->db->query("SELECT * FROM ost_staff_test WHERE ost_staff_test.staff_id NOT IN (SELECT ost_staff_test.staff_id FROM ost_staff_test INNER JOIN ost_team_member_test ON ost_staff_test.staff_id = ost_team_member_test.staff_id WHERE team_id = '$teamid')"),
+                'notteammember' => $this->db->query("SELECT * FROM ost_staff_test WHERE ost_staff_test.staff_guid NOT IN (SELECT ost_staff_test.staff_guid FROM ost_staff_test INNER JOIN ost_team_member_test ON ost_staff_test.staff_guid = ost_team_member_test.staff_guid WHERE team_guid = '$teamid')"),
 
                 'staff' => $this->db->query("SELECT * FROM ost_staff_test"),
 
-                'teammember' => $this->db->query("SELECT * FROM ost_team_member_test INNER JOIN ost_staff_test ON ost_team_member_test.staff_id = ost_staff_test.staff_id WHERE team_id ='$teamid' "),
+                'teammember' => $this->db->query("SELECT * FROM ost_team_member_test INNER JOIN ost_staff_test ON ost_team_member_test.staff_guid = ost_staff_test.staff_guid WHERE team_guid ='$teamid' "),
 
 
-                'lead' => $this->db->query("SELECT * FROM ost_staff_test right JOIN ost_team_test ON ost_staff_test.staff_id = ost_team_test.lead_id WHERE team_id ='$teamid' ")->row(),
+                'lead' => $this->db->query("SELECT * FROM ost_staff_test right JOIN ost_team_test ON ost_staff_test.staff_guid = ost_team_test.lead_guid WHERE team_guid ='$teamid' ")->row(),
 
             );
         $browser_id = $_SERVER["HTTP_USER_AGENT"];
@@ -1001,14 +1001,14 @@ class admin_agents_controller extends CI_Controller {
     {  
         $name = $this->input->post('name');
         $isenabled = $this->input->post('isenabled');
-        $lead_id = $this->input->post('lead_id');
+        $lead_guid = $this->input->post('lead_guid');
         $notes = $this->input->post('notes');
         $members = $this->input->post('members[]');
         $teamid = $_REQUEST['id'];
 
 
 
-        $namecheck = $this->db->query("SELECT * FROM ost_team_test WHERE name = '$name' AND team_id !='$teamid' ");
+        $namecheck = $this->db->query("SELECT * FROM ost_team_test WHERE name = '$name' AND team_guid !='$teamid' ");
 
         if ($namecheck->num_rows() != 0){
 
@@ -1021,24 +1021,24 @@ class admin_agents_controller extends CI_Controller {
 
         else {
 
-        if ($lead_id != '0') {
+        if ($lead_guid != '0') {
 
             $this->db->query("UPDATE ost_team_test SET 
             name = '$name', 
             flags = '$isenabled',
-            lead_id = '$lead_id', 
+            lead_guid = '$lead_guid', 
             notes = '$notes',
             updated = NOW()
-            WHERE team_id = '$teamid' ;");
+            WHERE team_guid = '$teamid' ;");
 
 
-        $this->db->query("DELETE FROM ost_team_member_test WHERE team_id='$teamid' ");
+        $this->db->query("DELETE FROM ost_team_member_test WHERE team_guid='$teamid' ");
 
         if ($members != ""){
 
         foreach ($members as $value) {
                 $this->db->query("INSERT INTO 
-                ost_team_member_test (team_id, staff_id)
+                ost_team_member_test (team_guid, staff_guid)
                 VALUES 
                 ('$teamid', '$value') ");
             }
@@ -1054,18 +1054,18 @@ class admin_agents_controller extends CI_Controller {
             $this->db->query("UPDATE ost_team_test SET 
             name = '$name', 
             flags = '$isenabled',
-            lead_id = '$lead_id',
+            lead_guid = '$lead_guid',
             notes = '$notes',
             updated = NOW()
-            WHERE team_id = '$teamid' ;");
+            WHERE team_guid = '$teamid' ;");
 
-       $this->db->query("DELETE FROM ost_team_member_test WHERE team_id='$teamid' ");
+       $this->db->query("DELETE FROM ost_team_member_test WHERE team_guid='$teamid' ");
 
         if ($members != ""){
 
         foreach ($members as $value) {
                 $this->db->query("INSERT INTO 
-                ost_team_member_test (team_id, staff_id)
+                ost_team_member_test (team_guid, staff_guid)
                 VALUES 
                 ('$teamid', '$value') ");
             }
@@ -1127,7 +1127,7 @@ class admin_agents_controller extends CI_Controller {
 
             $this->db->query("UPDATE ost_role_test
                             SET flags = '$status'
-                            WHERE id = '$value'");
+                            WHERE role_guid = '$value'");
         }
 
             echo "<script> alert('Status of role/s changed');</script>";
@@ -1137,7 +1137,7 @@ class admin_agents_controller extends CI_Controller {
         elseif ($status == 2) {
             foreach ($check as $value) {
 
-            $this->db->query("DELETE FROM ost_role_test WHERE id='$value' ");
+            $this->db->query("DELETE FROM ost_role_test WHERE role_guid='$value' ");
 
             
         }
@@ -1213,8 +1213,8 @@ class admin_agents_controller extends CI_Controller {
 
 
         $this->db->query("INSERT INTO ost_role_test 
-            (name, permissions, notes, created, updated)
-            VALUES ('$name', '$perms', '$notes', NOW(), NOW() )");
+            (role_guid, name, permissions, notes, created, updated)
+            VALUES (REPLACE(UPPER(UUID()),'-',''), '$name', '$perms', '$notes', NOW(), NOW() )");
 
         echo "<script> alert('Role added');</script>";
         echo "<script> document.location='" . base_url() . "/index.php/admin_agents_controller/agents_roles' </script>";
@@ -1231,39 +1231,39 @@ class admin_agents_controller extends CI_Controller {
             $roleid = $_REQUEST['id'];
             $data = array(
 
-                'role' => $this->db->query("SELECT * FROM ost_role_test WHERE id = '$roleid' ")->row(),
+                'role' => $this->db->query("SELECT * FROM ost_role_test WHERE role_guid = '$roleid' ")->row(),
 
-                'addticketallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE id = ' $roleid' AND permissions LIKE '%ticket.create%'")->num_rows(),
+                'addticketallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE role_guid = ' $roleid' AND permissions LIKE '%ticket.create%'")->num_rows(),
 
-                'editticketallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE id = ' $roleid' AND permissions LIKE '%ticket.edit%'")->num_rows(),
+                'editticketallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE role_guid = ' $roleid' AND permissions LIKE '%ticket.edit%'")->num_rows(),
 
-                'asgticketallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE id = ' $roleid' AND permissions LIKE '%ticket.assign%'")->num_rows(),
+                'asgticketallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE role_guid = ' $roleid' AND permissions LIKE '%ticket.assign%'")->num_rows(),
 
-                'transticketallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE id = ' $roleid' AND permissions LIKE '%ticket.transfer%'")->num_rows(),
+                'transticketallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE role_guid = ' $roleid' AND permissions LIKE '%ticket.transfer%'")->num_rows(),
 
-                'replyticketallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE id = ' $roleid' AND permissions LIKE '%ticket.reply%'")->num_rows(),
+                'replyticketallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE role_guid = ' $roleid' AND permissions LIKE '%ticket.reply%'")->num_rows(),
 
-                'closeticketallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE id = ' $roleid' AND permissions LIKE '%ticket.close%'")->num_rows(),
+                'closeticketallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE role_guid = ' $roleid' AND permissions LIKE '%ticket.close%'")->num_rows(),
 
-                'deleteticketallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE id = ' $roleid' AND permissions LIKE '%ticket.delete%'")->num_rows(),
+                'deleteticketallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE role_guid = ' $roleid' AND permissions LIKE '%ticket.delete%'")->num_rows(),
 
-                'editthreadallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE id = ' $roleid' AND permissions LIKE '%thread.edit%'")->num_rows(),
+                'editthreadallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE role_guid = ' $roleid' AND permissions LIKE '%thread.edit%'")->num_rows(),
 
-                'addtaskallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE id = ' $roleid' AND permissions LIKE '%task.create%'")->num_rows(),
+                'addtaskallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE role_guid = ' $roleid' AND permissions LIKE '%task.create%'")->num_rows(),
 
-                'edittaskallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE id = ' $roleid' AND permissions LIKE '%task.edit%'")->num_rows(),
+                'edittaskallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE role_guid = ' $roleid' AND permissions LIKE '%task.edit%'")->num_rows(),
 
-                'asgtaskallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE id = ' $roleid' AND permissions LIKE '%task.assign%'")->num_rows(),
+                'asgtaskallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE role_guid = ' $roleid' AND permissions LIKE '%task.assign%'")->num_rows(),
 
-                'transtaskallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE id = ' $roleid' AND permissions LIKE '%task.transfer%'")->num_rows(),
+                'transtaskallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE role_guid = ' $roleid' AND permissions LIKE '%task.transfer%'")->num_rows(),
 
-                'replytaskallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE id = ' $roleid' AND permissions LIKE '%task.reply%'")->num_rows(),
+                'replytaskallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE role_guid = ' $roleid' AND permissions LIKE '%task.reply%'")->num_rows(),
 
-                'closetaskallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE id = ' $roleid' AND permissions LIKE '%task.close%'")->num_rows(),
+                'closetaskallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE role_guid = ' $roleid' AND permissions LIKE '%task.close%'")->num_rows(),
 
-                'deletetaskallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE id = ' $roleid' AND permissions LIKE '%ticket.delete%'")->num_rows(),
+                'deletetaskallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE role_guid = ' $roleid' AND permissions LIKE '%ticket.delete%'")->num_rows(),
 
-                'managecannedallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE id = ' $roleid' AND permissions LIKE '%canned.manage%'")->num_rows(),
+                'managecannedallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE role_guid = ' $roleid' AND permissions LIKE '%canned.manage%'")->num_rows(),
 
             );
         $browser_id = $_SERVER["HTTP_USER_AGENT"];
@@ -1300,7 +1300,7 @@ class admin_agents_controller extends CI_Controller {
         $roleid = $_REQUEST['id'];
         
 
-        $namecheck = $this->db->query("SELECT * FROM ost_role_test WHERE name = '$name' AND id != '$roleid' ");
+        $namecheck = $this->db->query("SELECT * FROM ost_role_test WHERE name = '$name' AND role_guid != '$roleid' ");
 
         if ($namecheck->num_rows() != 0){
 
@@ -1318,7 +1318,7 @@ class admin_agents_controller extends CI_Controller {
                             notes = '$notes',
                             permissions = '$perms',
                             updated = NOW()
-                            WHERE id = '$roleid'");
+                            WHERE role_guid = '$roleid'");
 
 
         echo "<script> alert('Role edited');</script>";
@@ -1332,20 +1332,20 @@ class admin_agents_controller extends CI_Controller {
     {      
         if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
         {
-            $deparment_info = $this->db->query("SELECT id FROM ost_department_test");
+            $deparment_info = $this->db->query("SELECT department_guid FROM ost_department_test");
             foreach ($deparment_info->result() as $depart_info)
             {
-                $depart_child = $this->db->query("SELECT name, pid FROM ost_department_test WHERE id = '".$depart_info->id."'");
+                $depart_child = $this->db->query("SELECT name, pid FROM ost_department_test WHERE department_guid = '".$depart_info->department_guid."'");
                 $concat = $depart_child->row('name');
                 while (!empty($depart_child->row('pid')))
                 {       
-                    $depart_main = $this->db->query("SELECT name, pid FROM ost_department_test WHERE id = '".$depart_child->row('pid')."'");
+                    $depart_main = $this->db->query("SELECT name, pid FROM ost_department_test WHERE department_guid = '".$depart_child->row('pid')."'");
                     $concat = $depart_main->row('name').' / '.$concat;
 
                     $depart_child = $depart_main;
                 }
 
-                $depart_name[] = array('depart_name' => $concat, 'depart_id' => $depart_info->id);
+                $depart_name[] = array('depart_name' => $concat, 'depart_id' => $depart_info->department_guid);
             }
             usort($depart_name, function($a, $b)
             {
@@ -1354,7 +1354,7 @@ class admin_agents_controller extends CI_Controller {
 
             $data = array(
 
-                'department' => $this->db->query("SELECT a.ispublic, a.manager_id, a.id, a.name, b.email, b.email_id, b.name AS emailname, c.firstname, c.lastname,c.staff_id  FROM ost_department_test AS a LEFT JOIN ost_email_test AS b ON a.email_id = b.email_id LEFT JOIN ost_staff_test AS c ON a.manager_id = c.staff_id"),
+                'department' => $this->db->query("SELECT a.ispublic, a.manager_guid, a.department_guid, a.name, b.email, b.email_guid, b.name AS emailname, c.firstname, c.lastname,c.staff_guid  FROM ost_department_test AS a LEFT JOIN ost_email_test AS b ON a.email_guid = b.email_guid LEFT JOIN ost_staff_test AS c ON a.manager_guid = c.staff_guid"),
                 'depart_name' => $depart_name,
                 'max_page_size' => $this->db->query("SELECT value FROM ost_config_test WHERE id = '21'")->row('value'),
 
@@ -1396,7 +1396,7 @@ class admin_agents_controller extends CI_Controller {
 
             $this->db->query("UPDATE ost_department_test
                             SET ispublic = '$status'
-                            WHERE id = '$value'");
+                            WHERE department_guid = '$value'");
         }
 
             echo "<script> alert('Status of department(s) changed');</script>";
@@ -1406,7 +1406,7 @@ class admin_agents_controller extends CI_Controller {
         elseif ($status == 2) {
             foreach ($check as $value) {
 
-            $this->db->query("DELETE FROM ost_department_test WHERE id='$value' ");
+            $this->db->query("DELETE FROM ost_department_test WHERE department_guid='$value' ");
 
             
         }
@@ -1424,20 +1424,20 @@ class admin_agents_controller extends CI_Controller {
     {      
         if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
         {   
-            $deparment_info = $this->db->query("SELECT id FROM ost_department_test");
+            $deparment_info = $this->db->query("SELECT department_guid FROM ost_department_test");
             foreach ($deparment_info->result() as $depart_info)
             {
-                $depart_child = $this->db->query("SELECT name, pid FROM ost_department_test WHERE id = '".$depart_info->id."'");
+                $depart_child = $this->db->query("SELECT name, pid FROM ost_department_test WHERE department_guid = '".$depart_info->department_guid."'");
                 $concat = $depart_child->row('name');
                 while (!empty($depart_child->row('pid')))
                 {       
-                    $depart_main = $this->db->query("SELECT name, pid FROM ost_department_test WHERE id = '".$depart_child->row('pid')."'");
+                    $depart_main = $this->db->query("SELECT name, pid FROM ost_department_test WHERE department_guid = '".$depart_child->row('pid')."'");
                     $concat = $depart_main->row('name').' / '.$concat;
 
                     $depart_child = $depart_main;
                 }
 
-                $depart_name[] = array('depart_name' => $concat, 'depart_id' => $depart_info->id);
+                $depart_name[] = array('depart_name' => $concat, 'depart_id' => $depart_info->department_guid);
             }
             usort($depart_name, function($a, $b)
             {
@@ -1484,32 +1484,33 @@ class admin_agents_controller extends CI_Controller {
         $pid = $this->input->post('pid');
         $name = $this->input->post('name');
         $ispublic = $this->input->post('ispublic');
-        $sla_id = $this->input->post('sla_id');
-        $manager_id = $this->input->post('manager_id');
+        $sla_guid = $this->input->post('sla_guid');
+        $manager_guid = $this->input->post('manager_guid');
         $assign_members_only = $this->input->post('assign_members_only');
         $disable_auto_claim = $this->input->post('disable_auto_claim');
-        $email_id = $this->input->post('email_id');
-        $tpl_id = $this->input->post('tpl_id');
+        $email_guid = $this->input->post('email_guid');
+        $tpl_guid = $this->input->post('tpl_guid');
         $ticket_auto_response = $this->input->post('ticket_auto_response');
         $message_auto_response = $this->input->post('message_auto_response');
-        $autoresp_email_id = $this->input->post('autoresp_email_id');
+        $autoresp_email_guid = $this->input->post('autoresp_email_guid');
         $group_membership = $this->input->post('group_membership');
         $deptsignature = $this->input->post('deptsignature');
         $members = $this->input->post('members[]');
         $member_role = $this->input->post('member_role[]');
 
-        $parentname = $this->db->query("SELECT name from ost_department_test WHERE id = '$pid' ")->row('name');
+        $parentname = $this->db->query("SELECT name from ost_department_test WHERE department_guid = '$pid' ")->row('name');
 
         if ($assign_members_only == 0 && $disable_auto_claim == 0) {
 
         if ($pid == '') {
-            $this->db->query("INSERT INTO ost_department_test (name, ispublic, sla_id, manager_id, flags, email_id, tpl_id, ticket_auto_response, message_auto_response, autoresp_email_id, group_membership, signature, created, updated )
-            VALUES ('$name', '$ispublic', '$sla_id', '$manager_id', '0', '$email_id', '$tpl_id', '$ticket_auto_response', '$message_auto_response', '$autoresp_email_id', '$group_membership', '$deptsignature',NOW(), NOW() )");
+            $department_guid = $this->db->query("SELECT REPLACE(UPPER(UUID()),'-','') AS guid")->row('guid');
+            $this->db->query("INSERT INTO ost_department_test (department_guid, name, ispublic, sla_guid, manager_guid, flags, email_guid, tpl_guid, ticket_auto_response, message_auto_response, autoresp_email_guid, group_membership, signature, created, updated )
+            VALUES ('$department_guid', '$name', '$ispublic', '$sla_guid', '$manager_guid', '0', '$email_guid', '$tpl_guid', '$ticket_auto_response', '$message_auto_response', '$autoresp_email_guid', '$group_membership', '$deptsignature',NOW(), NOW() )");
 
         } else if ($pid != '') {
 
-            $this->db->query("INSERT INTO ost_department_test (pid, name, ispublic, sla_id, manager_id, flags, email_id, tpl_id, ticket_auto_response, message_auto_response, autoresp_email_id, group_membership, signature, created, updated )
-            VALUES ('$pid', '$parentname / $name', '$ispublic', '$sla_id', '$manager_id', '0', '$email_id', '$tpl_id', '$ticket_auto_response', '$message_auto_response', '$autoresp_email_id', '$group_membership', '$deptsignature',NOW(), NOW() )");
+            $this->db->query("INSERT INTO ost_department_test (pid, name, ispublic, sla_guid, manager_guid, flags, email_guid, tpl_guid, ticket_auto_response, message_auto_response, autoresp_email_guid, group_membership, signature, created, updated )
+            VALUES ('$pid', '$parentname / $name', '$ispublic', '$sla_guid', '$manager_guid', '0', '$email_guid', '$tpl_guid', '$ticket_auto_response', '$message_auto_response', '$autoresp_email_guid', '$group_membership', '$deptsignature',NOW(), NOW() )");
         }
             
         }
@@ -1517,13 +1518,14 @@ class admin_agents_controller extends CI_Controller {
         else if ($assign_members_only == 1 && $disable_auto_claim == 0) {
 
         if ($pid == '') {
-            $this->db->query("INSERT INTO ost_department_test (name, ispublic, sla_id, manager_id, flags, email_id, tpl_id, ticket_auto_response, message_auto_response, autoresp_email_id, group_membership, signature, created, updated )
-            VALUES ('$name', '$ispublic', '$sla_id', '$manager_id', '1', '$email_id', '$tpl_id', '$ticket_auto_response', '$message_auto_response', '$autoresp_email_id', '$group_membership', '$deptsignature',NOW(), NOW() )");
+            $department_guid = $this->db->query("SELECT REPLACE(UPPER(UUID()),'-','') AS guid")->row('guid');
+            $this->db->query("INSERT INTO ost_department_test (department_guid, name, ispublic, sla_guid, manager_guid, flags, email_guid, tpl_guid, ticket_auto_response, message_auto_response, autoresp_email_guid, group_membership, signature, created, updated )
+            VALUES ('$department_guid', '$name', '$ispublic', '$sla_guid', '$manager_guid', '1', '$email_guid', '$tpl_guid', '$ticket_auto_response', '$message_auto_response', '$autoresp_email_guid', '$group_membership', '$deptsignature',NOW(), NOW() )");
 
         } else if ($pid != '') {
 
-            $this->db->query("INSERT INTO ost_department_test (pid, name, ispublic, sla_id, manager_id, flags, email_id, tpl_id, ticket_auto_response, message_auto_response, autoresp_email_id, group_membership, signature, created, updated )
-            VALUES ('$pid', '$parentname / $name', '$ispublic', '$sla_id', '$manager_id', '1', '$email_id', '$tpl_id', '$ticket_auto_response', '$message_auto_response', '$autoresp_email_id', '$group_membership', '$deptsignature',NOW(), NOW() )");
+            $this->db->query("INSERT INTO ost_department_test (pid, name, ispublic, sla_guid, manager_guid, flags, email_guid, tpl_guid, ticket_auto_response, message_auto_response, autoresp_email_guid, group_membership, signature, created, updated )
+            VALUES ('$pid', '$parentname / $name', '$ispublic', '$sla_guid', '$manager_guid', '1', '$email_guid', '$tpl_guid', '$ticket_auto_response', '$message_auto_response', '$autoresp_email_guid', '$group_membership', '$deptsignature',NOW(), NOW() )");
         }
             
         }
@@ -1531,13 +1533,14 @@ class admin_agents_controller extends CI_Controller {
         else if ($assign_members_only == 0 && $disable_auto_claim == 1) {
 
         if ($pid == '') {
-            $this->db->query("INSERT INTO ost_department_test (name, ispublic, sla_id, manager_id, flags, email_id, tpl_id, ticket_auto_response, message_auto_response, autoresp_email_id, group_membership, signature, created, updated )
-            VALUES ('$name', '$ispublic', '$sla_id', '$manager_id', '2', '$email_id', '$tpl_id', '$ticket_auto_response', '$message_auto_response', '$autoresp_email_id', '$group_membership', '$deptsignature',NOW(), NOW() )");
+            $department_guid = $this->db->query("SELECT REPLACE(UPPER(UUID()),'-','') AS guid")->row('guid');
+            $this->db->query("INSERT INTO ost_department_test (department_guid, name, ispublic, sla_guid, manager_guid, flags, email_guid, tpl_guid, ticket_auto_response, message_auto_response, autoresp_email_guid, group_membership, signature, created, updated )
+            VALUES ('$department_guid', '$name', '$ispublic', '$sla_guid', '$manager_guid', '2', '$email_guid', '$tpl_guid', '$ticket_auto_response', '$message_auto_response', '$autoresp_email_guid', '$group_membership', '$deptsignature',NOW(), NOW() )");
 
         } else if ($pid != '') {
 
-            $this->db->query("INSERT INTO ost_department_test (pid, name, ispublic, sla_id, manager_id, flags, email_id, tpl_id, ticket_auto_response, message_auto_response, autoresp_email_id, group_membership, signature, created, updated )
-            VALUES ('$pid', '$parentname / $name', '$ispublic', '$sla_id', '$manager_id', '2', '$email_id', '$tpl_id', '$ticket_auto_response', '$message_auto_response', '$autoresp_email_id', '$group_membership', '$deptsignature',NOW(), NOW() )");
+            $this->db->query("INSERT INTO ost_department_test (pid, name, ispublic, sla_guid, manager_guid, flags, email_guid, tpl_guid, ticket_auto_response, message_auto_response, autoresp_email_guid, group_membership, signature, created, updated )
+            VALUES ('$pid', '$parentname / $name', '$ispublic', '$sla_guid', '$manager_guid', '2', '$email_guid', '$tpl_guid', '$ticket_auto_response', '$message_auto_response', '$autoresp_email_guid', '$group_membership', '$deptsignature',NOW(), NOW() )");
         }
             
         }
@@ -1545,18 +1548,19 @@ class admin_agents_controller extends CI_Controller {
         else if ($assign_members_only == 1 && $disable_auto_claim == 1) {
 
         if ($pid == '') {
-            $this->db->query("INSERT INTO ost_department_test (name, ispublic, sla_id, manager_id, flags, email_id, tpl_id, ticket_auto_response, message_auto_response, autoresp_email_id, group_membership, signature, created, updated )
-            VALUES ('$name', '$ispublic', '$sla_id', '$manager_id', '3', '$email_id', '$tpl_id', '$ticket_auto_response', '$message_auto_response', '$autoresp_email_id', '$group_membership', '$deptsignature',NOW(), NOW() )");
+            $department_guid = $this->db->query("SELECT REPLACE(UPPER(UUID()),'-','') AS guid")->row('guid');
+            $this->db->query("INSERT INTO ost_department_test (department_guid, name, ispublic, sla_guid, manager_guid, flags, email_guid, tpl_guid, ticket_auto_response, message_auto_response, autoresp_email_guid, group_membership, signature, created, updated )
+            VALUES ('$department_guid', '$name', '$ispublic', '$sla_guid', '$manager_guid', '3', '$email_guid', '$tpl_guid', '$ticket_auto_response', '$message_auto_response', '$autoresp_email_guid', '$group_membership', '$deptsignature',NOW(), NOW() )");
 
         } else if ($pid != '') {
 
-            $this->db->query("INSERT INTO ost_department_test (pid, name, ispublic, sla_id, manager_id, flags, email_id, tpl_id, ticket_auto_response, message_auto_response, autoresp_email_id, group_membership, signature, created, updated )
-            VALUES ('$pid', '$parentname / $name', '$ispublic', '$sla_id', '$manager_id', '3', '$email_id', '$tpl_id', '$ticket_auto_response', '$message_auto_response', '$autoresp_email_id', '$group_membership', '$deptsignature',NOW(), NOW() )");
+            $this->db->query("INSERT INTO ost_department_test (pid, name, ispublic, sla_guid, manager_guid, flags, email_guid, tpl_guid, ticket_auto_response, message_auto_response, autoresp_email_guid, group_membership, signature, created, updated )
+            VALUES ('$pid', '$parentname / $name', '$ispublic', '$sla_guid', '$manager_guid', '3', '$email_guid', '$tpl_guid', '$ticket_auto_response', '$message_auto_response', '$autoresp_email_guid', '$group_membership', '$deptsignature',NOW(), NOW() )");
         }
             
         }
 
-        $dept_id = $this->db->query("SELECT id FROM ost_department_test WHERE created = NOW()")->row('id');
+        $dept_guid = $this->db->query("SELECT department_guid FROM ost_department_test WHERE created = NOW()")->row('department_guid');
 
         if ($members != ""){
 
@@ -1569,15 +1573,15 @@ class admin_agents_controller extends CI_Controller {
                 else{
 
                 $this->db->query("INSERT INTO 
-                ost_staff_dept_access_test (staff_id, dept_id, role_id)
+                ost_staff_dept_access_test (staff_guid, dept_guid, role_guid)
                 VALUES 
-                ('$members1', '$dept_id', '$member_role[$index]') ");
+                ('$members1', '$dept_guid', '$member_role[$index]') ");
                 }
             }              
         }
 
         echo "<script> alert('Department added.');</script>";
-        echo "<script> document.location='" . base_url() . "/index.php/admin_agents_controller/agents_departments_info?id=$dept_id' </script>";
+        echo "<script> document.location='" . base_url() . "/index.php/admin_agents_controller/agents_departments_info?id=$dept_guid' </script>";
 
     }
 
@@ -1585,21 +1589,21 @@ class admin_agents_controller extends CI_Controller {
     {      
         if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
         {   
-            $dept_id = $_REQUEST['id'];
-            $deparment_info = $this->db->query("SELECT id FROM ost_department_test");
+            $dept_guid = $_REQUEST['id'];
+            $deparment_info = $this->db->query("SELECT department_guid FROM ost_department_test");
             foreach ($deparment_info->result() as $depart_info)
             {
-                $depart_child = $this->db->query("SELECT name, pid FROM ost_department_test WHERE id = '".$depart_info->id."'");
+                $depart_child = $this->db->query("SELECT name, pid FROM ost_department_test WHERE department_guid = '".$depart_info->department_guid."'");
                 $concat = $depart_child->row('name');
                 while (!empty($depart_child->row('pid')))
                 {       
-                    $depart_main = $this->db->query("SELECT name, pid FROM ost_department_test WHERE id = '".$depart_child->row('pid')."'");
+                    $depart_main = $this->db->query("SELECT name, pid FROM ost_department_test WHERE department_guid = '".$depart_child->row('pid')."'");
                     $concat = $depart_main->row('name').' / '.$concat;
 
                     $depart_child = $depart_main;
                 }
 
-                $depart_name[] = array('depart_name' => $concat, 'depart_id' => $depart_info->id);
+                $depart_name[] = array('depart_name' => $concat, 'depart_id' => $depart_info->department_guid);
             }
             usort($depart_name, function($a, $b)
             {
@@ -1608,15 +1612,15 @@ class admin_agents_controller extends CI_Controller {
 
             $data = array(
                 'department' => $depart_name,
-                'departmentinfo' => $this->db->query("SELECT * FROM ost_department_test WHERE id = '$dept_id' ")->row(),
+                'departmentinfo' => $this->db->query("SELECT * FROM ost_department_test WHERE department_guid = '$dept_guid' ")->row(),
                 'sla' => $this->db->query("SELECT * FROM ost_sla_test"),
                 'staff' => $this->db->query("SELECT * FROM ost_staff_test"),
                 'email' => $this->db->query("SELECT * FROM ost_email_test"),
                 'emailtemplate' => $this->db->query("SELECT * FROM ost_email_template_group"),
                 'roles' => $this->db->query("SELECT * FROM ost_role_test"),
-                'primarymember' => $this->db->query("SELECT * FROM ost_staff_test WHERE dept_id = '$dept_id' "),
-                'extendedmember' => $this->db->query("SELECT a.staff_id, a.role_id, b.firstname, b.lastname  FROM ost_staff_dept_access_test as a INNER JOIN ost_staff_test as b ON a.staff_id = b.staff_id WHERE a.dept_id = '$dept_id' "),
-                'staff1' => $this->db->query("SELECT * FROM ost_staff_test WHERE staff_id NOT IN (SELECT a.staff_id FROM ost_staff_dept_access_test as a INNER JOIN ost_staff_test as b ON a.staff_id = b.staff_id WHERE a.dept_id = '$dept_id' )"),
+                'primarymember' => $this->db->query("SELECT * FROM ost_staff_test WHERE dept_guid = '$dept_guid' "),
+                'extendedmember' => $this->db->query("SELECT a.staff_guid, a.role_guid, b.firstname, b.lastname  FROM ost_staff_dept_access_test as a INNER JOIN ost_staff_test as b ON a.staff_guid = b.staff_guid WHERE a.dept_guid = '$dept_guid' "),
+                'staff1' => $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid NOT IN (SELECT a.staff_guid FROM ost_staff_dept_access_test as a INNER JOIN ost_staff_test as b ON a.staff_guid = b.staff_guid WHERE a.dept_guid = '$dept_guid' )"),
             );
         $browser_id = $_SERVER["HTTP_USER_AGENT"];
         if(strpos($browser_id,"Windows CE") || strpos($browser_id,"Windows NT 5.1") )
@@ -1649,15 +1653,15 @@ class admin_agents_controller extends CI_Controller {
         $pid = $this->input->post('pid');
         $name = $this->input->post('name');
         $ispublic = $this->input->post('ispublic');
-        $sla_id = $this->input->post('sla_id');
-        $manager_id = $this->input->post('manager_id');
+        $sla_guid = $this->input->post('sla_guid');
+        $manager_guid = $this->input->post('manager_guid');
         $assign_members_only = $this->input->post('assign_members_only');
         $disable_auto_claim = $this->input->post('disable_auto_claim');
-        $email_id = $this->input->post('email_id');
-        $tpl_id = $this->input->post('tpl_id');
+        $email_guid = $this->input->post('email_guid');
+        $tpl_guid = $this->input->post('tpl_guid');
         $ticket_auto_response = $this->input->post('ticket_auto_response');
         $message_auto_response = $this->input->post('message_auto_response');
-        $autoresp_email_id = $this->input->post('autoresp_email_id');
+        $autoresp_email_guid = $this->input->post('autoresp_email_guid');
         $group_membership = $this->input->post('group_membership');
         $deptsignature = $this->input->post('deptsignature');
         $members = $this->input->post('members[]');
@@ -1665,7 +1669,7 @@ class admin_agents_controller extends CI_Controller {
 
         $primary_members = $this->input->post('primary_members[]');
         $primary_role = $this->input->post('primary_role[]');
-        $dept_id = $_REQUEST['id'];
+        $dept_guid = $_REQUEST['id'];
 
 
         if ($ticket_auto_response == '') {
@@ -1679,7 +1683,7 @@ class admin_agents_controller extends CI_Controller {
             
         }
 
-        $parentname = $this->db->query("SELECT name from ost_department_test WHERE id = '$pid' ")->row('name');
+        $parentname = $this->db->query("SELECT name from ost_department_test WHERE department_guid = '$pid' ")->row('name');
 
  
         if ($assign_members_only == 0 && $disable_auto_claim == 0) {
@@ -1690,19 +1694,19 @@ class admin_agents_controller extends CI_Controller {
                 pid = NULL,
                 name = '$name', 
                 ispublic = '$ispublic',
-                sla_id = '$sla_id', 
-                manager_id = '$manager_id',
+                sla_guid = '$sla_guid', 
+                manager_guid = '$manager_guid',
                 flags = '0', 
-                email_id = '$email_id',
-                tpl_id = '$tpl_id', 
+                email_guid = '$email_guid',
+                tpl_guid = '$tpl_guid', 
                 ticket_auto_response = '$ticket_auto_response',
                 message_auto_response = '$message_auto_response', 
-                autoresp_email_id = '$autoresp_email_id',
+                autoresp_email_guid = '$autoresp_email_guid',
                 group_membership = '$group_membership', 
                 signature = '$deptsignature',
                 updated = NOW()
 
-                WHERE id = '$dept_id' ;");
+                WHERE department_guid = '$dept_guid' ;");
 
 
 
@@ -1713,19 +1717,19 @@ class admin_agents_controller extends CI_Controller {
                 pid = '$pid', 
                 name = '$parentname / $name', 
                 ispublic = '$ispublic',
-                sla_id = '$sla_id', 
-                manager_id = '$manager_id',
+                sla_guid = '$sla_guid', 
+                manager_guid = '$manager_guid',
                 flags = '0', 
-                email_id = '$email_id',
-                tpl_id = '$tpl_id', 
+                email_guid = '$email_guid',
+                tpl_guid = '$tpl_guid', 
                 ticket_auto_response = '$ticket_auto_response',
                 message_auto_response = '$message_auto_response', 
-                autoresp_email_id = '$autoresp_email_id',
+                autoresp_email_guid = '$autoresp_email_guid',
                 group_membership = '$group_membership', 
                 signature = '$deptsignature',
                 updated = NOW()
 
-                WHERE id = '$dept_id' ;");
+                WHERE department_guid = '$dept_guid' ;");
         }
             
 
@@ -1740,19 +1744,19 @@ class admin_agents_controller extends CI_Controller {
                 pid = NULL,
                 name = '$name', 
                 ispublic = '$ispublic',
-                sla_id = '$sla_id', 
-                manager_id = '$manager_id',
+                sla_guid = '$sla_guid', 
+                manager_guid = '$manager_guid',
                 flags = '1', 
-                email_id = '$email_id',
-                tpl_id = '$tpl_id', 
+                email_guid = '$email_guid',
+                tpl_guid = '$tpl_guid', 
                 ticket_auto_response = '$ticket_auto_response',
                 message_auto_response = '$message_auto_response', 
-                autoresp_email_id = '$autoresp_email_id',
+                autoresp_email_guid = '$autoresp_email_guid',
                 group_membership = '$group_membership', 
                 signature = '$deptsignature',
                 updated = NOW()
 
-                WHERE id = '$dept_id' ;");
+                WHERE department_guid = '$dept_guid' ;");
 
 
 
@@ -1763,19 +1767,19 @@ class admin_agents_controller extends CI_Controller {
                 pid = '$pid', 
                 name = '$parentname / $name', 
                 ispublic = '$ispublic',
-                sla_id = '$sla_id', 
-                manager_id = '$manager_id',
+                sla_guid = '$sla_guid', 
+                manager_guid = '$manager_guid',
                 flags = '1', 
-                email_id = '$email_id',
-                tpl_id = '$tpl_id', 
+                email_guid = '$email_guid',
+                tpl_guid = '$tpl_guid', 
                 ticket_auto_response = '$ticket_auto_response',
                 message_auto_response = '$message_auto_response', 
-                autoresp_email_id = '$autoresp_email_id',
+                autoresp_email_guid = '$autoresp_email_guid',
                 group_membership = '$group_membership', 
                 signature = '$deptsignature',
                 updated = NOW()
 
-                WHERE id = '$dept_id' ;");
+                WHERE department_guid = '$dept_guid' ;");
         }
             
 
@@ -1789,19 +1793,19 @@ class admin_agents_controller extends CI_Controller {
                 pid = NULL,
                 name = '$name', 
                 ispublic = '$ispublic',
-                sla_id = '$sla_id', 
-                manager_id = '$manager_id',
+                sla_guid = '$sla_guid', 
+                manager_guid = '$manager_guid',
                 flags = '2', 
-                email_id = '$email_id',
-                tpl_id = '$tpl_id', 
+                email_guid = '$email_guid',
+                tpl_guid = '$tpl_guid', 
                 ticket_auto_response = '$ticket_auto_response',
                 message_auto_response = '$message_auto_response', 
-                autoresp_email_id = '$autoresp_email_id',
+                autoresp_email_guid = '$autoresp_email_guid',
                 group_membership = '$group_membership', 
                 signature = '$deptsignature',
                 updated = NOW()
 
-                WHERE id = '$dept_id' ;");
+                WHERE department_guid = '$dept_guid' ;");
 
 
 
@@ -1812,19 +1816,19 @@ class admin_agents_controller extends CI_Controller {
                 pid = '$pid', 
                 name = '$parentname / $name', 
                 ispublic = '$ispublic',
-                sla_id = '$sla_id', 
-                manager_id = '$manager_id',
+                sla_guid = '$sla_guid', 
+                manager_guid = '$manager_guid',
                 flags = '2', 
-                email_id = '$email_id',
-                tpl_id = '$tpl_id', 
+                email_guid = '$email_guid',
+                tpl_guid = '$tpl_guid', 
                 ticket_auto_response = '$ticket_auto_response',
                 message_auto_response = '$message_auto_response', 
-                autoresp_email_id = '$autoresp_email_id',
+                autoresp_email_guid = '$autoresp_email_guid',
                 group_membership = '$group_membership', 
                 signature = '$deptsignature',
                 updated = NOW()
 
-                WHERE id = '$dept_id' ;");
+                WHERE department_guid = '$dept_guid' ;");
         }
             
 
@@ -1837,19 +1841,19 @@ class admin_agents_controller extends CI_Controller {
                 pid = NULL,
                 name = '$name', 
                 ispublic = '$ispublic',
-                sla_id = '$sla_id', 
-                manager_id = '$manager_id',
+                sla_guid = '$sla_guid', 
+                manager_guid = '$manager_guid',
                 flags = '3', 
-                email_id = '$email_id',
-                tpl_id = '$tpl_id', 
+                email_guid = '$email_guid',
+                tpl_guid = '$tpl_guid', 
                 ticket_auto_response = '$ticket_auto_response',
                 message_auto_response = '$message_auto_response', 
-                autoresp_email_id = '$autoresp_email_id',
+                autoresp_email_guid = '$autoresp_email_guid',
                 group_membership = '$group_membership', 
                 signature = '$deptsignature',
                 updated = NOW()
 
-                WHERE id = '$dept_id' ;");
+                WHERE department_guid = '$dept_guid' ;");
 
 
 
@@ -1860,25 +1864,25 @@ class admin_agents_controller extends CI_Controller {
                 pid = '$pid', 
                 name = '$parentname / $name', 
                 ispublic = '$ispublic',
-                sla_id = '$sla_id', 
-                manager_id = '$manager_id',
+                sla_guid = '$sla_guid', 
+                manager_guid = '$manager_guid',
                 flags = '3', 
-                email_id = '$email_id',
-                tpl_id = '$tpl_id', 
+                email_guid = '$email_guid',
+                tpl_guid = '$tpl_guid', 
                 ticket_auto_response = '$ticket_auto_response',
                 message_auto_response = '$message_auto_response', 
-                autoresp_email_id = '$autoresp_email_id',
+                autoresp_email_guid = '$autoresp_email_guid',
                 group_membership = '$group_membership', 
                 signature = '$deptsignature',
                 updated = NOW()
 
-                WHERE id = '$dept_id' ;");
+                WHERE department_guid = '$dept_guid' ;");
         }
             
 
         }
 
-                $this->db->query("DELETE FROM ost_staff_dept_access_test WHERE dept_id='$dept_id' ");
+                $this->db->query("DELETE FROM ost_staff_dept_access_test WHERE dept_guid='$dept_guid' ");
 
                 if ($members != ""){
 
@@ -1892,9 +1896,9 @@ class admin_agents_controller extends CI_Controller {
                 else{
 
                 $this->db->query("INSERT INTO 
-                ost_staff_dept_access_test (staff_id, dept_id, role_id)
+                ost_staff_dept_access_test (staff_guid, dept_guid, role_guid)
                 VALUES 
-                ('$members1', '$dept_id', '$member_role[$index]') ");
+                ('$members1', '$dept_guid', '$member_role[$index]') ");
                 }
 
                 }
@@ -1915,8 +1919,8 @@ class admin_agents_controller extends CI_Controller {
                 else{
 
                 $this->db->query("UPDATE ost_staff_test
-                        SET role_id = '$primary_role[$index]', updated = NOW()
-                        WHERE staff_id = '$primary_members1';");
+                        SET role_guid = '$primary_role[$index]', updated = NOW()
+                        WHERE staff_guid = '$primary_members1';");
                 }
 
                 }
@@ -1925,7 +1929,7 @@ class admin_agents_controller extends CI_Controller {
                 
 
                 echo "<script> alert('Department edited.');</script>";
-                echo "<script> document.location='" . base_url() . "/index.php/admin_agents_controller/agents_departments_info?id=$dept_id' </script>";
+                echo "<script> document.location='" . base_url() . "/index.php/admin_agents_controller/agents_departments_info?id=$dept_guid' </script>";
         
 
             

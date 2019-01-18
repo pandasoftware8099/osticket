@@ -75,7 +75,7 @@
             <select required="true" id="topic" name="topicId" class="form-control">
                     <option>— Select Help Topic —</option>
                 <?php foreach ($topic->result() as $reason) { ?>   
-                    <option value="<?php echo $reason->topic_id?>" <?php echo $reason->topic_id == $result->row('topic_id')?"selected":"";?>><?php echo $reason->topic?></option>
+                    <option value="<?php echo $reason->topic_guid?>" <?php echo $reason->topic_guid == $result->row('topic_guid')?"selected":"";?>><?php echo $reason->topic?></option>
                 <?php }?>
             </select>
             &nbsp;<font class="error">&nbsp;</font>
@@ -91,7 +91,7 @@
         <div class="col-lg-10">        
             <select class="form-control" name="subtopicId" id="sub" data-placeholder="Select" required>
             <?php foreach ($current_sub->result() as $ori_sub) { ?>
-                <option value = "<?php echo $ori_sub->id;?>" <?php echo $ori_sub->id == $result->row('subtopic_id')?"selected":"";?>><?php echo $ori_sub->value;?></option>
+                <option value = "<?php echo $ori_sub->list_item_guid;?>" <?php echo $ori_sub->list_item_guid == $result->row('subtopic_guid')?"selected":"";?>><?php echo $ori_sub->value;?></option>
             <?php } ?>
             </select>
             &nbsp;<font class="error">&nbsp;</font>
@@ -107,7 +107,7 @@
             <select name="slaId" class="form-control">
                 <option value="0">— None —</option>
                 <?php foreach ($sla->result() as $sla) { ?>   
-                    <option value="<?php echo $sla->id?>" <?php echo $this->db->query("SELECT * FROM ost_ticket_test WHERE ticket_id = '".$_REQUEST['id']."'")->row('sla_id') == "1"?"selected":""; ?>><?php echo $sla->sla_name?></option>
+                    <option value="<?php echo $sla->sla_guid?>" <?php echo $this->db->query("SELECT * FROM ost_ticket_test WHERE ticket_guid = '".$_REQUEST['id']."'")->row('sla_guid') == "1"?"selected":""; ?>><?php echo $sla->sla_name?></option>
                 <?php }?>
             </select>
             <font class="error">&nbsp;</font>
@@ -153,7 +153,7 @@
                 <select class="form-control" name="priorityId" id="_4ab802de58eca46e" data-placeholder="Select" required>
                     <option value="">— Select —</option>
                     <?php foreach ($status->result() as $priority) { ?> 
-                    <option value="<?php echo $priority->priority_id?>" <?php echo $this->db->query("SELECT * FROM ost_ticket_test WHERE ticket_id = '".$_REQUEST['id']."'")->row('priority_id') == "$priority->priority_id"?"selected":""; ?>><?php echo $priority->priority_desc?></option>
+                    <option value="<?php echo $priority->priority_guid?>" <?php echo $this->db->query("SELECT * FROM ost_ticket_test WHERE ticket_guid = '".$_REQUEST['id']."'")->row('priority_guid') == "$priority->priority_guid"?"selected":""; ?>><?php echo $priority->priority_desc?></option>
                     <?php }?>
                 </select>
             </div>            
@@ -381,7 +381,7 @@
                     <?php foreach ($user->result() as $uinfo) { ?>
                         <div><strong id="user-name"><?php echo $uinfo->user_name?></strong></div>
                         <div>&lt;<span id="user-email"><?php echo $uinfo->user_email?></span>&gt;</div>
-                        <div><span id="user-org"><?php echo $this->db->query("SELECT * FROM ost_user_test AS a INNER JOIN ost_organization_test AS b ON a.user_org_id = b.id WHERE user_id = '".$uinfo->user_id."'")->row('name')?></span></div>
+                        <div><span id="user-org"><?php echo $this->db->query("SELECT * FROM ost_user_test AS a INNER JOIN ost_organization_test AS b ON a.user_org_guid = b.organization_guid WHERE user_guid = '".$uinfo->user_guid."'")->row('name')?></span></div>
 
                     <table style="margin-top: 1em;">
                         <tbody>

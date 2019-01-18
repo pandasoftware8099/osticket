@@ -91,26 +91,26 @@
             <tr id="14">
               
               <td align="center" class="nohover">
-                <input class="ckb" type="checkbox" name="tids[]" value="<?php echo $value->ticket_id;?>"">
+                <input class="ckb" type="checkbox" name="tids[]" value="<?php echo $value->ticket_guid;?>"">
               </td>
               
               <td nowrap="">
-                <a class="Icon webTicket" title="<?php echo $value->user_email;?>" href="<?php echo site_url('staff_ticket_controller/ticketinfo');?>?id=<?php echo $value->ticket_id;?>"><?php echo $value->number;?></a>
+                <a class="Icon webTicket" title="<?php echo $value->user_email;?>" href="<?php echo site_url('staff_ticket_controller/ticketinfo');?>?id=<?php echo $value->ticket_guid;?>"><?php echo $value->number;?></a>
               </td>
               
               <td align="center" nowrap=""><?php echo $value->ticket_updated;?></td>
               
               <td>
-                 <a style="text-overflow: ellipsis;overflow: hidden;width: 300px;" title="<?php echo $value->user_email;?>" href="<?php echo site_url('staff_ticket_controller/ticketinfo');?>?id=<?php echo $value->ticket_id;?>"><?php echo $value->topic;?></a>
+                 <a style="text-overflow: ellipsis;overflow: hidden;width: 300px;" title="<?php echo $value->user_email;?>" href="<?php echo site_url('staff_ticket_controller/ticketinfo');?>?id=<?php echo $value->ticket_guid;?>"><?php echo $value->topic;?></a>
 
 
               <?php 
-                if ($this->db->query("SELECT COUNT(*) as total FROM ost_thread_entry_test WHERE ticket_id = '".$value->ticket_id."' AND type != 'E'")->row('total') != '0' && $this->db->query("SELECT COUNT(*) as total FROM ost_thread_entry_test WHERE ticket_id = '".$value->ticket_id."' AND type != 'E'")->row('total') != '1')
+                if ($this->db->query("SELECT COUNT(*) as total FROM ost_thread_entry_test WHERE ticket_guid = '".$value->ticket_guid."' AND type != 'E'")->row('total') != '0' && $this->db->query("SELECT COUNT(*) as total FROM ost_thread_entry_test WHERE ticket_guid = '".$value->ticket_guid."' AND type != 'E'")->row('total') != '1')
                 { ?>
 
                 <span class="pull-right faded-more">
                   <i class="icon-comments-alt"></i>
-                    <small><?php echo $this->db->query("SELECT COUNT(*) as total FROM ost_thread_entry_test WHERE ticket_id = '".$value->ticket_id."' AND type != 'E'")->row('total');?></small>
+                    <small><?php echo $this->db->query("SELECT COUNT(*) as total FROM ost_thread_entry_test WHERE ticket_guid = '".$value->ticket_guid."' AND type != 'E'")->row('total');?></small>
                 </span>
               <?php } ?>
               </td>
@@ -122,21 +122,21 @@
               
               <td nowrap=""><span class="truncate" style="max-width: 113px">
                 <?php 
-                if ($value->team_id == '0')
+                if ($value->team_guid == '0')
                 { ?>
                   <?php echo $this->db->query("SELECT firstname FROM ost_staff_test AS a
-                    INNER JOIN ost_ticket_test AS b ON b.assigned_to = a.staff_id
-                    WHERE b.ticket_id = '".$value->ticket_id."'")->row('firstname');?> 
+                    INNER JOIN ost_ticket_test AS b ON b.assigned_to = a.staff_guid
+                    WHERE b.ticket_guid = '".$value->ticket_guid."'")->row('firstname');?> 
                   <?php echo $this->db->query("SELECT lastname FROM ost_staff_test AS a
-                    INNER JOIN ost_ticket_test AS b ON b.assigned_to = a.staff_id
-                    WHERE b.ticket_id = '".$value->ticket_id."'")->row('lastname');?>
+                    INNER JOIN ost_ticket_test AS b ON b.assigned_to = a.staff_guid
+                    WHERE b.ticket_guid = '".$value->ticket_guid."'")->row('lastname');?>
                 <?php }
 
                 if ($value->assigned_to == '0')
                 { ?>
                   <?php echo $this->db->query("SELECT name FROM ost_team_test AS a
-                    INNER JOIN ost_ticket_test AS b ON b.team_id = a.team_id
-                    WHERE b.ticket_id = '".$value->ticket_id."'")->row('name');?>
+                    INNER JOIN ost_ticket_test AS b ON b.team_guid = a.team_guid
+                    WHERE b.ticket_guid = '".$value->ticket_guid."'")->row('name');?>
                 <?php } ?>
                 </span>
               </td>
@@ -173,10 +173,10 @@
                     <td colspan="2">
                         <span>
                           <strong>Status:&nbsp;</strong>
-                            <select name="status_id" id="status_id">
+                            <select name="status_guid" id="status_guid">
                               <option value="">— Select —</option>
                               <?php foreach ($status->result() as $status) { ?>
-                              <option value="<?php echo $status->id;?>"><?php echo $status->name;?></option>
+                              <option value="<?php echo $status->status_guid;?>"><?php echo $status->name;?></option>
                               <?php } ?> 
                             </select>
                             <font class="error">*&nbsp;</font>
@@ -245,12 +245,12 @@
                                           <option value="">— Select an Agent —</option>
                               <optgroup label="Agents (<?php echo $staff->num_rows() ?>)">
                               <?php foreach ($staff->result() as $staff) { ?>
-                              <option value="a<?php echo $staff->staff_id;?>"><?php echo $staff->firstname;?> <?php echo $staff->lastname;?></option>
+                              <option value="a<?php echo $staff->staff_guid;?>"><?php echo $staff->firstname;?> <?php echo $staff->lastname;?></option>
                               <?php } ?> 
                               </optgroup>    
                               <optgroup label="Team (<?php echo $team->num_rows() ?>)">         
                               <?php foreach ($team->result() as $team) { ?>
-                              <option value="t<?php echo $team->team_id;?>"><?php echo $team->name;?></option>
+                              <option value="t<?php echo $team->team_guid;?>"><?php echo $team->name;?></option>
                               <?php } ?> 
                               </optgroup>  
 
@@ -569,11 +569,11 @@ $(document).ready(function () {
         return false;
       }
 
-      $("#status_id").attr('required', true);
+      $("#status_guid").attr('required', true);
       $("#departmentid").attr('required', false);
       $("#assignto").attr('required', false);
       $("#deleteticket").attr('required', false);
-      $("#status_id").attr('name', 'status_id');
+      $("#status_guid").attr('name', 'status_guid');
       $("#departmentid").attr('name', true);
       $("#assignto").attr('name', true);
       $("#deleteticket").attr('name', true);
@@ -588,10 +588,10 @@ $(document).ready(function () {
         return false;
       }
 
-      $("#status_id").attr('required', false);
+      $("#status_guid").attr('required', false);
       $("#departmentid").attr('required', false);
       $("#departmentid").attr('name', true);
-      $("#status_id").attr('name', true);
+      $("#status_guid").attr('name', true);
       $("#assignto").attr('required', true);
       $("#assignto").attr('name', 'assignto');
       $("#deleteticket").attr('required', false);
@@ -608,11 +608,11 @@ $(document).ready(function () {
         return false;
       }
 
-      $("#status_id").attr('required', false);
+      $("#status_guid").attr('required', false);
       $("#assignto").attr('required', false);
       $("#departmentid").attr('required', true);
       $("#deleteticket").attr('required', false);
-      $("#status_id").attr('name', true);
+      $("#status_guid").attr('name', true);
       $("#departmentid").attr('name', 'departmentid');
       $("#assignto").attr('name', true);
       $("#deleteticket").attr('name', true);
@@ -627,11 +627,11 @@ $(document).ready(function () {
         return false;
       }
 
-      $("#status_id").attr('required', false);
+      $("#status_guid").attr('required', false);
       $("#assignto").attr('required', false);
       $("#departmentid").attr('required', false);
       $("#deleteticket").attr('required', true);
-      $("#status_id").attr('name', true);
+      $("#status_guid").attr('name', true);
       $("#departmentid").attr('name', true);
       $("#assignto").attr('name', true);
       $("#deleteticket").attr('name', 'deleteticket');

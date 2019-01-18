@@ -23,7 +23,7 @@
             <select required="true" id="type" name="topicId" class="form-control">
               <option>— Select Help Topic —</option>
               <?php foreach ($topic->result() as $reason) { ?>   
-              <option value="<?php echo $reason->topic_id?>"><?php echo $reason->topic?></option>
+              <option value="<?php echo $reason->topic_guid?>"><?php echo $reason->topic?></option>
               <?php }?>
             </select></div>
     </div>

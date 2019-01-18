@@ -59,10 +59,10 @@
       <?php foreach ($helptopic->result() as $value) { ?>
                 <tr>
                   <td align="center">
-                    <input type="checkbox" class="ckb" name="tids[]" value="<?php echo $value->topic_id;?>">
+                    <input type="checkbox" class="ckb" name="tids[]" value="<?php echo $value->topic_guid;?>">
                   </td>
                   <td>
-                  <a href="<?php echo site_url('admin_manage_controller/manage_helptopics_info');?>?id=<?php echo $value->topic_id;?>"><?php echo $value->topic;?></a>&nbsp;
+                  <a href="<?php echo site_url('admin_manage_controller/manage_helptopics_info');?>?id=<?php echo $value->topic_guid;?>"><?php echo $value->topic;?></a>&nbsp;
                   </td>
                   <td><?php if ($value->isactive == 1){ ?>
 
@@ -87,7 +87,7 @@
                         
                   </td>
                   
-                  <!-- <td><a href="<?php echo site_url('admin_manage_controller/agents_department_info');?>?id=<?php echo $value->dept_id;?>"><?php echo $value->name;?></a></td> -->
+                  <!-- <td><a href="<?php echo site_url('admin_manage_controller/agents_department_info');?>?id=<?php echo $value->dept_guid;?>"><?php echo $value->name;?></a></td> -->
                   <td><?php echo $value->updated;?></td>
                 </tr>
       <?php } ?>

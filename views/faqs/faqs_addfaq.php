@@ -22,11 +22,11 @@
             <div class="faded">FAQ category the question belongs to.</div>
         </label>
         <div class="col-lg-9">
-            <select name="category_id" class="form-control" required="true">
+            <select name="category_guid" class="form-control" required="true">
                 <option value="" selected="select">
                     --SELECT CATEGORY--</option>
                     <?php foreach ($faqcate->result() as $value1) { ?>
-                        <option value="<?php echo $value1->category_id;?>"><?php echo $value1->name;?></option>
+                        <option value="<?php echo $value1->category_guid;?>"><?php echo $value1->name;?></option>
                     <?php } ?>
                             </select>
             <div class="error"></div>

@@ -1,14 +1,14 @@
 <div id="content">
 <form class="form-horizontal"
-    <?php if (empty($pages->row('id'))) {?>
+    <?php if (empty($pages->row('content_guid'))) {?>
         action="<?php echo site_url('admin_manage_controller/manage_pages_addnew_process')?>"
     <?php }
     else {?>
-        action="<?php echo site_url('admin_manage_controller/manage_pages_update_process')?>?id=<?php echo $_REQUEST['id'];?>"
+        action="<?php echo site_url('admin_manage_controller/manage_pages_update_process')?>?id=<?php echo $_REQUEST['content_guid'];?>"
     <?php }?>
     method="post" class="save">
 
- <h2><?php if (empty($pages->row('id'))) {?>
+ <h2><?php if (empty($pages->row('content_guid'))) {?>
         Add New Page
      <?php }
      else {?>
@@ -22,7 +22,7 @@
     <div class="form-group" style="overflow:auto;">
         <label class="col-lg-2 control-label">Name <span class="error">*</span> :</label>
         <div class="col-lg-10">
-            <input type="text" size="40" name="name" class="form-control" value="<?php if (!empty($pages->row('id'))) {?> <?php echo $pages->row('name');?> <?php }?>" autofocus data-translate-tag=""/>
+            <input type="text" size="40" name="name" class="form-control" value="<?php if (!empty($pages->row('content_guid'))) {?> <?php echo $pages->row('name');?> <?php }?>" autofocus data-translate-tag=""/>
             &nbsp;<span class="error"></span>
         </div>
     </div>
@@ -66,7 +66,7 @@
     <div id="translations_container">
         <div id="translation-en_US" lang="en_US">
             <textarea required="true" name="content" class="textarea" style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;">
-                <?php if (!empty($pages->row('id'))) {?>
+                <?php if (!empty($pages->row('content_guid'))) {?>
                     <?php echo $pages->row('body');?>
                 <?php }?>
             </textarea>
@@ -85,7 +85,7 @@
         <em><strong>Internal Notes</strong>:
             Be liberal, they're internal</em>
             <textarea name="notes" class="textarea" style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;">
-                <?php if (!empty($pages->row('id'))) {?>
+                <?php if (!empty($pages->row('content_guid'))) {?>
                     <?php echo $pages->row('notes');?>
                 <?php }?>
             </textarea>
@@ -93,7 +93,7 @@
 </div>
 
 <p style="text-align:center">
-    <input type="submit" name="submit" value="<?php echo $pages->row('id') == ''?"Add Page":"Save Changes";?>">
+    <input type="submit" name="submit" value="<?php echo $pages->row('content_guid') == ''?"Add Page":"Save Changes";?>">
     <input type="reset"  name="reset"  value="Reset">
     <input type="button" name="cancel" value="Cancel" onclick='window.location.href="<?php echo site_url('admin_manage_controller/manage_pages')?>"'>
 </p>

@@ -50,10 +50,10 @@
     <div class="form-group">
         <label class="col-lg-2 control-label"><i class="help-tip icon-question-sign" href="#sla"></i> SLA :</label>
         <div class="col-lg-10">
-            <select name="sla_id" class="form-control">
+            <select name="sla_guid" class="form-control">
                 <option value="0">— System Default —</option>
                 <?php foreach ($sla->result() as $value) { ?>
-                    <option <?php echo ($value->id == $departmentinfo->sla_id )?"selected":""; ?> value="<?php echo $value->id?>"><?php echo $value->sla_name?></option>
+                    <option <?php echo ($value->sla_guid == $departmentinfo->sla_guid )?"selected":""; ?> value="<?php echo $value->sla_guid?>"><?php echo $value->sla_name?></option>
                 <?php } ?>              
             </select>
             &nbsp;<span class="error"></span>
@@ -62,9 +62,9 @@
     <div class="form-group">
         <label class="col-lg-2 control-label"><i class="help-tip icon-question-sign" href="#manager"></i> Manager :</label>
         <div class="col-lg-10">
-            <select name="manager_id" class="form-control">
+            <select name="manager_guid" class="form-control">
                 <?php foreach ($staff->result() as $value) { ?>
-                    <option <?php echo ($value->staff_id == $departmentinfo->manager_id )?"selected":""; ?> value="<?php echo $value->staff_id?>"><?php echo $value->firstname?> <?php echo $value->lastname?></option>
+                    <option <?php echo ($value->staff_guid == $departmentinfo->manager_guid )?"selected":""; ?> value="<?php echo $value->staff_guid?>"><?php echo $value->firstname?> <?php echo $value->lastname?></option>
                 <?php } ?>
             </select>
             &nbsp;<span class="error"></span>
@@ -92,10 +92,10 @@
     <div class="form-group">
         <label class="col-lg-2 control-label"><i class="help-tip icon-question-sign" href="#email"></i> Outgoing Email :</label>
         <div class="col-lg-10">
-            <select name="email_id" class="form-control">
+            <select name="email_guid" class="form-control">
                 <option value="0">— System Default —</option>
                 <?php foreach ($email->result() as $value) { ?>
-                    <option <?php echo ($value->email_id == $departmentinfo->email_id )?"selected":""; ?> value="<?php echo $value->email_id?>"><?php echo $value->name?> < <?php echo $value->email?> ></option>
+                    <option <?php echo ($value->email_guid == $departmentinfo->email_guid )?"selected":""; ?> value="<?php echo $value->email_guid?>"><?php echo $value->name?> < <?php echo $value->email?> ></option>
                 <?php } ?>                     
             </select>
             &nbsp;<span class="error">&nbsp;</span>
@@ -126,10 +126,10 @@
     <div class="form-group">
         <label class="col-lg-2 control-label"><i class="help-tip icon-question-sign" href="#template"></i>Email Template Set :</label>
         <div class="col-lg-10">
-            <select name="tpl_id" class="form-control">
+            <select name="tpl_guid" class="form-control">
                 <option value="0">— System Default —</option>
                 <?php foreach ($emailtemplate->result() as $value) { ?>
-                    <option <?php echo ($value->tpl_id == $departmentinfo->tpl_id )?"selected":""; ?> value="<?php echo $value->tpl_id?>"><?php echo $value->name?></option>
+                    <option <?php echo ($value->tpl_guid == $departmentinfo->tpl_guid )?"selected":""; ?> value="<?php echo $value->tpl_guid?>"><?php echo $value->name?></option>
                 <?php } ?>               
             </select>
             &nbsp;<span class="error">&nbsp;        </span></div>
@@ -137,10 +137,10 @@
     <!-- <div class="form-group">
         <label class="col-lg-2 control-label"><i class="help-tip icon-question-sign" href="#auto_response_email"></i> Auto-Response Email :</label>
         <div class="col-lg-10">
-            <select name="autoresp_email_id" class="form-control">
+            <select name="autoresp_email_guid" class="form-control">
                 <option value="0" selected="selected">— Department Email —</option>
                 <?php foreach ($email->result() as $value) { ?>
-                    <option <?php echo ($value->email_id == $departmentinfo->autoresp_email_id )?"selected":""; ?> value="<?php echo $value->email_id?>"><?php echo $value->name?> < <?php echo $value->email?> ></option>
+                    <option <?php echo ($value->email_guid == $departmentinfo->autoresp_email_guid )?"selected":""; ?> value="<?php echo $value->email_guid?>"><?php echo $value->name?> < <?php echo $value->email?> ></option>
                 <?php } ?>                
             </select>
             &nbsp;<span class="error"></span>
@@ -206,17 +206,17 @@
           <select id="add_access" data-quick-add="staff">
             <option value="0">— Select Agent —</option>
             <?php foreach ($staff1->result() as $value) { ?>
-                        <option value="<?php echo $value->staff_id?>"><?php echo $value->firstname?> <?php echo $value->lastname?></option>
+                        <option value="<?php echo $value->staff_guid?>"><?php echo $value->firstname?> <?php echo $value->lastname?></option>
                         <?php } ?>
           </select>
           <button type="button" class="action-button">
             Add          </button>
         </td>
       </tr>
-      <?php $staff_dept_id = array();
+      <?php $staff_dept_guid = array();
         foreach($staff->result() as $staff_info)
         {
-            $staff_dept_id[] = $staff_info->dept_id;
+            $staff_dept_guid[] = $staff_info->dept_guid;
         };?>
       <tr id="add_extended_access_1">
         <td colspan="2">
@@ -224,7 +224,7 @@
             <select id="add_dep_access" data-quick-add="staff">
                 <option value="0">— Select Department —</option>
                 <?php foreach ($department as $value) { ?>
-                <?php if (in_array($value['depart_id'], $staff_dept_id)) { ?>
+                <?php if (in_array($value['depart_id'], $staff_dept_guid)) { ?>
                 <option value="<?php echo $value['depart_id']?>" ><?php echo $value['depart_name']?></option>
                 <?php } ?>
                 <?php } ?>
@@ -243,7 +243,7 @@
           <select data-name="member_role" data-quick-add="role">
             <option value="0">— Select Role —</option>
             <?php foreach ($roles->result() as $value) { ?>
-                        <option value="<?php echo $value->id?>"><?php echo $value->name?></option>
+                        <option value="<?php echo $value->role_guid?>"><?php echo $value->name?></option>
                         <?php } ?>  
           </select>
           <span style="display:inline-block;width:60px"> </span>
@@ -357,8 +357,8 @@ $('#add_extended_access_1').find('button').on('click', function(){
         success: function(result){
 
             $.each(result['a'], function(key, val){
-                addAccess(val.staff_id, val.firstname + " " + val.lastname, 0, true);
-                $("#add_extended_access option[value = '" + val.staff_id + "']").remove();
+                addAccess(val.staff_guid, val.firstname + " " + val.lastname, 0, true);
+                $("#add_extended_access option[value = '" + val.staff_guid + "']").remove();
             });
             selected.remove();
             return false;
@@ -366,12 +366,12 @@ $('#add_extended_access_1').find('button').on('click', function(){
 });
 //primary member
 <?php foreach ($primarymember->result() as $value) { ?>
-addAccessprimary(<?php echo $value->staff_id?>, "<?php echo $value->firstname?> <?php echo $value->lastname?>", <?php echo $value->role_id?>, 0, 1, null);
+addAccessprimary(<?php echo $value->staff_guid?>, "<?php echo $value->firstname?> <?php echo $value->lastname?>", <?php echo $value->role_guid?>, 0, 1, null);
 <?php } ?>
 
 //extended member
 <?php foreach ($extendedmember->result() as $value) { ?>
-addAccess(<?php echo $value->staff_id?>, "<?php echo $value->firstname?> <?php echo $value->lastname?>", <?php echo $value->role_id?>, 1, 0, null);
+addAccess(<?php echo $value->staff_guid?>, "<?php echo $value->firstname?> <?php echo $value->lastname?>", <?php echo $value->role_guid?>, 1, 0, null);
 <?php } ?>
 
 </script>

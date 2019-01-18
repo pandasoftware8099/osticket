@@ -30,13 +30,13 @@
     <div class="form-group" style="overflow:auto;">
         <label class="col-lg-4 control-label"> Default Ticket Number Sequence :</label>
         <div class="col-lg-6">
-            <select name="ticket_sequence_id" class="form-control" id="ticket_sequence_id">
+            <select name="ticket_sequence_guid" class="form-control" id="ticket_sequence_guid">
                 <option value="0" <?php if($ticket_seq=='0'){echo 'selected';}?>>— Random —</option>
                 <?php foreach($ticket_seq_list->result() as $value){
-                    if($ticket_seq==$value->id){
-                        echo '<option value="'.$value->id.'" selected>'.$value->name.'</option>';
+                    if($ticket_seq==$value->sequence_guid){
+                        echo '<option value="'.$value->sequence_guid.'" selected>'.$value->name.'</option>';
                     }else{
-                    echo '<option value="'.$value->id.'">'.$value->name.'</option>';
+                    echo '<option value="'.$value->sequence_guid.'">'.$value->name.'</option>';
                                }}?>
                             </select>
         </div>
@@ -51,7 +51,7 @@
             <span>
                 <select name="default_ticket_status" class="form-control">
                     <?php foreach ($default_status->result() as $value) { ?>
-                        <option <?php echo ($value->id == $defaultstatusid->row('value') )?"selected":""; ?> value="<?php echo $value->id;?>"><?php echo $value->name;?></option>
+                        <option <?php echo ($value->status_guid == $defaultstatusid->row('value') )?"selected":""; ?> value="<?php echo $value->status_guid;?>"><?php echo $value->name;?></option>
                     <?php } ?>
                 </select>
                 &nbsp; <span class="error"></span>
@@ -63,7 +63,7 @@
         <div class="col-lg-8">
             <select name="default_priority" class="form-control">
                 <?php foreach ($default_priority->result() as $value) { ?>
-                    <option <?php echo ($value->priority_id == $defaultpriorityid->row('value') )?"selected":""; ?> value="<?php echo $value->priority_id;?>"><?php echo $value->priority_desc;?></option>
+                    <option <?php echo ($value->priority_guid == $defaultpriorityid->row('value') )?"selected":""; ?> value="<?php echo $value->priority_guid;?>"><?php echo $value->priority_desc;?></option>
                 <?php } ?>
             </select>
             &nbsp;<span class="error"></span>
@@ -76,7 +76,7 @@
                 <select name="default_sla" class="form-control">
                     <option value="0">— None —</option>
                     <?php foreach ($default_sla->result() as $value) { ?>
-                    <option <?php echo ($value->id == $defaultslaid->row('value') )?"selected":""; ?> value="<?php echo $value->id;?>" selected="selected"><?php echo $value->sla_name;?></option>
+                    <option <?php echo ($value->sla_guid == $defaultslaid->row('value') )?"selected":""; ?> value="<?php echo $value->sla_guid;?>" selected="selected"><?php echo $value->sla_name;?></option>
                     <?php } ?>
                 </select>
                 &nbsp;<span class="error"></span>
@@ -89,7 +89,7 @@
             <select name="default_help_topic" class="form-control">
                 <option value="0">— None —</option>
                 <?php foreach($default_topic->result() as $topic) { ?>
-                <option value="<?php echo $topic->topic_id;?>" <?php echo $topic->topic_id == $default_help_topic->row('value')?"selected":"";?>><?php echo $topic->topic;?></option>
+                <option value="<?php echo $topic->topic_guid;?>" <?php echo $topic->topic_guid == $default_help_topic->row('value')?"selected":"";?>><?php echo $topic->topic;?></option>
                 <?php } ?>
             </select>
             <span class="error"></span>
@@ -200,147 +200,149 @@
             </em></th></tr>
         <tr>
             <td><em><b>Status:</b></em> &nbsp;
-                <input type="radio" name="ticket_alert_active" value="1"> Enable
-                <input type="radio" name="ticket_alert_active" value="0">
+                <input type="radio" name="ticket_alert_active" value="1" <?php echo $ticket_alert_active == 1?"checked":"";?>> Enable
+                <input type="radio" name="ticket_alert_active" value="0" <?php echo $ticket_alert_active == 0?"checked":"";?>>
                  Disable                &nbsp;&nbsp;<font class="error">&nbsp;</font>
              </td>
         </tr>
         <tr>
             <td>
-                <input type="checkbox" name="ticket_alert_admin">
-                Admin Email <em>(kelwin@pandasoftware.my)</em>
+                <input type="checkbox" name="ticket_alert_admin" <?php echo $ticket_alert_admin == 1?"checked":"";?> value="1">
+                Admin Email <em>(<?php echo $admin_email;?>)</em>
             </td>
         </tr>
         <tr>
             <td>
-                <input type="checkbox" name="ticket_alert_dept_manager" checked="">
+                <input type="checkbox" name="ticket_alert_dept_manager" <?php echo $ticket_alert_dept_manager == 1?"checked":"";?> value="1">
                 Department Manager            </td>
         </tr>
         <tr>
             <td>
-                <input type="checkbox" name="ticket_alert_dept_members" checked="">
+                <input type="checkbox" name="ticket_alert_dept_members" <?php echo $ticket_alert_dept_members == 1?"checked":"";?> value="1">
                 Department Members            </td>
         </tr>
         <tr>
             <td>
-                <input type="checkbox" name="ticket_alert_acct_manager" checked="">
+                <input type="checkbox" name="ticket_alert_acct_manager" <?php echo $ticket_alert_acct_manager == 1?"checked":"";?> value="1">
                 Organization Account Manager            </td>
         </tr>
         <tr><th><em><b>New Message Alert</b> :
             </em></th></tr>
         <tr>
             <td><em><b>Status:</b></em> &nbsp;
-              <input type="radio" name="message_alert_active" value="1"> Enable              &nbsp;&nbsp;
-              <input type="radio" name="message_alert_active" value="0" checked="">
+              <input type="radio" name="message_alert_active" value="1" <?php echo $message_alert_active == 1?"checked":"";?>> Enable              &nbsp;&nbsp;
+              <input type="radio" name="message_alert_active" value="0" <?php echo $message_alert_active == 0?"checked":"";?>>
               Disable            </td>
         </tr>
         <tr>
             <td>
-              <input type="checkbox" name="message_alert_laststaff" checked="">
+              <input type="checkbox" name="message_alert_laststaff" <?php echo $message_alert_laststaff == 1?"checked":"";?> value="1">
                 Last Respondent            </td>
         </tr>
         <tr>
             <td>
-              <input type="checkbox" name="message_alert_assigned" checked="">
+              <input type="checkbox" name="message_alert_assigned" <?php echo $message_alert_assigned == 1?"checked":"";?> value="1">
               Assigned Agent / Team            </td>
         </tr>
         <tr>
             <td>
-              <input type="checkbox" name="message_alert_dept_manager" checked="">
+              <input type="checkbox" name="message_alert_dept_manager" <?php echo $message_alert_dept_manager == 1?"checked":"";?> value="1">
               Department Manager            </td>
         </tr>
         <tr>
             <td>
-                <input type="checkbox" name="message_alert_acct_manager" checked="">
+                <input type="checkbox" name="message_alert_acct_manager" <?php echo $message_alert_acct_manager == 1?"checked":"";?> value="1">
                 Organization Account Manager            </td>
         </tr>
         <tr><th><em><b>New Internal Activity Alert</b> :
             </em></th></tr>
         <tr>
             <td><em><b>Status:</b></em> &nbsp;
-              <input type="radio" name="note_alert_active" value="1">
+              <input type="radio" name="note_alert_active" value="1" <?php echo $note_alert_active == 1?"checked":"";?>>
                 Enable              &nbsp;&nbsp;
-              <input type="radio" name="note_alert_active" value="0" checked="">
+              <input type="radio" name="note_alert_active" value="0" <?php echo $note_alert_active == 0?"checked":"";?>>
                 Disable              &nbsp;&nbsp;&nbsp;<font class="error">&nbsp;</font>
             </td>
         </tr>
         <tr>
             <td>
-              <input type="checkbox" name="note_alert_laststaff" checked=""> Last Respondent            </td>
+              <input type="checkbox" name="note_alert_laststaff" <?php echo $note_alert_laststaff == 1?"checked":"";?> value="1"> Last Respondent            </td>
         </tr>
         <tr>
             <td>
-              <input type="checkbox" name="note_alert_assigned" checked="">
+              <input type="checkbox" name="note_alert_assigned" <?php echo $note_alert_assigned == 1?"checked":"";?> value="1">
                 Assigned Agent / Team            </td>
         </tr>
         <tr>
             <td>
-              <input type="checkbox" name="note_alert_dept_manager" checked="">
+              <input type="checkbox" name="note_alert_dept_manager" <?php echo $note_alert_dept_manager == 1?"checked":"";?> value="1">
                 Department Manager            </td>
         </tr>
         <tr><th><em><b>Ticket Assignment Alert</b> :
             </em></th></tr>
         <tr>
             <td><em><b>Status: </b></em> &nbsp;
-              <input name="assigned_alert_active" value="1" type="radio"> Enable              &nbsp;&nbsp;
-              <input name="assigned_alert_active" value="0" type="radio" checked="checked"> Disable               &nbsp;&nbsp;&nbsp;<font class="error">&nbsp;</font>
+              <input name="assigned_alert_active" value="1" type="radio" <?php echo $assigned_alert_active == 1?"checked":"";?>> Enable              &nbsp;&nbsp;
+              <input name="assigned_alert_active" value="0" type="radio" <?php echo $assigned_alert_active == 0?"checked":"";?>> Disable               &nbsp;&nbsp;&nbsp;<font class="error">&nbsp;</font>
             </td>
         </tr>
         <tr>
             <td>
-              <input type="checkbox" name="assigned_alert_staff" checked=""> Assigned Agent            </td>
+              <input type="checkbox" name="assigned_alert_staff" <?php echo $assigned_alert_staff == 1?"checked":"";?> value="1"> Assigned Agent            </td>
         </tr>
         <tr>
             <td>
-              <input type="checkbox" name="assigned_alert_team_lead" checked=""> Team Lead            </td>
+              <input type="checkbox" name="assigned_alert_team_lead" <?php echo $assigned_alert_team_lead == 1?"checked":"";?> value="1"> Team Lead            </td>
         </tr>
         <tr>
             <td>
-              <input type="checkbox" name="assigned_alert_team_members" checked="">
+              <input type="checkbox" name="assigned_alert_team_members" <?php echo $assigned_alert_team_members == 1?"checked":"";?> value="1">
                 Team Members            </td>
         </tr>
         <tr><th><em><b>Ticket Transfer Alert</b> :
             </em></th></tr>
         <tr>
             <td><em><b>Status:</b></em> &nbsp;
-            <input type="radio" name="transfer_alert_active" value="1">
-                Enable            <input type="radio" name="transfer_alert_active" value="0" checked="">
+            <input type="radio" name="transfer_alert_active" value="1" <?php echo $transfer_alert_active == 1?"checked":"";?>>
+                Enable            
+            <input type="radio" name="transfer_alert_active" value="0" <?php echo $transfer_alert_active == 0?"checked":"";?>>
                 Disable              &nbsp;&nbsp;&nbsp;<font class="error">&nbsp;</font>
             </td>
         </tr>
         <tr>
             <td>
-              <input type="checkbox" name="transfer_alert_assigned" checked="">
+              <input type="checkbox" name="transfer_alert_assigned" <?php echo $transfer_alert_assigned == 1?"checked":"";?> value="1">
                 Assigned Agent / Team            </td>
         </tr>
         <tr>
             <td>
-              <input type="checkbox" name="transfer_alert_dept_manager" checked="">
+              <input type="checkbox" name="transfer_alert_dept_manager" <?php echo $transfer_alert_dept_manager == 1?"checked":"";?> value="1">
                 Department Manager            </td>
         </tr>
         <tr>
             <td>
-              <input type="checkbox" name="transfer_alert_dept_members" checked="">
+              <input type="checkbox" name="transfer_alert_dept_members" <?php echo $transfer_alert_dept_members == 1?"checked":"";?> value="1">
                 Department Members            </td>
         </tr>
         <tr><th><em><b>Overdue Ticket Alert</b> :
             </em></th></tr>
         <tr>
             <td><em><b>Status:</b></em> &nbsp;
-              <input type="radio" name="overdue_alert_active" value="1"> Enable              <input type="radio" name="overdue_alert_active" value="0" checked=""> Disable              &nbsp;&nbsp;<font class="error">&nbsp;</font>
+              <input type="radio" name="overdue_alert_active" value="1" <?php echo $overdue_alert_active == 1?"checked":"";?>> Enable              
+              <input type="radio" name="overdue_alert_active" value="0" <?php echo $overdue_alert_active == 0?"checked":"";?>> Disable              &nbsp;&nbsp;<font class="error">&nbsp;</font>
             </td>
         </tr>
         <tr>
             <td>
-              <input type="checkbox" name="overdue_alert_assigned" checked=""> Assigned Agent / Team            </td>
+              <input type="checkbox" name="overdue_alert_assigned" <?php echo $overdue_alert_assigned == 1?"checked":"";?> value="1"> Assigned Agent / Team            </td>
         </tr>
         <tr>
             <td>
-              <input type="checkbox" name="overdue_alert_dept_manager" checked=""> Department Manager            </td>
+              <input type="checkbox" name="overdue_alert_dept_manager" <?php echo $overdue_alert_dept_manager == 1?"checked":"";?> value="1"> Department Manager            </td>
         </tr>
         <tr>
             <td>
-              <input type="checkbox" name="overdue_alert_dept_members" checked=""> Department Members            </td>
+              <input type="checkbox" name="overdue_alert_dept_members" <?php echo $overdue_alert_dept_members == 1?"checked":"";?> value="1"> Department Members            </td>
         </tr>
         <tr><th>
             <em><b>System Alerts</b>: </em></th></tr>
@@ -370,6 +372,7 @@
 </p>
 </form>
 
+
 <script type="text/javascript">
     function random_number(digit)
     {   
@@ -389,7 +392,7 @@
         padding = padding.toString(); 
         return str.length < max ? pad(padding + str, max, padding) : str; 
     }   
-        var ticket_no_seq = document.getElementById("ticket_sequence_id").options[document.getElementById("ticket_sequence_id").selectedIndex].value;
+        var ticket_no_seq = document.getElementById("ticket_sequence_guid").options[document.getElementById("ticket_sequence_guid").selectedIndex].value;
 
     var random_number_digit = document.getElementById("ticket_number_format");
     if (ticket_no_seq == '0'){  
@@ -451,7 +454,7 @@
                 }); 
         }   
         
-    $("#ticket_sequence_id").change(function () {   
+    $("#ticket_sequence_guid").change(function () {   
                 var val = $(this).val();    
                 if (val == '0'){    
             document.getElementById("ticket_number_example").innerHTML = 'YYMMDD' + random_number(random_number_digit); 
@@ -544,7 +547,7 @@ used to generate sequences for different purposes.<br>
         <div style="display:inline-block" class="name">
             <input type="text" value="<?php echo $value->name?>" name="name[]"></input>
         </div>
-        <input type="hidden" value="<?php echo $value->id?>" name="id[]">
+        <input type="hidden" value="<?php echo $value->sequence_guid?>" name="id[]">
     </div>
         <div class="manage-buttons col-lg-2">
             <span class="faded">next</span>
