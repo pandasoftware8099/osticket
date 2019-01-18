@@ -24,6 +24,16 @@ class Welcome extends CI_Controller {
 
 		$data = array(
 			'landpages' => $this->db->query("SELECT * FROM ost_content_test WHERE type = 'landing' AND in_use = '1' AND field = 'pages'"),
+
+			'enable_kb' => $this->db->query("SELECT value FROM ost_config_test WHERE id='26'")->row('value'),
+
+			'feature_question' => $this->db->query("SELECT * FROM ost_faq_category_test a INNER JOIN ost_faq_test b ON a.`category_guid` = b.`category_guid` WHERE ispublic = '1' AND ispublished = '2' "),
+
+			'feature_kb' => $this->db->query("SELECT * FROM ost_faq_category_test WHERE ispublic = '2'"),
+
+			'feature_kb_faq' => $this->db->query("SELECT * FROM ost_faq_test WHERE ispublished = '2'"),
+
+
 			
 		);
 

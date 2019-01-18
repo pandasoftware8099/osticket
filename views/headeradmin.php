@@ -51,17 +51,16 @@
     <script src="<?php echo base_url('asset/plugins/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js');?>"></script>
 <link type="text/css" rel="stylesheet" href="https://cdn.datatables.net/buttons/1.5.2/css/buttons.dataTables.min.css">
 
-<!-- texteditor -->
-  <link rel="stylesheet" href="http://localhost/adminlte/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css">
-<script src="http://localhost/adminlte/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js"></script>
+<!-- include summernote css/js -->
+<link href="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.11/summernote.css" rel="stylesheet">
+<script src="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.11/summernote.js"></script>
 
 <script type="text/javascript">
     
-      $(function () {
+$(document).ready(function() {
+  $('.textarea').summernote();
+});
 
-    //bootstrap WYSIHTML5 - text editor
-    $('.textarea').wysihtml5()
-  })
 </script>
 
 <style type="text/css">
@@ -192,7 +191,7 @@ div.dataTables_wrapper div.dataTables_paginate ul.pagination {
                 <li><a class="lists" href="<?php echo site_url('admin_settings_controller/settings_task')?>" title="" id="subnav3">Tasks</a></li>
                 <li><a class="teams" href="<?php echo site_url('admin_settings_controller/settings_agent')?>" title="" id="subnav4">Agents</a></li>
                 <li><a class="groups" href="<?php echo site_url('admin_settings_controller/settings_user')?>" title="" id="subnav5">Users</a></li>
-                <li><a class="kb-settings" href="settings.php?t=kb" title="" id="subnav6">Knowledgebase</a></li>
+                <li><a class="kb-settings" href="<?php echo site_url('admin_settings_controller/settings_knowledgebase')?>" title="" id="subnav6">Knowledgebase</a></li>
             </ul>
             </li>
 
@@ -202,10 +201,10 @@ div.dataTables_wrapper div.dataTables_paginate ul.pagination {
                 <li><a class="lists" href="<?php echo site_url('admin_manage_controller/manage_subtopics')?>" title="" id="nav6">Subtopics</a></li>
                 <li><a class="sla" href="<?php echo site_url('admin_manage_controller/manage_sla')?>" title="" id="nav2">SLA Plans</a></li>
                 <li><a class="api" href="<?php echo site_url('admin_manage_controller/manage_api')?>" title="" id="nav3">API Keys</a></li>
-                <li><a class="ticketFilters" href="/helpdesk/scp/filters.php" title="Ticket Filters" id="nav1">Ticket Filters</a></li>
                 <li><a class="pages" href="<?php echo site_url('admin_manage_controller/manage_pages')?>" title="Pages" id="nav4">Pages</a></li>
+                <!-- <li><a class="ticketFilters" href="/helpdesk/scp/filters.php" title="Ticket Filters" id="nav1">Ticket Filters</a></li>
                 <li><a class="forms" href="/helpdesk/scp/forms.php" title="" id="nav5">Forms</a></li>
-                <li><a class="api" href="/helpdesk/scp/plugins.php" title="" id="nav7">Plugins</a></li>
+                <li><a class="api" href="/helpdesk/scp/plugins.php" title="" id="nav7">Plugins</a></li> -->
             </ul>
             </li>
 
