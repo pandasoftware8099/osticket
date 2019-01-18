@@ -52,14 +52,14 @@
     <tbody>
         <?php foreach ($templategroup->result() as $value) { ?>
             <tr>
-                <td align="center"><input type="checkbox" class="ckb" id="tids" name="tids[]" value="<?php echo $value->tpl_id?>" <?php echo $default_template_id->row('value') == $value->tpl_id?"disabled":"";?>></td>
-                <td>&nbsp;<a href="<?php echo site_url('admin_emails_controller/emails_templates_info')?>?id=<?php echo $value->tpl_id?>"><?php echo $value->name?></a> <?php echo $default_template_id->row('value') == $value->tpl_id?" <small>(System Default)</small>":"";?></td>
+                <td align="center"><input type="checkbox" class="ckb" id="tids" name="tids[]" value="<?php echo $value->tpl_guid?>" <?php echo $default_template_id->row('value') == $value->tpl_guid?"disabled":"";?>></td>
+                <td>&nbsp;<a href="<?php echo site_url('admin_emails_controller/emails_templates_info')?>?id=<?php echo $value->tpl_guid?>"><?php echo $value->name?></a> <?php echo $default_template_id->row('value') == $value->tpl_guid?" <small>(System Default)</small>":"";?></td>
                 <td><?php if ($value->isactive == 1){ ?>
                         Active
                     <?php } else if ($value->isactive == 0) { ?>
                         Inactive
                     <?php } ?></td>
-                <td><?php echo $default_template_id->row('value') == $value->tpl_id?"Yes":"No";?></td>
+                <td><?php echo $default_template_id->row('value') == $value->tpl_guid?"Yes":"No";?></td>
                 <td><?php echo $value->created?></td>
                 <td><?php echo $value->updated?></td>
             </tr>

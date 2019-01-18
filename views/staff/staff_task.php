@@ -80,7 +80,7 @@
                       <select class="form-control" name="departmentid" id="_3b16f40dc83394b4" data-placeholder="Select" required="true">
                         <option value="">— Select —</option>
                         <?php foreach ($department->result() as $departmentt) { ?>
-                          <option value="<?php echo $departmentt->id;?>"><?php echo $departmentt->name;?></option>
+                          <option value="<?php echo $departmentt->department_guid;?>"><?php echo $departmentt->name;?></option>
                         <?php } ?>
                       </select>
                     </fieldset></td>
@@ -95,13 +95,13 @@
                         <option value="">— Select —</option>
                         <optgroup label="Agents (<?php echo $staff->num_rows();?>)">
                           <?php foreach ($staff->result() as $stafff) { ?>
-                          <option value="a<?php echo $stafff->staff_id;?>"><?php echo $stafff->firstname;?> <?php echo $stafff->lastname;?></option>
+                          <option value="a<?php echo $stafff->staff_guid;?>"><?php echo $stafff->firstname;?> <?php echo $stafff->lastname;?></option>
                           <?php } ?> 
                         </optgroup>    
                             
                         <optgroup label="Team (<?php echo $team->num_rows();?>)">         
                           <?php foreach ($team->result() as $teamm) { ?>
-                          <option value="t<?php echo $teamm->team_id;?>"><?php echo $teamm->name;?></option>
+                          <option value="t<?php echo $teamm->team_guid;?>"><?php echo $teamm->name;?></option>
                           <?php } ?> 
                         </optgroup>
                       </select>
@@ -225,40 +225,40 @@ $(function() {
             <?php foreach ($result->result() as $value) { ?>
             
             <tr id="3">
-                <td align="center" class="nohover"><input class="ckb" type="checkbox" name="tids[]" value="<?php echo $value->task_id;?>"></td>
-                <td nowrap=""><a class="preview" href="<?php echo site_url('staff_task_controller/taskinfo');?>?id=<?php echo $value->task_id;?>"><?php echo $value->number;?></a></td>
+                <td align="center" class="nohover"><input class="ckb" type="checkbox" name="tids[]" value="<?php echo $value->task_guid;?>"></td>
+                <td nowrap=""><a class="preview" href="<?php echo site_url('staff_task_controller/taskinfo');?>?id=<?php echo $value->task_guid;?>"><?php echo $value->number;?></a></td>
                 <td nowrap=""><?php echo $value->task_created;?></td>
-                <td><a href="<?php echo site_url('staff_task_controller/taskinfo');?>?id=<?php echo $value->task_id;?>"><?php echo $value->title;?></a>
+                <td><a href="<?php echo site_url('staff_task_controller/taskinfo');?>?id=<?php echo $value->task_guid;?>"><?php echo $value->title;?></a>
                     <?php 
-                    if ($this->db->query("SELECT COUNT(*) as threadcount FROM ost_thread_entry_test WHERE task_id = '".$value->task_id."'")->row('threadcount') != '0' && $this->db->query("SELECT COUNT(*) as threadcount FROM ost_thread_entry_test WHERE task_id = '".$value->task_id."'")->row('threadcount') != '1')
+                    if ($this->db->query("SELECT COUNT(*) as threadcount FROM ost_thread_entry_test WHERE task_guid = '".$value->task_guid."'")->row('threadcount') != '0' && $this->db->query("SELECT COUNT(*) as threadcount FROM ost_thread_entry_test WHERE task_guid = '".$value->task_guid."'")->row('threadcount') != '1')
                     { ?>
                       <span class="pull-right faded-more">
                         <i class="icon-comments-alt"></i>
-                          <small><?php echo $this->db->query("SELECT COUNT(*) as threadcount FROM ost_thread_entry_test WHERE task_id = '".$value->task_id."'")->row('threadcount');?></small>
+                          <small><?php echo $this->db->query("SELECT COUNT(*) as threadcount FROM ost_thread_entry_test WHERE task_guid = '".$value->task_guid."'")->row('threadcount');?></small>
                       </span>
                     <?php } ?></td>
                 <td nowrap=""><?php echo $value->name;?></td>
                 <td nowrap="">
 
                 <?php 
-                if ($value->team_id == '0')
+                if ($value->team_guid == '0')
                 { ?>
                   <?php echo $this->db->query("SELECT firstname FROM ost_staff_test AS a
                                               INNER JOIN ost_task_test AS b
-                                              ON b.staff_id = a.staff_id
-                                              WHERE b.task_id = '".$value->task_id."'")->row('firstname');?> 
+                                              ON b.staff_guid = a.staff_guid
+                                              WHERE b.task_guid = '".$value->task_guid."'")->row('firstname');?> 
                   <?php echo $this->db->query("SELECT lastname FROM ost_staff_test AS a
                                               INNER JOIN ost_task_test AS b
-                                              ON b.staff_id = a.staff_id
-                                              WHERE b.task_id = '".$value->task_id."'")->row('lastname');?>
+                                              ON b.staff_guid = a.staff_guid
+                                              WHERE b.task_guid = '".$value->task_guid."'")->row('lastname');?>
                 <?php }
 
-                if ($value->staff_id == '0')
+                if ($value->staff_guid == '0')
                 { ?>
                   <?php echo $this->db->query("SELECT name FROM ost_team_test AS a
                                               INNER JOIN ost_task_test AS b
-                                              ON b.team_id = a.team_id
-                                              WHERE b.task_id = '".$value->task_id."'")->row('name');?>
+                                              ON b.team_guid = a.team_guid
+                                              WHERE b.task_guid = '".$value->task_guid."'")->row('name');?>
                 <?php } ?>
 
                 </td>
@@ -297,7 +297,7 @@ $(function() {
 
                 <table width="100%">
                 <tbody>
-                  <input type="hidden" name="status_id" id="status_id" value="1">
+                  <input type="hidden" name="status_guid" id="status_guid" value="1">
                 </tbody>
                 <tbody>
                   <tr>
@@ -342,7 +342,7 @@ $(function() {
 
                 <table width="100%">
                 <tbody>
-                  <input type="hidden" name="status_id" id="status_id" value="0">
+                  <input type="hidden" name="status_guid" id="status_guid" value="0">
                 </tbody>
                 <tbody>
                   <tr>
@@ -399,12 +399,12 @@ $(function() {
                                           <option value="">— Select an Agent —</option>
                               <optgroup label="Agents (<?php echo $this->db->query("SELECT COUNT(*) as agent FROM ost_staff_test")->row('agent');?>)">
                               <?php foreach ($staff->result() as $staff) { ?>
-                              <option value="a<?php echo $staff->staff_id;?>"><?php echo $staff->firstname;?> <?php echo $staff->lastname;?></option>
+                              <option value="a<?php echo $staff->staff_guid;?>"><?php echo $staff->firstname;?> <?php echo $staff->lastname;?></option>
                               <?php } ?> 
                               </optgroup>    
                               <optgroup label="Team (<?php echo $this->db->query("SELECT COUNT(*) as team FROM ost_team_test")->row('team');?>)">         
                               <?php foreach ($team->result() as $team) { ?>
-                              <option value="t<?php echo $team->team_id;?>"><?php echo $team->name;?></option>
+                              <option value="t<?php echo $team->team_guid;?>"><?php echo $team->name;?></option>
                               <?php } ?> 
                               </optgroup>  
 
@@ -490,7 +490,7 @@ $(function() {
                   <select class="form-control" name="departmentid" id="departmentid" data-placeholder="Select">
                     <option value="">— Select —</option>
                     <?php foreach ($department->result() as $department) { ?>
-                      <option value="<?php echo $department->id;?>"><?php echo $department->name;?></option>
+                      <option value="<?php echo $department->department_guid;?>"><?php echo $department->name;?></option>
                     <?php } ?>
                   </select>
                   </div>
@@ -688,11 +688,11 @@ $(document).ready(function () {
         return false;
       }
 
-      $("#status_id").attr('required', true);
+      $("#status_guid").attr('required', true);
       $("#departmentid").attr('required', false);
       $("#assignto").attr('required', false);
       $("#deletetask").attr('required', false);
-      $("#status_id").attr('name', 'status_id');
+      $("#status_guid").attr('name', 'status_guid');
       $("#departmentid").attr('name', true);
       $("#assignto").attr('name', true);
       $("#deletetask").attr('name', true);
@@ -707,10 +707,10 @@ $(document).ready(function () {
         return false;
       }
 
-      $("#status_id").attr('required', false);
+      $("#status_guid").attr('required', false);
       $("#departmentid").attr('required', false);
       $("#departmentid").attr('name', true);
-      $("#status_id").attr('name', true);
+      $("#status_guid").attr('name', true);
       $("#assignto").attr('required', true);
       $("#assignto").attr('name', 'assignto');
       $("#deletetask").attr('required', false);
@@ -727,11 +727,11 @@ $(document).ready(function () {
         return false;
       }
 
-      $("#status_id").attr('required', false);
+      $("#status_guid").attr('required', false);
       $("#assignto").attr('required', false);
       $("#departmentid").attr('required', true);
       $("#deletetask").attr('required', false);
-      $("#status_id").attr('name', true);
+      $("#status_guid").attr('name', true);
       $("#departmentid").attr('name', 'departmentid');
       $("#assignto").attr('name', true);
       $("#deletetask").attr('name', true);
@@ -746,11 +746,11 @@ $(document).ready(function () {
         return false;
       }
 
-      $("#status_id").attr('required', false);
+      $("#status_guid").attr('required', false);
       $("#assignto").attr('required', false);
       $("#departmentid").attr('required', false);
       $("#deletetask").attr('required', true);
-      $("#status_id").attr('name', true);
+      $("#status_guid").attr('name', true);
       $("#departmentid").attr('name', true);
       $("#assignto").attr('name', true);
       $("#deletetask").attr('name', 'delete');

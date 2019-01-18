@@ -55,8 +55,8 @@
     <tbody>     <?php foreach ($roles->result() as $value) { ?>
                 <tr>
                 <td align="center">
-                  <input id="tids" type="checkbox" class="ckb" name="tids[]" value="<?php echo $value->id?>"> </td>
-                <td><a href="<?php echo site_url('admin_agents_controller/agents_roles_info')?>?id=<?php echo $value->id?>"><?php echo $value->name?></a> &nbsp;</td>
+                  <input id="tids" type="checkbox" class="ckb" name="tids[]" value="<?php echo $value->role_guid?>"> </td>
+                <td><a href="<?php echo site_url('admin_agents_controller/agents_roles_info')?>?id=<?php echo $value->role_guid?>"><?php echo $value->name?></a> &nbsp;</td>
                 <td>&nbsp;<?php if ($value->flags == 1){ ?>
 
                       Active

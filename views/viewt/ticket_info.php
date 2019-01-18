@@ -12,8 +12,8 @@
           <?php } ?>  
           </small>
         <div class="pull-right">
-            <a class="action-button" href="<?php echo site_url('ticket_controller/printpreview');?>?id=<?php echo $value->ticket_id;?>"><i class="icon-print"></i> Print</a>
-            <a class="action-button" href="<?php echo site_url('ticket_controller/ticketedit');?>?id=<?php echo $value->ticket_id;?>"><i class="icon-edit"></i> Edit</a>
+            <a class="action-button" href="<?php echo site_url('ticket_controller/printpreview');?>?id=<?php echo $value->ticket_guid;?>"><i class="icon-print"></i> Print</a>
+            <a class="action-button" href="<?php echo site_url('ticket_controller/ticketedit');?>?id=<?php echo $value->ticket_guid;?>"><i class="icon-edit"></i> Edit</a>
         </div>
     </h1>
 </div>
@@ -141,9 +141,9 @@ $.dialog(url, [201], function(xhr, resp) {
             <span class="label label-bare" title="Edited on  by Hugh Panda">Edited</span>
         </span>
         </div>
-                            <?php if ($value1->staff_id == '0') { ?>
+                            <?php if ($value1->staff_guid == '0') { ?>
                                 <b><?php echo $value1->poster;?></b>
-                            <?php } else if ($value1->user_id == '0') { ?>
+                            <?php } else if ($value1->user_guid == '0') { ?>
                                 <?php if ($threadname->defaultname == 'mine') { ?>
                                     <b><?php echo $value1->poster;?></b> 
                                 <?php } else if ($threadname->defaultname == 'email') { ?>
@@ -163,8 +163,8 @@ $.dialog(url, [201], function(xhr, resp) {
     <?php 
         $file = $this->db->query("SELECT * FROM ost_file_test AS b
             INNER JOIN ost_thread_entry_test AS a
-            ON a.id = b.thread_entry_id
-            WHERE b.thread_entry_id = '".$value1->id."'");
+            ON a.thread_entry_guid = b.thread_entry_guid
+            WHERE b.thread_entry_guid = '".$value1->thread_entry_guid."'");
     ?>
 
     <?php 
@@ -199,7 +199,7 @@ $.dialog(url, [201], function(xhr, resp) {
 
 <div class="clear" style="padding-bottom:10px;"></div>
 
-<?php if ($openclose->status_id != '3') { ?>
+<?php if ($openclose->status_guid != '3') { ?>
 <form id="reply" action="<?php echo site_url('ticket_controller/StatusUpdate')?>" name="reply" method="post" enctype="multipart/form-data">
     <h2>Post a Reply</h2>
     <input type="hidden" name="id" value="<?php  echo $_REQUEST['id']; ?>">
@@ -245,7 +245,7 @@ $.dialog(url, [201], function(xhr, resp) {
         <link rel="stylesheet" type="text/css" href="/helpdesk/css/filedrop.css"></div>
 <input type="hidden" name="draft_id"></form>
 
-<?php } else if ($openclose->status_id == '3') {?>
+<?php } else if ($openclose->status_guid == '3') {?>
 
     <div id="msg_warning">This ticket is marked as closed and cannot be reopened.</div>
 

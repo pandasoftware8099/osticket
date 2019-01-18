@@ -21,7 +21,7 @@
 
 <div id="breadcrumbs">
     <a href="<?php echo site_url('staff_faqs_controller/main');?>">All Categories</a>
-    » <a href="<?php echo site_url('staff_faqs_controller/faqcategory');?>?cid=<?php echo $faqcate->category_id;?>"><?php echo $faqcate->name;?></a>
+    » <a href="<?php echo site_url('staff_faqs_controller/faqcategory');?>?cid=<?php echo $faqcate->category_guid;?>"><?php echo $faqcate->name;?></a>
     <span class="faded">(Public)</span>
 </div>
 
@@ -76,8 +76,8 @@ echo '<br><br><img src="data:image/jpeg;base64,'.base64_encode( $value2->image )
     <?php 
         $file = $this->db->query("SELECT * FROM ost_file_test AS b
             INNER JOIN ost_faq_test AS a
-            ON a.faq_id = b.faq_id
-            WHERE b.faq_id = '".$value1->faq_id."'");
+            ON a.faq_guid = b.faq_guid
+            WHERE b.faq_guid = '".$value1->faq_guid."'");
     ?>
 
     <?php 

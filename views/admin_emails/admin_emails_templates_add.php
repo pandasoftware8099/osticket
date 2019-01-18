@@ -23,10 +23,10 @@
 <div class="form-group">
     <label class="col-lg-3 control-label">Template Set To Clone <span class="error">*</span> :</label>
     <div class="col-lg-9">
-        <select class="form-control" name="tpl_id" required>
+        <select class="form-control" name="tpl_guid" required>
             <option value="">— Select Email Template Set to Clone —</option>
             <?php foreach ($email_template_group->result() as $template_group) { ?>
-            <option value="<?php echo $template_group->tpl_id;?>"><?php echo $template_group->name;?></option>
+            <option value="<?php echo $template_group->tpl_guid;?>"><?php echo $template_group->name;?></option>
             <?php } ?>
         </select>
         &nbsp;<span class="error"></span>

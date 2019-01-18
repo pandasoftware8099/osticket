@@ -76,12 +76,12 @@ $(function() {
       update_example = function() {
       request && request.abort();
       request = $.get('ajax.php/sequence/'
-        + $('[name=sequence_id] :selected').val(),
+        + $('[name=sequence_guid] :selected').val(),
         {'format': $('[name=number_format]').val()},
         function(data) { $('#format-example').text(data); }
       );
     };
-    $('[name=sequence_id]').on('change', update_example);
+    $('[name=sequence_guid]').on('change', update_example);
     $('[name=number_format]').on('keyup', update_example);
 
     $('form select#newform').change(function() {

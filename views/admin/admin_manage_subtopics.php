@@ -41,9 +41,9 @@
         <?php foreach ($listitem->result() as $value) { ?>
             <tr>
             <td align="center">
-                <input width="7" type="checkbox" class="ckb" name="tids[]" value="<?php echo $value->id ?>">
+                <input width="7" type="checkbox" class="ckb" name="tids[]" value="<?php echo $value->list_item_guid ?>">
             </td>
-            <td><a href="<?php echo site_url('admin_manage_controller/manage_subtopics_info')?>?id=<?php echo $value->id ?>"><?php echo $value->value ?></a></td>
+            <td><a href="<?php echo site_url('admin_manage_controller/manage_subtopics_info')?>?id=<?php echo $value->list_item_guid ?>"><?php echo $value->value ?></a></td>
             <td><?php echo $value->created ?></td>
             <td><?php echo $value->updated ?></td>
         </tr>

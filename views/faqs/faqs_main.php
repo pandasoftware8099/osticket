@@ -24,7 +24,7 @@
                 <?php foreach ($faqcate->result() as $value) { ?>
                     
                     <li>
-                    <h4><a class="truncate" style="max-width:600px" href="<?php echo site_url('staff_faqs_controller/faqcategory');?>?cid=<?php echo $value->category_id;?>"><?php echo $value->name;?>(<?php echo $this->db->query("SELECT COUNT(*) as total FROM ost_faq_test WHERE category_id = '".$value->category_id."'")->row('total');?>)</a> - 
+                    <h4><a class="truncate" style="max-width:600px" href="<?php echo site_url('staff_faqs_controller/faqcategory');?>?cid=<?php echo $value->category_guid;?>"><?php echo $value->name;?>(<?php echo $this->db->query("SELECT COUNT(*) as total FROM ost_faq_test WHERE category_guid = '".$value->category_guid."'")->row('total');?>)</a> - 
                         <span>
 
 

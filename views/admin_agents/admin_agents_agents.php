@@ -99,10 +99,10 @@
       <?php foreach ($agent->result() as $value) { ?>
                 <tr>
                   <td align="center">
-                    <input id="tids" type="checkbox" class="ckb" name="tids[]" value="<?php echo $value->staff_id;?>">
+                    <input id="tids" type="checkbox" class="ckb" name="tids[]" value="<?php echo $value->staff_guid;?>">
                   </td>
                   <td>
-                  <a href="<?php echo site_url('admin_agents_controller/agents_agents_info');?>?id=<?php echo $value->staff_id;?>"><?php echo $value->firstname;?>&nbsp; <?php echo $value->lastname;?></a>&nbsp;
+                  <a href="<?php echo site_url('admin_agents_controller/agents_agents_info');?>?id=<?php echo $value->staff_guid;?>"><?php echo $value->firstname;?>&nbsp; <?php echo $value->lastname;?></a>&nbsp;
                   </td>
                   <td>
                   <?php echo $value->username;?>
@@ -154,7 +154,7 @@
                   Primary Department:
                                 <span class="error">*</span>
                               </label>
-        <select class="form-control" name="dept_id" id="dept_id" data-placeholder="Select">
+        <select class="form-control" name="dept_guid" id="dept_guid" data-placeholder="Select">
                         <option value="">— Primary Department —</option>
                     <?php foreach ($department as $depart) { ?>   
                         <option value="<?php echo $depart['depart_id']?>"><?php echo $depart['depart_name']?></option>
@@ -168,10 +168,10 @@
                   Primary Role:
                                 <span class="error">*</span>
                               </label>
-        <select class="form-control" name="role_id" id="role_id" data-placeholder="Select">
+        <select class="form-control" name="role_guid" id="role_guid" data-placeholder="Select">
                         <option value="">— Corresponding Role —</option>
                     <?php foreach ($role->result() as $role) { ?>   
-                        <option value="<?php echo $role->id?>"><?php echo $role->name?></option>
+                        <option value="<?php echo $role->role_guid?>"><?php echo $role->name?></option>
                     <?php }?>
                 </select>
                       </fieldset>
@@ -330,8 +330,8 @@ $(document).ready(function () {
       document.getElementById("permissions-confirm").style.display = "none";
       document.getElementById("department-confirm").style.display = "none";
       document.getElementById("enable-confirm").style.display = "block";
-      $("#dept_id").attr('required', false);
-      $("#role_id").attr('required', false);
+      $("#dept_guid").attr('required', false);
+      $("#role_guid").attr('required', false);
       $('#more-modal').find("[name=status]").val(1);
       
 
@@ -349,8 +349,8 @@ $(document).ready(function () {
       document.getElementById("permissions-confirm").style.display = "none";
       document.getElementById("department-confirm").style.display = "none";
       document.getElementById("disable-confirm").style.display = "block";
-      $("#dept_id").attr('required', false);
-      $("#role_id").attr('required', false);
+      $("#dept_guid").attr('required', false);
+      $("#role_guid").attr('required', false);
       $('#more-modal').find("[name=status]").val(0);
 
     });
@@ -367,8 +367,8 @@ $(document).ready(function () {
       document.getElementById("permissions-confirm").style.display = "none";
       document.getElementById("department-confirm").style.display = "none";
       document.getElementById("delete-confirm").style.display = "block";
-      $("#dept_id").attr('required', false);
-      $("#role_id").attr('required', false);
+      $("#dept_guid").attr('required', false);
+      $("#role_guid").attr('required', false);
       $('#more-modal').find("[name=status]").val(2);
 
     });
@@ -385,8 +385,8 @@ $(document).ready(function () {
       document.getElementById("permissions-confirm").style.display = "block";
       document.getElementById("delete-confirm").style.display = "none";
       document.getElementById("department-confirm").style.display = "none";
-      $("#dept_id").attr('required', false);
-      $("#role_id").attr('required', false);
+      $("#dept_guid").attr('required', false);
+      $("#role_guid").attr('required', false);
       $('#more-modal').find("[name=status]").val(3);
 
     });
@@ -403,8 +403,8 @@ $(document).ready(function () {
       document.getElementById("permissions-confirm").style.display = "none";
       document.getElementById("delete-confirm").style.display = "none";
       document.getElementById("department-confirm").style.display = "block";
-      $("#dept_id").attr('required', true);
-      $("#role_id").attr('required', true);
+      $("#dept_guid").attr('required', true);
+      $("#role_guid").attr('required', true);
       $('#more-modal').find("[name=status]").val(4);
 
     });

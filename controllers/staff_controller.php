@@ -45,7 +45,7 @@ class staff_controller extends CI_Controller {
         if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
         {
 
-        $staff_id = $_REQUEST['id'];
+        $staff_guid = $_REQUEST['id'];
         
         $oripasswd = $this->input->post('oripasswd');
         $newpass1 = $this->input->post('passwd1');
@@ -54,11 +54,11 @@ class staff_controller extends CI_Controller {
         $getDate = date('Y-m-d');
         $getDate = strtotime(date("Y-m-d", strtotime($getDate)) . " +".$passwdreset." months");
         $expiry_date = date('Y-m-d',$getDate);
-        $stafforipasswd = $this->db->query("SELECT passwd FROM ost_staff_test WHERE staff_id = '$staff_id' ")->row('passwd');
+        $stafforipasswd = $this->db->query("SELECT passwd FROM ost_staff_test WHERE staff_guid = '$staff_guid' ")->row('passwd');
 
 
         if($newpass1 == $newpass2 && $oripasswd == $stafforipasswd){
-            $this->db->query("UPDATE ost_staff_test SET change_passwd = '0', passwd = '$newpass2' , updated = NOW(),passwdreset='$expiry_date' WHERE staff_id = '$staff_id'");
+            $this->db->query("UPDATE ost_staff_test SET change_passwd = '0', passwd = '$newpass2' , updated = NOW(),passwdreset='$expiry_date' WHERE staff_guid = '$staff_guid'");
         
             echo "<script> alert('Succesfully activate account');</script>";
             echo "<script>

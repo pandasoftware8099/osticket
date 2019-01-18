@@ -67,13 +67,13 @@ class staff_faqs_controller extends CI_Controller {
     public function faqcategory()
     {      
         if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
-        {   $category_id = $_REQUEST['cid'];
+        {   $category_guid = $_REQUEST['cid'];
             $staffid = $_SESSION["staffid"];
             $data = array(
-            'faqcate' => $this->db->query("SELECT * FROM ost_faq_category_test WHERE category_id ='$category_id' "),
-            'faqinfo' => $this->db->query("SELECT * FROM ost_faq_test WHERE category_id = '$category_id' "),
+            'faqcate' => $this->db->query("SELECT * FROM ost_faq_category_test WHERE category_guid ='$category_guid' "),
+            'faqinfo' => $this->db->query("SELECT * FROM ost_faq_test WHERE category_guid = '$category_guid' "),
 
-            'faqallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_id = ' $staffid' AND permissions LIKE '%faq.manage%'")->num_rows(),
+            'faqallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = ' $staffid' AND permissions LIKE '%faq.manage%'")->num_rows(),
 
             );
         $browser_id = $_SERVER["HTTP_USER_AGENT"];
@@ -105,12 +105,12 @@ class staff_faqs_controller extends CI_Controller {
         {   $faqid = $_REQUEST['id'];
             $staffid = $_SESSION["staffid"];
             $data = array(
-            'faqdetails' => $this->db->query("SELECT * FROM ost_faq_info_test WHERE faq_id ='$faqid' "),
-            'faqinfo' => $this->db->query("SELECT * FROM ost_faq_test WHERE faq_id = '$faqid' "),
+            'faqdetails' => $this->db->query("SELECT * FROM ost_faq_info_test WHERE faq_guid ='$faqid' "),
+            'faqinfo' => $this->db->query("SELECT * FROM ost_faq_test WHERE faq_guid = '$faqid' "),
 
-            'faqcate' => $this->db->query("SELECT * FROM ost_faq_test INNER JOIN ost_faq_category_test ON ost_faq_test.category_id = ost_faq_category_test.category_id WHERE faq_id = '$faqid' ")->row(),
+            'faqcate' => $this->db->query("SELECT * FROM ost_faq_test INNER JOIN ost_faq_category_test ON ost_faq_test.category_guid = ost_faq_category_test.category_guid WHERE faq_guid = '$faqid' ")->row(),
 
-            'faqallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_id = ' $staffid' AND permissions LIKE '%faq.manage%'")->num_rows(),
+            'faqallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = ' $staffid' AND permissions LIKE '%faq.manage%'")->num_rows(),
 
             );
         $browser_id = $_SERVER["HTTP_USER_AGENT"];
@@ -171,7 +171,7 @@ class staff_faqs_controller extends CI_Controller {
 
     public function faqadd_process()
     {      
-        $cate_id = $this->input->post('category_id');
+        $cate_id = $this->input->post('category_guid');
         $ispublished = $this->input->post('ispublished');
         $question = $this->input->post('question');
         $answer = $this->input->post('answer');
@@ -179,7 +179,8 @@ class staff_faqs_controller extends CI_Controller {
 
         $ipaddress = $_SERVER['REMOTE_ADDR'];
 
-        $this->db->query("INSERT INTO ost_faq_test (category_id, ispublished, question, answer, notes, created, updated) VALUES ('$cate_id', '$ispublished', '$question', '$answer', '$notes', NOW(),NOW() ); ");
+        $faq_guid = $this->db->query("SELECT REPLACE(UPPER(UUID()),'-','') AS guid")->row('guid');
+        $this->db->query("INSERT INTO ost_faq_test (faq_guid, category_guid, ispublished, question, answer, notes, created, updated) VALUES ('$faq_guid', '$cate_id', '$ispublished', '$question', '$answer', '$notes', NOW(),NOW() ); ");
             
         //filename none wont report error
         if(isset($_POST['submit']))
@@ -192,14 +193,14 @@ class staff_faqs_controller extends CI_Controller {
                 // Looping all files
                 for($i=0;$i<$countfiles;$i++)
                 {
-                    $faq_id = $this->db->query("SELECT faq_id FROM ost_faq_test WHERE created = now() ")->row('faq_id');
-                    $filename = 'faq'.$faq_id.'_'.$_FILES['file']['name'][$i];
+                    $faq_guid = $this->db->query("SELECT faq_guid FROM ost_faq_test WHERE created = now() ")->row('faq_guid');
+                    $filename = 'faq'.$faq_guid.'_'.$_FILES['file']['name'][$i];
 
                     // Upload file
                     move_uploaded_file($_FILES['file']['tmp_name'][$i],'../helpme/uploads/'.$filename);
 
-                    $this->db->query("INSERT ost_file_test (type, name, created , faq_id )
-                    VALUES ('faq', '$filename', NOW(), '$faq_id' ) ");
+                    $this->db->query("INSERT ost_file_test (file_guid, type, name, created , faq_guid )
+                    VALUES (REPLACE(UPPER(UUID()),'-',''), 'faq', '$filename', NOW(), '$faq_guid' ) ");
                 }
                 echo "<script> alert('$i File(s) and FAQ submitted.');</script>";
             }
@@ -216,10 +217,10 @@ class staff_faqs_controller extends CI_Controller {
     {      
         if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
         {   
-            $faq_id = $_REQUEST['id'];
+            $faq_guid = $_REQUEST['id'];
             $data = array(
                 'faqcate' => $this->db->query("SELECT * FROM ost_faq_category_test"),
-                'faqinfo' => $this->db->query("SELECT * FROM ost_faq_test WHERE faq_id = '$faq_id' "),
+                'faqinfo' => $this->db->query("SELECT * FROM ost_faq_test WHERE faq_guid = '$faq_guid' "),
                 'max_file_size' => $this->db->query("SELECT value FROM ost_config_test WHERE id = '77'")->row('value'),
                 'max_files' => $this->db->query("SELECT value FROM ost_config_test WHERE id = '119'")->row('value'),
             );
@@ -248,21 +249,21 @@ class staff_faqs_controller extends CI_Controller {
 
     public function faqedit_process()
     {                         
-        $faq_id = $_REQUEST['id'];   
-        $cate_id = $this->input->post('category_id');
+        $faq_guid = $_REQUEST['id'];   
+        $cate_id = $this->input->post('category_guid');
         $ispublished = $this->input->post('ispublished');
         $question = $this->input->post('question');
         $answer = $this->input->post('answer');
         $notes = $this->input->post('notes');
 
         $this->db->query("UPDATE ost_faq_test
-            SET category_id = '$cate_id', 
+            SET category_guid = '$cate_id', 
             ispublished = '$ispublished', 
             question = '$question', 
             answer = '$answer',
             notes = '$notes',
             updated = now()
-            WHERE faq_id = '$faq_id';");
+            WHERE faq_guid = '$faq_guid';");
 
         //filename none wont report error
         error_reporting(0);
@@ -276,13 +277,13 @@ class staff_faqs_controller extends CI_Controller {
 
                 if ($_FILES['file']['name'][0] != "") {
 
-                    $filename = 'faq'.$faq_id.'_'.$_FILES['file']['name'][$i];
+                    $filename = 'faq'.$faq_guid.'_'.$_FILES['file']['name'][$i];
 
                     // Upload file
                     move_uploaded_file($_FILES['file']['tmp_name'][$i],'../helpme/uploads/'.$filename);
 
-                    $this->db->query("INSERT ost_file_test (type, name, created , faq_id )
-                    VALUES ('faq', '$filename', NOW(), '$faq_id' ) ");
+                    $this->db->query("INSERT ost_file_test (file_guid, type, name, created , faq_guid )
+                    VALUES (REPLACE(UPPER(UUID()),'-',''), 'faq', '$filename', NOW(), '$faq_guid' ) ");
                 }
             }
 
@@ -304,11 +305,11 @@ class staff_faqs_controller extends CI_Controller {
 
     public function faqdelete_process()
 
-    {   $faq_id = $_REQUEST['id'];   
+    {   $faq_guid = $_REQUEST['id'];   
         
-        $name = $this->db->query("SELECT question FROM ost_faq_test WHERE faq_id = '$faq_id' ")->row('question');
-        $this->db->query("DELETE FROM ost_faq_test WHERE faq_id='$faq_id' ");
-        $this->db->query("DELETE FROM ost_file_test WHERE faq_id='$faq_id' ");
+        $name = $this->db->query("SELECT question FROM ost_faq_test WHERE faq_guid = '$faq_guid' ")->row('question');
+        $this->db->query("DELETE FROM ost_faq_test WHERE faq_guid='$faq_guid' ");
+        $this->db->query("DELETE FROM ost_file_test WHERE faq_guid='$faq_guid' ");
 
         echo "<script> alert('$name FAQ deleted.');</script>";
         echo "<script> document.location='" . base_url() . "/index.php/staff_faqs_controller/main' </script>";
@@ -319,7 +320,7 @@ class staff_faqs_controller extends CI_Controller {
         if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
         {   $cate_id = $_REQUEST['id'];
             $data = array(
-            'faqcate' => $this->db->query("SELECT * FROM ost_faq_category_test WHERE category_id = '$cate_id' "),
+            'faqcate' => $this->db->query("SELECT * FROM ost_faq_category_test WHERE category_guid = '$cate_id' "),
             'faqinfo' => $this->db->query("SELECT * FROM ost_faq_test ")
 
 
@@ -361,7 +362,7 @@ class staff_faqs_controller extends CI_Controller {
             description = '$catedescrip',
             notes = '$catenotes',
             updated = now()
-            WHERE category_id = '$cate_id' ;");
+            WHERE category_guid = '$cate_id' ;");
 
         echo "<script> alert('FAQ category edited succesfully.');</script>";
         echo "<script> document.location='" . base_url() . "/index.php/staff_faqs_controller/faqcategory?cid=$cate_id' </script>";
@@ -372,10 +373,10 @@ class staff_faqs_controller extends CI_Controller {
         if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
         {
 
-            $faq_id = $_REQUEST['id'];
+            $faq_guid = $_REQUEST['id'];
             $data = array(
-            'faqcate' => $this->db->query("SELECT * FROM ost_faq_category_test WHERE category_id = '$faq_id' "),
-            'faqinfo' => $this->db->query("SELECT * FROM ost_faq_test WHERE faq_id = '$faq_id' ")
+            'faqcate' => $this->db->query("SELECT * FROM ost_faq_category_test WHERE category_guid = '$faq_guid' "),
+            'faqinfo' => $this->db->query("SELECT * FROM ost_faq_test WHERE faq_guid = '$faq_guid' ")
 
             );
 
@@ -439,14 +440,14 @@ class staff_faqs_controller extends CI_Controller {
 
     {   
 
-        /*$faq_id = $this->input->post('tids[]');*/
-        $category_id = $_REQUEST['cid'];
-        $file_faq_id = $this->db->query("SELECT faq_id FROM ost_faq_test WHERE category_id = '$category_id' ")->row('faq_id');
-        $name = $this->db->query("SELECT name FROM ost_faq_category_test WHERE category_id = '$category_id' ")->row('name');
+        /*$faq_guid = $this->input->post('tids[]');*/
+        $category_guid = $_REQUEST['cid'];
+        $file_faq_guid = $this->db->query("SELECT faq_guid FROM ost_faq_test WHERE category_guid = '$category_guid' ")->row('faq_guid');
+        $name = $this->db->query("SELECT name FROM ost_faq_category_test WHERE category_guid = '$category_guid' ")->row('name');
 
-        $this->db->query("DELETE FROM ost_faq_category_test WHERE category_id='$category_id' ");    
-        $this->db->query("DELETE FROM ost_faq_test WHERE category_id='$category_id' ");
-        $this->db->query("DELETE FROM ost_file_test WHERE faq_id='$file_faq_id' ");
+        $this->db->query("DELETE FROM ost_faq_category_test WHERE category_guid='$category_guid' ");    
+        $this->db->query("DELETE FROM ost_faq_test WHERE category_guid='$category_guid' ");
+        $this->db->query("DELETE FROM ost_file_test WHERE faq_guid='$file_faq_guid' ");
 
 
         echo "<script> alert('Category name $name deleted.');</script>";
@@ -502,7 +503,7 @@ class staff_faqs_controller extends CI_Controller {
             VALUES 
             ('$ispublic', '$catename', '$catedescrip', '$catenotes', NOW(),NOW() ); ");
 
-        $cate_id = $this->db->query("SELECT category_id FROM ost_faq_category_test WHERE created =now() ")->row('category_id');
+        $cate_id = $this->db->query("SELECT category_guid FROM ost_faq_category_test WHERE created =now() ")->row('category_guid');
 
         echo "<script> alert('FAQ category added succesfully.');</script>";
         echo "<script> document.location='" . base_url() . "/index.php/staff_faqs_controller/faqcategory?cid=$cate_id' </script>";

@@ -63,7 +63,7 @@ class staff_dashboard_controller extends CI_Controller {
         
         $data = array(
             
-            'result' => $this->db->query("SELECT * FROM  ost_staff_test WHERE staff_id = '$userid'"),
+            'result' => $this->db->query("SELECT * FROM  ost_staff_test WHERE staff_guid = '$userid'"),
             'hide_staff_name' => $this->db->query("SELECT value FROM ost_config_test WHERE id='67'")->row('value'),
         );
 
@@ -116,7 +116,7 @@ class staff_dashboard_controller extends CI_Controller {
             else
                 $crefresh = NULL;
 
-            $user_id = $_SESSION["staffid"];
+            $user_guid = $_SESSION["staffid"];
 
             /*$updatesessiondata = array(
                               
@@ -146,7 +146,7 @@ class staff_dashboard_controller extends CI_Controller {
                     defaultname = '$cdefaultname',
                     updated = NOW()
 
-                    WHERE staff_id='$user_id'");
+                    WHERE staff_guid='$user_guid'");
 
                    $sessiondata = array(
                         
@@ -177,7 +177,7 @@ class staff_dashboard_controller extends CI_Controller {
             $newpass2 = $this->input->post('newpass2');
 
 
-            $user_id = $_SESSION["staffid"];
+            $user_guid = $_SESSION["staffid"];
 
             /*$updatesessiondata = array(
                               
@@ -188,7 +188,7 @@ class staff_dashboard_controller extends CI_Controller {
                         'userphoneext' =>$cphoneext,
                     ); */     
 
-            $checking = $this->db->query("SELECT * FROM osticket.ost_staff_test WHERE staff_id='$user_id' AND passwd='$currentpass'")->num_rows();
+            $checking = $this->db->query("SELECT * FROM osticket.ost_staff_test WHERE staff_guid='$user_guid' AND passwd='$currentpass'")->num_rows();
           
             if ($checking  > 0) {
 
@@ -197,7 +197,7 @@ class staff_dashboard_controller extends CI_Controller {
 
                     passwd = '$newpass1', updated = now()
 
-                    WHERE staff_id='$user_id'");
+                    WHERE staff_guid='$user_guid'");
 
                    /* $this->session->set_userdata($updatesessiondata);*/
 
@@ -238,7 +238,7 @@ class staff_dashboard_controller extends CI_Controller {
         $userid = $_SESSION["staffid"];    
         $data = array(
             
-            'result' => $this->db->query("SELECT * FROM  ost_staff_test ORDER BY staff_id DESC"),
+            'result' => $this->db->query("SELECT * FROM  ost_staff_test ORDER BY staff_guid DESC"),
             'max_page_size' => $this->db->query("SELECT value FROM ost_config_test WHERE id = '21'")->row('value'), 
 
         );

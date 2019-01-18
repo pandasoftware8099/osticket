@@ -43,9 +43,9 @@
         Default Department <font class="error">*</font> :
     </label>
     <div class="col-lg-9">
-        <select required="true" name="default_dept_id" class="form-control" data-quick-add="department">
+        <select required="true" name="default_dept_guid" class="form-control" data-quick-add="department">
                                 <?php foreach ($department->result() as $value) { ?>
-                                <option <?php echo ($default_dept_id->value == $value->id)?"selected":""; ?> value="<?php echo $value->id;?>"><?php echo $value->name;?></option>
+                                <option <?php echo ($default_dept_guid->value == $value->id)?"selected":""; ?> value="<?php echo $value->id;?>"><?php echo $value->name;?></option>
                                 <?php } ?>
                             <option value="0" data-quick-add="">— Add New —</option>
         </select>&nbsp;<font class="error">&nbsp;</font>

@@ -20,7 +20,7 @@
                 <em><b>General Settings</b></em>
             </div>
             <div class="form-group" style="overflow:auto;">
-                <label class="col-lg-3 control-label"><i class="help-tip icon-question-sign" href="#staff_identity_masking"></i> Agent Identity Masking :</label>
+                <label class="col-lg-3 control-label"><i class="help-tip icon-question-sign" href="#staff_guidentity_masking"></i> Agent Identity Masking :</label>
                 <div class="col-lg-9 test" >
                     <input type="hidden" name="hide_staff_name" value="0">
                     <input type="checkbox" name="hide_staff_name" value="1" <?php if($hide_staff_name->value == '1'){
@@ -139,7 +139,7 @@
             </div>
             <div class="modal-body form">
                 <!-- <div class="col-md-12"> -->
-                <form action="<?php echo site_url('admin_settings_controller/templates_update');?>?id=<?php echo $agenttemplate->id;?>&direct=agent" method="POST" id="form" class="form-horizontal">
+                <form action="<?php echo site_url('admin_settings_controller/templates_update');?>?id=<?php echo $agenttemplate->content_guid;?>&direct=agent" method="POST" id="form" class="form-horizontal">
                     <input name="topic" class="form-control" type="text" style="width:100%;font-size: 20px"  value="<?php echo $agenttemplate->name;?>">
                     <div>
                         <span class="help-block"></span>

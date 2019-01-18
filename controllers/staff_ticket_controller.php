@@ -22,33 +22,33 @@ class staff_ticket_controller extends CI_Controller {
         if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
         {   
             $userdeptid = $_SESSION['staffdept'];
-            $staff_id = $_SESSION["staffid"];
+            $staff_guid = $_SESSION["staffid"];
             $direct = $_REQUEST['direct'];
             $show_assigned_tickets = $this->db->query("SELECT value FROM ost_config_test WHERE id = '65'")->row('value');
             $show_answered_tickets = $this->db->query("SELECT value FROM ost_config_test WHERE id = '66'")->row('value');
-            $defaultdept = $this->db->query("SELECT name, value FROM ost_config_test a INNER JOIN ost_department_test b ON a.value = b.id WHERE a.id = '85'");
+            $defaultdept = $this->db->query("SELECT name, value FROM ost_config_test a INNER JOIN ost_department_test b ON a.value = b.department_guid WHERE a.id = '85'");
 
             if ($direct == 'open')
             {
                 $result = $this->db->query("SELECT * FROM  ost_ticket_test AS a  
-                    INNER JOIN ost_help_topic_test AS b  ON b.topic_id = a.topic_id 
-                    INNER JOIN ost_ticket_status_test AS c  ON c.id = a.status_id 
-                    INNER JOIN ost_user_test AS d  ON a.user_id = d.user_id 
-                    INNER JOIN ost_ticket_priority_test AS e  ON e.priority_id = a.priority_id
+                    INNER JOIN ost_help_topic_test AS b  ON b.topic_guid = a.topic_guid 
+                    INNER JOIN ost_ticket_status_test AS c  ON c.status_guid = a.status_guid 
+                    INNER JOIN ost_user_test AS d  ON a.user_guid = d.user_guid 
+                    INNER JOIN ost_ticket_priority_test AS e  ON e.priority_guid = a.priority_guid
                     WHERE c.state = 'open'
-                    AND department IN (SELECT NAME FROM ost_department_test a INNER JOIN ost_staff_dept_access_test b ON a.id = b.`dept_id` WHERE B.`staff_id` = '$staff_id' UNION SELECT NAME FROM ost_department_test WHERE id = '$userdeptid')
-                    AND (($show_assigned_tickets = '1' AND NOT ((a.assigned_to IS NOT NULL AND a.assigned_to != '0') OR (a.team_id IS NOT NULL AND a.team_id != '0'))) OR ($show_assigned_tickets = '0'))
-                    AND (($show_answered_tickets = '1' AND a.ticket_id NOT IN (SELECT ticket_id FROM ost_thread_entry_test AS f WHERE f.type = 'S' AND a.created_at != f.created)) OR ($show_answered_tickets = '0'))");
+                    AND department IN (SELECT NAME FROM ost_department_test a INNER JOIN ost_staff_dept_access_test b ON a.department_guid = b.`dept_guid` WHERE B.`staff_guid` = '$staff_guid' UNION SELECT NAME FROM ost_department_test WHERE department_guid = '$userdeptid')
+                    AND (($show_assigned_tickets = '1' AND NOT ((a.assigned_to IS NOT NULL AND a.assigned_to != '0') OR (a.team_guid IS NOT NULL AND a.team_guid != '0'))) OR ($show_assigned_tickets = '0'))
+                    AND (($show_answered_tickets = '1' AND a.ticket_guid NOT IN (SELECT ticket_guid FROM ost_thread_entry_test AS f WHERE f.type = 'S' AND a.created_at != f.created)) OR ($show_answered_tickets = '0'))");
             }
             else if ($direct == 'answered')
             {
                 $result = $this->db->query("SELECT * FROM ost_ticket_test AS a  
-                    INNER JOIN ost_help_topic_test AS b ON b.topic_id = a.topic_id 
-                    INNER JOIN ost_ticket_status_test AS c ON c.id = a.status_id 
-                    INNER JOIN ost_user_test AS d ON a.user_id = d.user_id 
-                    INNER JOIN ost_ticket_priority_test AS e ON e.priority_id = a.priority_id
-                    INNER JOIN ost_thread_entry_test AS f ON a.ticket_id = f.ticket_id
-                    WHERE f.type = 'S' AND a.created_at != f.created GROUP BY a.ticket_id");
+                    INNER JOIN ost_help_topic_test AS b ON b.topic_guid = a.topic_guid 
+                    INNER JOIN ost_ticket_status_test AS c ON c.status_guid = a.status_guid 
+                    INNER JOIN ost_user_test AS d ON a.user_guid = d.user_guid 
+                    INNER JOIN ost_ticket_priority_test AS e ON e.priority_guid = a.priority_guid
+                    INNER JOIN ost_thread_entry_test AS f ON a.ticket_guid = f.ticket_guid
+                    WHERE f.type = 'S' AND a.created_at != f.created GROUP BY a.ticket_guid");
             }
 
             if ($userdeptid == $defaultdept->row('value'))
@@ -57,20 +57,20 @@ class staff_ticket_controller extends CI_Controller {
             }
             else
             {
-                $department = $this->db->query("SELECT dept_id, role_id, permissions ,c.`name`,c.`id` FROM (SELECT dept_id , role_id FROM ost_staff_test WHERE staff_id = '$staff_id' UNION SELECT dept_id , role_id FROM ost_staff_dept_access_test WHERE staff_id = '$staff_id' ) a INNER JOIN ost_role_test b ON a.role_id=b.id INNER JOIN ost_department_test c ON a.dept_id = c.id WHERE permissions LIKE '%ticket.transfer%' AND c.name != '".$defaultdept->row('name')."'");
+                $department = $this->db->query("SELECT dept_guid, a.role_guid, permissions ,c.`name`,c.`department_guid` FROM (SELECT dept_guid , role_guid FROM ost_staff_test WHERE staff_guid = '$staff_guid' UNION SELECT dept_guid , role_guid FROM ost_staff_dept_access_test WHERE staff_guid = '$staff_guid' ) a INNER JOIN ost_role_test b ON a.role_guid=b.role_guid INNER JOIN ost_department_test c ON a.dept_guid = c.department_guid WHERE permissions LIKE '%ticket.transfer%' AND c.name != '".$defaultdept->row('name')."'");
             }
 
             $data = array(
                 
                 'result' => $result,
 
-                'editallow' => $this->db->query(" SELECT dept_id, role_id ,b.`permissions` FROM ost_staff_test AS a INNER JOIN ost_role_test AS b ON a.`role_id` = b.id WHERE staff_id = '$staff_id' AND b.`permissions` LIKE '%ticket.edit%'")->num_rows(),
+                'editallow' => $this->db->query(" SELECT dept_guid, a.role_guid ,b.`permissions` FROM ost_staff_test AS a INNER JOIN ost_role_test AS b ON a.`role_guid` = b.role_guid WHERE staff_guid = '$staff_guid' AND b.`permissions` LIKE '%ticket.edit%'")->num_rows(),
 
-                'assignallow' => $this->db->query(" SELECT dept_id, role_id ,b.`permissions` FROM ost_staff_test AS a INNER JOIN ost_role_test AS b ON a.`role_id` = b.id WHERE staff_id = '$staff_id' AND b.`permissions` LIKE '%ticket.assign%'")->num_rows(),
+                'assignallow' => $this->db->query(" SELECT dept_guid, a.role_guid ,b.`permissions` FROM ost_staff_test AS a INNER JOIN ost_role_test AS b ON a.`role_guid` = b.role_guid WHERE staff_guid = '$staff_guid' AND b.`permissions` LIKE '%ticket.assign%'")->num_rows(),
 
-                'transferallow' => $this->db->query(" SELECT dept_id, role_id ,b.`permissions` FROM ost_staff_test AS a INNER JOIN ost_role_test AS b ON a.`role_id` = b.id WHERE staff_id = '$staff_id' AND b.`permissions` LIKE '%ticket.transfer%'")->num_rows(),
+                'transferallow' => $this->db->query(" SELECT dept_guid, a.role_guid ,b.`permissions` FROM ost_staff_test AS a INNER JOIN ost_role_test AS b ON a.`role_guid` = b.role_guid WHERE staff_guid = '$staff_guid' AND b.`permissions` LIKE '%ticket.transfer%'")->num_rows(),
 
-                'deleteallow' => $this->db->query(" SELECT dept_id, role_id ,b.`permissions` FROM ost_staff_test AS a INNER JOIN ost_role_test AS b ON a.`role_id` = b.id WHERE staff_id = '$staff_id' AND b.`permissions` LIKE '%ticket.delete%'")->num_rows(),
+                'deleteallow' => $this->db->query(" SELECT dept_guid, a.role_guid ,b.`permissions` FROM ost_staff_test AS a INNER JOIN ost_role_test AS b ON a.`role_guid` = b.role_guid WHERE staff_guid = '$staff_guid' AND b.`permissions` LIKE '%ticket.delete%'")->num_rows(),
 
                 'status' => $this->db->query("SELECT * FROM ost_ticket_status_test"),
 
@@ -78,7 +78,7 @@ class staff_ticket_controller extends CI_Controller {
 
                 'default_depart' => $defaultdept,
 
-                'staff' => $this->db->query("SELECT * FROM ost_staff_test WHERE dept_id = '$userdeptid'"), 
+                'staff' => $this->db->query("SELECT * FROM ost_staff_test WHERE dept_guid = '$userdeptid'"), 
 
                 'team' => $this->db->query("SELECT * FROM ost_team_test WHERE flags = 1 "),
 
@@ -112,9 +112,9 @@ class staff_ticket_controller extends CI_Controller {
     {      
         if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
         {
-            $staff_id = $_SESSION["staffid"];  
+            $staff_guid = $_SESSION["staffid"];  
             $userdeptid = $_SESSION['staffdept'];
-            $defaultdept = $this->db->query("SELECT name, value FROM ost_config_test a INNER JOIN ost_department_test b ON a.value = b.id WHERE a.id = '85'");
+            $defaultdept = $this->db->query("SELECT name, value FROM ost_config_test a INNER JOIN ost_department_test b ON a.value = b.department_guid WHERE a.id = '85'");
 
             if ($userdeptid == $defaultdept->row('value'))
             {
@@ -122,25 +122,25 @@ class staff_ticket_controller extends CI_Controller {
             }
             else
             {
-                $department = $this->db->query("SELECT dept_id, role_id, permissions ,c.`name`,c.`id` FROM (SELECT dept_id , role_id FROM ost_staff_test WHERE staff_id = '$staff_id' UNION SELECT dept_id , role_id FROM ost_staff_dept_access_test WHERE staff_id = '$staff_id' ) a INNER JOIN ost_role_test b ON a.role_id=b.id INNER JOIN ost_department_test c ON a.dept_id = c.id WHERE permissions LIKE '%ticket.transfer%' AND c.name != '".$defaultdept->row('name')."'");
+                $department = $this->db->query("SELECT dept_guid, a.role_guid, permissions ,c.`name`,c.`department_guid` FROM (SELECT dept_guid , role_guid FROM ost_staff_test WHERE staff_guid = '$staff_guid' UNION SELECT dept_guid , role_guid FROM ost_staff_dept_access_test WHERE staff_guid = '$staff_guid' ) a INNER JOIN ost_role_test b ON a.role_guid=b.role_guid INNER JOIN ost_department_test c ON a.dept_guid = c.department_guid WHERE permissions LIKE '%ticket.transfer%' AND c.name != '".$defaultdept->row('name')."'");
             }
 
             $data = array(
                 
                 'result' => $this->db->query("SELECT * FROM  ost_ticket_test AS a  
-                    INNER JOIN ost_help_topic_test AS b  ON b.topic_id = a.topic_id 
-                    INNER JOIN ost_ticket_status_test AS c  ON c.id = a.status_id 
-                    INNER JOIN ost_user_test AS d  ON a.user_id = d.user_id 
-                    INNER JOIN ost_ticket_priority_test AS e  ON e.priority_id = a.priority_id 
-                    WHERE c.state = 'open' AND assigned_to = '$staff_id' ORDER BY ticket_id DESC"), 
+                    INNER JOIN ost_help_topic_test AS b  ON b.topic_guid = a.topic_guid 
+                    INNER JOIN ost_ticket_status_test AS c  ON c.status_guid = a.status_guid 
+                    INNER JOIN ost_user_test AS d  ON a.user_guid = d.user_guid 
+                    INNER JOIN ost_ticket_priority_test AS e  ON e.priority_guid = a.priority_guid 
+                    WHERE c.state = 'open' AND assigned_to = '$staff_guid' ORDER BY ticket_guid DESC"), 
 
-                 'editallow' => $this->db->query(" SELECT dept_id, role_id ,b.`permissions` FROM ost_staff_test AS a INNER JOIN ost_role_test AS b ON a.`role_id` = b.id WHERE staff_id = '$staff_id' AND b.`permissions` LIKE '%ticket.edit%'")->num_rows(),
+                 'editallow' => $this->db->query(" SELECT dept_guid, a.role_guid ,b.`permissions` FROM ost_staff_test AS a INNER JOIN ost_role_test AS b ON a.`role_guid` = b.role_guid WHERE staff_guid = '$staff_guid' AND b.`permissions` LIKE '%ticket.edit%'")->num_rows(),
 
-                'assignallow' => $this->db->query(" SELECT dept_id, role_id ,b.`permissions` FROM ost_staff_test AS a INNER JOIN ost_role_test AS b ON a.`role_id` = b.id WHERE staff_id = '$staff_id' AND b.`permissions` LIKE '%ticket.assign%'")->num_rows(),
+                'assignallow' => $this->db->query(" SELECT dept_guid, a.role_guid ,b.`permissions` FROM ost_staff_test AS a INNER JOIN ost_role_test AS b ON a.`role_guid` = b.role_guid WHERE staff_guid = '$staff_guid' AND b.`permissions` LIKE '%ticket.assign%'")->num_rows(),
 
-                'transferallow' => $this->db->query(" SELECT dept_id, role_id ,b.`permissions` FROM ost_staff_test AS a INNER JOIN ost_role_test AS b ON a.`role_id` = b.id WHERE staff_id = '$staff_id' AND b.`permissions` LIKE '%ticket.transfer%'")->num_rows(),
+                'transferallow' => $this->db->query(" SELECT dept_guid, a.role_guid ,b.`permissions` FROM ost_staff_test AS a INNER JOIN ost_role_test AS b ON a.`role_guid` = b.role_guid WHERE staff_guid = '$staff_guid' AND b.`permissions` LIKE '%ticket.transfer%'")->num_rows(),
 
-                'deleteallow' => $this->db->query(" SELECT dept_id, role_id ,b.`permissions` FROM ost_staff_test AS a INNER JOIN ost_role_test AS b ON a.`role_id` = b.id WHERE staff_id = '$staff_id' AND b.`permissions` LIKE '%ticket.delete%'")->num_rows(),
+                'deleteallow' => $this->db->query(" SELECT dept_guid, a.role_guid ,b.`permissions` FROM ost_staff_test AS a INNER JOIN ost_role_test AS b ON a.`role_guid` = b.role_guid WHERE staff_guid = '$staff_guid' AND b.`permissions` LIKE '%ticket.delete%'")->num_rows(),
 
                 'status' => $this->db->query("SELECT * FROM ost_ticket_status_test"),
 
@@ -148,9 +148,9 @@ class staff_ticket_controller extends CI_Controller {
 
                 'default_depart' => $defaultdept,
 
-                'staff' => $this->db->query("SELECT * FROM ost_staff_test WHERE dept_id = '$userdeptid'"),
+                'staff' => $this->db->query("SELECT * FROM ost_staff_test WHERE dept_guid = '$userdeptid'"),
 
-                'editallow' => $this->db->query(" SELECT dept_id, role_id ,b.`permissions` FROM ost_staff_test AS a INNER JOIN ost_role_test AS b ON a.`role_id` = b.id WHERE staff_id = '$staff_id' AND b.`permissions` LIKE '%ticket.edit%'")->num_rows(),
+                'editallow' => $this->db->query(" SELECT dept_guid, a.role_guid ,b.`permissions` FROM ost_staff_test AS a INNER JOIN ost_role_test AS b ON a.`role_guid` = b.role_guid WHERE staff_guid = '$staff_guid' AND b.`permissions` LIKE '%ticket.edit%'")->num_rows(),
 
                 'team' => $this->db->query("SELECT * FROM ost_team_test WHERE flags = 1 "),
 
@@ -183,9 +183,9 @@ class staff_ticket_controller extends CI_Controller {
     {      
         if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
         {
-            $staff_id = $_SESSION["staffid"];  
+            $staff_guid = $_SESSION["staffid"];  
             $userdeptid = $_SESSION['staffdept'];
-            $defaultdept = $this->db->query("SELECT name, value FROM ost_config_test a INNER JOIN ost_department_test b ON a.value = b.id WHERE a.id = '85'");
+            $defaultdept = $this->db->query("SELECT name, value FROM ost_config_test a INNER JOIN ost_department_test b ON a.value = b.department_guid WHERE a.id = '85'");
 
             if ($userdeptid == $defaultdept->row('value'))
             {
@@ -193,7 +193,7 @@ class staff_ticket_controller extends CI_Controller {
             }
             else
             {
-                $department = $this->db->query("SELECT dept_id, role_id, permissions ,c.`name`,c.`id` FROM (SELECT dept_id , role_id FROM ost_staff_test WHERE staff_id = '$staff_id' UNION SELECT dept_id , role_id FROM ost_staff_dept_access_test WHERE staff_id = '$staff_id' ) a INNER JOIN ost_role_test b ON a.role_id=b.id INNER JOIN ost_department_test c ON a.dept_id = c.id WHERE permissions LIKE '%ticket.transfer%' AND c.name != '".$defaultdept->row('name')."'");
+                $department = $this->db->query("SELECT dept_guid, a.role_guid, b.permissions ,c.`name`,c.`department_guid` FROM (SELECT dept_guid , role_guid FROM ost_staff_test WHERE staff_guid = '$staff_guid' UNION SELECT dept_guid , role_guid FROM ost_staff_dept_access_test WHERE staff_guid = '$staff_guid' ) a INNER JOIN ost_role_test b ON a.role_guid=b.role_guid INNER JOIN ost_department_test c ON a.dept_guid = c.department_guid WHERE permissions LIKE '%ticket.transfer%' AND c.name != '".$defaultdept->row('name')."'");
             }
 
             /*$todaydate = date('Y-m-d');
@@ -203,19 +203,19 @@ class staff_ticket_controller extends CI_Controller {
             $data = array(
                 
                 'result' => $this->db->query("SELECT * FROM  ost_ticket_test AS a  
-                    INNER JOIN ost_help_topic_test AS b  ON b.topic_id = a.topic_id 
-                    INNER JOIN ost_ticket_status_test AS c  ON c.id = a.status_id 
-                    INNER JOIN ost_user_test AS d  ON a.user_id = d.user_id 
-                    INNER JOIN ost_ticket_priority_test AS e  ON e.priority_id = a.priority_id 
+                    INNER JOIN ost_help_topic_test AS b  ON b.topic_guid = a.topic_guid 
+                    INNER JOIN ost_ticket_status_test AS c  ON c.status_guid = a.status_guid 
+                    INNER JOIN ost_user_test AS d  ON a.user_guid = d.user_guid 
+                    INNER JOIN ost_ticket_priority_test AS e  ON e.priority_guid = a.priority_guid 
                     WHERE c.state = 'open' AND duedate <= now()"), 
 
-                 'editallow' => $this->db->query(" SELECT dept_id, role_id ,b.`permissions` FROM ost_staff_test AS a INNER JOIN ost_role_test AS b ON a.`role_id` = b.id WHERE staff_id = '$staff_id' AND b.`permissions` LIKE '%ticket.edit%'")->num_rows(),
+                 'editallow' => $this->db->query(" SELECT dept_guid, a.role_guid ,b.`permissions` FROM ost_staff_test AS a INNER JOIN ost_role_test AS b ON a.`role_guid` = b.role_guid WHERE staff_guid = '$staff_guid' AND b.`permissions` LIKE '%ticket.edit%'")->num_rows(),
 
-                'assignallow' => $this->db->query(" SELECT dept_id, role_id ,b.`permissions` FROM ost_staff_test AS a INNER JOIN ost_role_test AS b ON a.`role_id` = b.id WHERE staff_id = '$staff_id' AND b.`permissions` LIKE '%ticket.assign%'")->num_rows(),
+                'assignallow' => $this->db->query(" SELECT dept_guid, a.role_guid ,b.`permissions` FROM ost_staff_test AS a INNER JOIN ost_role_test AS b ON a.`role_guid` = b.role_guid WHERE staff_guid = '$staff_guid' AND b.`permissions` LIKE '%ticket.assign%'")->num_rows(),
 
-                'transferallow' => $this->db->query(" SELECT dept_id, role_id ,b.`permissions` FROM ost_staff_test AS a INNER JOIN ost_role_test AS b ON a.`role_id` = b.id WHERE staff_id = '$staff_id' AND b.`permissions` LIKE '%ticket.transfer%'")->num_rows(),
+                'transferallow' => $this->db->query(" SELECT dept_guid, a.role_guid ,b.`permissions` FROM ost_staff_test AS a INNER JOIN ost_role_test AS b ON a.`role_guid` = b.role_guid WHERE staff_guid = '$staff_guid' AND b.`permissions` LIKE '%ticket.transfer%'")->num_rows(),
 
-                'deleteallow' => $this->db->query(" SELECT dept_id, role_id ,b.`permissions` FROM ost_staff_test AS a INNER JOIN ost_role_test AS b ON a.`role_id` = b.id WHERE staff_id = '$staff_id' AND b.`permissions` LIKE '%ticket.delete%'")->num_rows(),
+                'deleteallow' => $this->db->query(" SELECT dept_guid, a.role_guid ,b.`permissions` FROM ost_staff_test AS a INNER JOIN ost_role_test AS b ON a.`role_guid` = b.role_guid WHERE staff_guid = '$staff_guid' AND b.`permissions` LIKE '%ticket.delete%'")->num_rows(),
 
                 'status' => $this->db->query("SELECT * FROM ost_ticket_status_test"),
 
@@ -223,9 +223,9 @@ class staff_ticket_controller extends CI_Controller {
 
                 'default_depart' => $defaultdept,
 
-                'staff' => $this->db->query("SELECT * FROM ost_staff_test WHERE dept_id = '$userdeptid'"),
+                'staff' => $this->db->query("SELECT * FROM ost_staff_test WHERE dept_guid = '$userdeptid'"),
 
-                'editallow' => $this->db->query(" SELECT dept_id, role_id ,b.`permissions` FROM ost_staff_test AS a INNER JOIN ost_role_test AS b ON a.`role_id` = b.id WHERE staff_id = '$staff_id' AND b.`permissions` LIKE '%ticket.edit%'")->num_rows(),
+                'editallow' => $this->db->query(" SELECT dept_guid, a.role_guid ,b.`permissions` FROM ost_staff_test AS a INNER JOIN ost_role_test AS b ON a.`role_guid` = b.role_guid WHERE staff_guid = '$staff_guid' AND b.`permissions` LIKE '%ticket.edit%'")->num_rows(),
 
                 'team' => $this->db->query("SELECT * FROM ost_team_test WHERE flags = 1 "),
 
@@ -256,9 +256,9 @@ class staff_ticket_controller extends CI_Controller {
     {      
         if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
         {
-            $staff_id = $_SESSION["staffid"];  
+            $staff_guid = $_SESSION["staffid"];  
             $userdeptid = $_SESSION['staffdept'];
-            $defaultdept = $this->db->query("SELECT name, value FROM ost_config_test a INNER JOIN ost_department_test b ON a.value = b.id WHERE a.id = '85'");
+            $defaultdept = $this->db->query("SELECT name, value FROM ost_config_test a INNER JOIN ost_department_test b ON a.value = b.department_guid WHERE a.id = '85'");
 
             if ($userdeptid == $defaultdept->row('value'))
             {
@@ -266,25 +266,25 @@ class staff_ticket_controller extends CI_Controller {
             }
             else
             {
-                $department = $this->db->query("SELECT dept_id, role_id, permissions ,c.`name`,c.`id` FROM (SELECT dept_id , role_id FROM ost_staff_test WHERE staff_id = '$staff_id' UNION SELECT dept_id , role_id FROM ost_staff_dept_access_test WHERE staff_id = '$staff_id' ) a INNER JOIN ost_role_test b ON a.role_id=b.id INNER JOIN ost_department_test c ON a.dept_id = c.id WHERE permissions LIKE '%ticket.transfer%' AND c.name != '".$defaultdept->row('name')."'");
+                $department = $this->db->query("SELECT dept_guid, a.role_guid, b.permissions ,c.`name`,c.`department_guid` FROM (SELECT dept_guid , role_guid FROM ost_staff_test WHERE staff_guid = '$staff_guid' UNION SELECT dept_guid , role_guid FROM ost_staff_dept_access_test WHERE staff_guid = '$staff_guid' ) a INNER JOIN ost_role_test b ON a.role_guid=b.role_guid INNER JOIN ost_department_test c ON a.dept_guid = c.department_guid WHERE permissions LIKE '%ticket.transfer%' AND c.name != '".$defaultdept->row('name')."'");
             }
 
             $data = array(
                 
                 'result' => $this->db->query("SELECT * FROM  ost_ticket_test AS a  
-                    INNER JOIN ost_help_topic_test AS b  ON b.topic_id = a.topic_id 
-                    INNER JOIN ost_ticket_status_test AS c  ON c.id = a.status_id 
-                    INNER JOIN ost_user_test AS d  ON a.user_id = d.user_id 
-                    INNER JOIN ost_ticket_priority_test AS e  ON e.priority_id = a.priority_id
-                    WHERE c.state = 'closed' AND department IN (SELECT NAME FROM ost_department_test a INNER JOIN ost_staff_dept_access_test b ON a.id = b.`dept_id` WHERE B.`staff_id` = '$staff_id' UNION SELECT NAME FROM ost_department_test WHERE id = '$userdeptid')"),
+                    INNER JOIN ost_help_topic_test AS b  ON b.topic_guid = a.topic_guid 
+                    INNER JOIN ost_ticket_status_test AS c  ON c.status_guid = a.status_guid 
+                    INNER JOIN ost_user_test AS d  ON a.user_guid = d.user_guid 
+                    INNER JOIN ost_ticket_priority_test AS e  ON e.priority_guid = a.priority_guid
+                    WHERE c.state = 'closed' AND department IN (SELECT NAME FROM ost_department_test a INNER JOIN ost_staff_dept_access_test b ON a.department_guid = b.`dept_guid` WHERE B.`staff_guid` = '$staff_guid' UNION SELECT NAME FROM ost_department_test WHERE department_guid = '$userdeptid')"),
 
-                 'editallow' => $this->db->query(" SELECT dept_id, role_id ,b.`permissions` FROM ost_staff_test AS a INNER JOIN ost_role_test AS b ON a.`role_id` = b.id WHERE staff_id = '$staff_id' AND b.`permissions` LIKE '%ticket.edit%'")->num_rows(),
+                 'editallow' => $this->db->query(" SELECT dept_guid, a.role_guid ,b.`permissions` FROM ost_staff_test AS a INNER JOIN ost_role_test AS b ON a.`role_guid` = b.role_guid WHERE staff_guid = '$staff_guid' AND b.`permissions` LIKE '%ticket.edit%'")->num_rows(),
 
-                'assignallow' => $this->db->query(" SELECT dept_id, role_id ,b.`permissions` FROM ost_staff_test AS a INNER JOIN ost_role_test AS b ON a.`role_id` = b.id WHERE staff_id = '$staff_id' AND b.`permissions` LIKE '%ticket.assign%'")->num_rows(),
+                'assignallow' => $this->db->query(" SELECT dept_guid, a.role_guid ,b.`permissions` FROM ost_staff_test AS a INNER JOIN ost_role_test AS b ON a.`role_guid` = b.role_guid WHERE staff_guid = '$staff_guid' AND b.`permissions` LIKE '%ticket.assign%'")->num_rows(),
 
-                'transferallow' => $this->db->query(" SELECT dept_id, role_id ,b.`permissions` FROM ost_staff_test AS a INNER JOIN ost_role_test AS b ON a.`role_id` = b.id WHERE staff_id = '$staff_id' AND b.`permissions` LIKE '%ticket.transfer%'")->num_rows(),
+                'transferallow' => $this->db->query(" SELECT dept_guid, a.role_guid ,b.`permissions` FROM ost_staff_test AS a INNER JOIN ost_role_test AS b ON a.`role_guid` = b.role_guid WHERE staff_guid = '$staff_guid' AND b.`permissions` LIKE '%ticket.transfer%'")->num_rows(),
 
-                'deleteallow' => $this->db->query(" SELECT dept_id, role_id ,b.`permissions` FROM ost_staff_test AS a INNER JOIN ost_role_test AS b ON a.`role_id` = b.id WHERE staff_id = '$staff_id' AND b.`permissions` LIKE '%ticket.delete%'")->num_rows(),
+                'deleteallow' => $this->db->query(" SELECT dept_guid, a.role_guid ,b.`permissions` FROM ost_staff_test AS a INNER JOIN ost_role_test AS b ON a.`role_guid` = b.role_guid WHERE staff_guid = '$staff_guid' AND b.`permissions` LIKE '%ticket.delete%'")->num_rows(),
 
                 'status' => $this->db->query("SELECT * FROM ost_ticket_status_test"),
 
@@ -292,9 +292,9 @@ class staff_ticket_controller extends CI_Controller {
 
                 'default_depart' => $defaultdept,
 
-                'staff' => $this->db->query("SELECT * FROM ost_staff_test WHERE dept_id = '$userdeptid'"),
+                'staff' => $this->db->query("SELECT * FROM ost_staff_test WHERE dept_guid = '$userdeptid'"),
 
-                'editallow' => $this->db->query(" SELECT dept_id, role_id ,b.`permissions` FROM ost_staff_test AS a INNER JOIN ost_role_test AS b ON a.`role_id` = b.id WHERE staff_id = '$staff_id' AND b.`permissions` LIKE '%ticket.edit%'")->num_rows(),
+                'editallow' => $this->db->query(" SELECT dept_guid, a.role_guid ,b.`permissions` FROM ost_staff_test AS a INNER JOIN ost_role_test AS b ON a.`role_guid` = b.role_guid WHERE staff_guid = '$staff_guid' AND b.`permissions` LIKE '%ticket.edit%'")->num_rows(),
 
                 'team' => $this->db->query("SELECT * FROM ost_team_test WHERE flags = 1 "),
 
@@ -329,12 +329,12 @@ class staff_ticket_controller extends CI_Controller {
     {      
         if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
         {
-            $user_id = $_REQUEST['id'];
-            $staff_id = $_SESSION['staffid'];
+            $user_guid = $_REQUEST['id'];
+            $staff_guid = $_SESSION['staffid'];
 
             $default_topic = $this->db->query("SELECT value FROM ost_config_test WHERE id ='102'");
             $manager = $this->db->query("SELECT * FROM ost_organization_test AS a
-                LEFT JOIN ost_user_test AS b ON a.id = b.user_org_id WHERE b.user_id = '$user_id'")->row('manager');
+                LEFT JOIN ost_user_test AS b ON a.organization_guid = b.user_org_guid WHERE b.user_guid = '$user_guid'")->row('manager');
 
             if ($manager != ('0' || ''))
             {
@@ -355,23 +355,23 @@ class staff_ticket_controller extends CI_Controller {
                 $teamid = '0';
             }
             
-            if ($user_id != "")
+            if ($user_guid != "")
             {
                 $data = array(
                     'userinfo' => $this->db->query("SELECT * FROM ost_user_test AS a
-                        LEFT JOIN ost_organization_test AS b ON a.user_org_id = b.id
+                        LEFT JOIN ost_organization_test AS b ON a.user_org_guid = b.organization_guid
                         LEFT JOIN ost_staff_test AS c ON b.manager = '$staffid'
                         LEFT JOIN ost_team_test AS d ON b.manager = '$teamid'
-                        WHERE user_id = '$user_id'"),
+                        WHERE user_guid = '$user_guid'"),
                     'stafftopic' => $this->db->query("SELECT * FROM ost_help_topic_test WHERE isactive = 1 ORDER BY topic"),
-                    'staffdepart' => $this->db->query("SELECT dept_id, role_id, permissions ,c.`name`,c.`id` FROM (SELECT dept_id , role_id FROM ost_staff_test WHERE staff_id = '$staff_id' UNION SELECT dept_id , role_id FROM ost_staff_dept_access_test WHERE staff_id = '$staff_id' ) a INNER JOIN ost_role_test b ON a.role_id=b.id INNER JOIN ost_department_test c ON a.dept_id = c.id WHERE permissions LIKE '%ticket.create%' "),
+                    'staffdepart' => $this->db->query("SELECT dept_guid, a.role_guid, b.permissions ,c.`name`,c.`department_guid` FROM (SELECT dept_guid , role_guid FROM ost_staff_test WHERE staff_guid = '$staff_guid' UNION SELECT dept_guid , role_guid FROM ost_staff_dept_access_test WHERE staff_guid = '$staff_guid' ) a INNER JOIN ost_role_test b ON a.role_guid=b.role_guid INNER JOIN ost_department_test c ON a.dept_guid = c.department_guid WHERE permissions LIKE '%ticket.create%' "),
                     'priority' => $this->db->query("SELECT * FROM ost_ticket_priority_test"),
-                    'sla' => $this->db->query("SELECT * FROM ost_sla_test WHERE isactive = 1 ORDER BY id"),
+                    'sla' => $this->db->query("SELECT * FROM ost_sla_test WHERE isactive = 1 ORDER BY sla_guid"),
                     'defaultslaid' => $this->db->query("SELECT * FROM ost_config_test WHERE id ='86'"),
                     'defaultpriorityid' => $this->db->query("SELECT * FROM ost_config_test WHERE id ='9'"),
                     'defaultstatusid' => $this->db->query("SELECT * FROM ost_config_test WHERE id ='103'"),
                     'default_help_topic' => $default_topic,
-                    'current_sub' => $this->db->query("SELECT id, value FROM ost_list_items_test WHERE topic_id = '".$default_topic->row('value')."' ORDER BY value"),
+                    'current_sub' => $this->db->query("SELECT list_item_guid, value FROM ost_list_items_test WHERE topic_guid = '".$default_topic->row('value')."' ORDER BY value"),
                     'agent' => $this->db->query("SELECT * FROM ost_staff_test ORDER BY firstname"),
                     'team' => $this->db->query("SELECT * FROM ost_team_test WHERE flags = 1  ORDER BY name"),
                     'status' => $this->db->query("SELECT * FROM ost_ticket_status_test"),
@@ -380,18 +380,18 @@ class staff_ticket_controller extends CI_Controller {
                 );
             }
 
-            elseif ($user_id == "")
+            elseif ($user_guid == "")
             {
                 $data = array(
                     'stafftopic' => $this->db->query("SELECT * FROM ost_help_topic_test WHERE isactive = 1 ORDER BY topic"),
-                    'staffdepart' => $this->db->query("SELECT dept_id, role_id, permissions ,c.`name`,c.`id` FROM (SELECT dept_id , role_id FROM ost_staff_test WHERE staff_id = '$staff_id' UNION SELECT dept_id , role_id FROM ost_staff_dept_access_test WHERE staff_id = '$staff_id' ) a INNER JOIN ost_role_test b ON a.role_id=b.id INNER JOIN ost_department_test c ON a.dept_id = c.id WHERE permissions LIKE '%ticket.create%' "),
+                    'staffdepart' => $this->db->query("SELECT dept_guid, a.role_guid, b.permissions ,c.`name`,c.`department_guid` FROM (SELECT dept_guid , role_guid FROM ost_staff_test WHERE staff_guid = '$staff_guid' UNION SELECT dept_guid , role_guid FROM ost_staff_dept_access_test WHERE staff_guid = '$staff_guid' ) a INNER JOIN ost_role_test b ON a.role_guid=b.role_guid INNER JOIN ost_department_test c ON a.dept_guid = c.department_guid WHERE permissions LIKE '%ticket.create%' "),
                     'priority' => $this->db->query("SELECT * FROM ost_ticket_priority_test"),
-                    'sla' => $this->db->query("SELECT * FROM ost_sla_test WHERE isactive = 1 ORDER BY id"),
+                    'sla' => $this->db->query("SELECT * FROM ost_sla_test WHERE isactive = 1 ORDER BY sla_guid"),
                     'defaultslaid' => $this->db->query("SELECT * FROM ost_config_test WHERE id ='86'"),
                     'defaultpriorityid' => $this->db->query("SELECT * FROM ost_config_test WHERE id ='9'"),
                     'defaultstatusid' => $this->db->query("SELECT * FROM ost_config_test WHERE id ='103'"),
                     'default_help_topic' => $default_topic,
-                    'current_sub' => $this->db->query("SELECT id, value FROM ost_list_items_test WHERE topic_id = '".$default_topic->row('value')."' ORDER BY value"),
+                    'current_sub' => $this->db->query("SELECT list_item_guid, value FROM ost_list_items_test WHERE topic_guid = '".$default_topic->row('value')."' ORDER BY value"),
                     'agent' => $this->db->query("SELECT * FROM ost_staff_test ORDER BY firstname"),
                     'team' => $this->db->query("SELECT * FROM ost_team_test  WHERE flags = 1 ORDER BY name"),
                     'status' => $this->db->query("SELECT * FROM ost_ticket_status_test"),
@@ -432,11 +432,11 @@ class staff_ticket_controller extends CI_Controller {
             $user_name = $this->input->post('name');
             $user_email = $this->input->post('email');
             $alertuser = $this->input->post('alertuser');
-            $status_id = $this->input->post('statusId');
-            $priority_id = $this->input->post('priorityId');
-            $sla_id = $this->input->post('slaId');
+            $status_guid = $this->input->post('statusId');
+            $priority_guid = $this->input->post('priorityId');
+            $sla_guid = $this->input->post('slaId');
             $subject = $this->input->post('topicId');
-            $subtopic_id = $this->input->post('subId');
+            $subtopic_guid = $this->input->post('subId');
             $description = $this->input->post('message');
             $assign_id = $this->input->post('assignId');
             $datetime = $this->input->post('datetime');
@@ -445,47 +445,47 @@ class staff_ticket_controller extends CI_Controller {
             $notes = $this->input->post('notes');
             $departid = $this->input->post('deptId');
             $poster_id = $_SESSION['staffid'];
-            $userdepname = $this->db->query("SELECT * FROM ost_department_test WHERE id = '$departid'")->row('name');
+            $userdepname = $this->db->query("SELECT * FROM ost_department_test WHERE department_guid = '$departid'")->row('name');
 
             if ($assign_id != '')
             {
                 if ($assign_id{0} == 'a')
                 {
-                    $staff_id = substr($assign_id, 1);
-                    $team_id = '0';
+                    $staff_guid = substr($assign_id, 1);
+                    $team_guid = '0';
                 }
                 else if ($assign_id{0} == 't')
                 {
-                    $team_id = substr($assign_id, 1);
-                    $staff_id = '0';
+                    $team_guid = substr($assign_id, 1);
+                    $staff_guid = '0';
                 }
             }
             else
             {
-                $team_id = '0';
-                $staff_id = '0';
+                $team_guid = '0';
+                $staff_guid = '0';
             }
 
-            $user_id = $this->db->query("SELECT * FROM ost_user_test WHERE user_name = '$user_name'")->row('user_id');
+            $user_guid = $this->db->query("SELECT * FROM ost_user_test WHERE user_name = '$user_name'")->row('user_guid');
 
-            $count_user_tickets = $this->db->query("SELECT COUNT(*) AS count FROM ost_ticket_test a INNER JOIN ost_ticket_status_test b ON a.status_id = b.id WHERE a.user_id = '$user_id' AND b.state = 'open'")->row('count');
+            $count_user_tickets = $this->db->query("SELECT COUNT(*) AS count FROM ost_ticket_test a INNER JOIN ost_ticket_status_test b ON a.status_guid = b.status_guid WHERE a.user_guid = '$user_guid' AND b.state = 'open'")->row('count');
             $max_open_tickets = $this->db->query("SELECT value FROM ost_config_test WHERE id = '22'")->row('value');
 
             if ($count_user_tickets < $max_open_tickets || empty($max_open_tickets))
             {
-                $result = $this->staff_new_ticket_model->add_new( $user_id, $status_id, $priority_id, $userdepname, $sla_id, $subject, $subtopic_id, $description, $assign_id, $staff_id, $team_id, $datetime, $source, $user_name, $user_email, $notes );
+                $result = $this->staff_new_ticket_model->add_new( $user_guid, $status_guid, $priority_guid, $userdepname, $sla_guid, $subject, $subtopic_guid, $description, $assign_id, $staff_guid, $team_guid, $datetime, $source, $user_name, $user_email, $notes );
 
-                $ticketid = $this->db->query("SELECT * FROM ost_ticket_test WHERE user_id = '$user_id' ORDER BY created_at DESC LIMIT 1 ")->row('ticket_id');
+                $ticketid = $this->db->query("SELECT * FROM ost_ticket_test WHERE user_guid = '$user_guid' ORDER BY created_at DESC LIMIT 1 ")->row('ticket_guid');
                 $poster_id = $_SESSION['staffid'];      
                 $ipaddress = $_SERVER['REMOTE_ADDR'];
-                $posterfname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_id = $poster_id")->row('firstname');
-                $posterlname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_id = $poster_id")->row('lastname');
+                $posterfname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = $poster_id")->row('firstname');
+                $posterlname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = $poster_id")->row('lastname');
                 $description = 'Created by <b>'.$posterfname.''.$posterlname.'</b>';
 
-                $this->db->query("INSERT INTO osticket.ost_thread_entry_test ( ticket_id , staff_id , type, poster , body , ip_address, created, updated, class, avatar )
-                VALUES ('$ticketid' ,'$poster_id', 'E' ,'$posterfname $posterlname', '$description', '$ipaddress', now(), now(), 'magic', 'left')");
+                $this->db->query("INSERT INTO osticket.ost_thread_entry_test ( thread_entry_guid, ticket_guid , staff_guid , type, poster , body , ip_address, created, updated, class, avatar )
+                VALUES (REPLACE(UPPER(UUID()),'-',''), '$ticketid' ,'$poster_id', 'E' ,'$posterfname $posterlname', '$description', '$ipaddress', now(), now(), 'magic', 'left')");
             
-                $ticket_auto_response = $this->db->query("SELECT ticket_auto_response FROM ost_department_test WHERE NAME = (SELECT department FROM ost_ticket_test WHERE ticket_id = '$ticketid')")->row('ticket_auto_response');
+                $ticket_auto_response = $this->db->query("SELECT ticket_auto_response FROM ost_department_test WHERE NAME = (SELECT department FROM ost_ticket_test WHERE ticket_guid = '$ticketid')")->row('ticket_auto_response');
                 $ticket_notice_active = $this->db->query("SELECT value FROM ost_config_test WHERE id='38'")->row('value');
 
                 if(isset($_POST['submit']))
@@ -495,7 +495,7 @@ class staff_ticket_controller extends CI_Controller {
                     // Looping all files
                     for($i=0;$i<$countfiles;$i++)
                     {
-                        $thread_id = $this->db->query("SELECT * FROM ost_thread_entry_test WHERE created = now() AND type ='S'")->row('id');
+                        $thread_id = $this->db->query("SELECT * FROM ost_thread_entry_test WHERE created = now() AND type ='S'")->row('thread_entry_guid');
 
                         $filename = $thread_id.'_'.$_FILES['file']['name'][$i];
 
@@ -504,8 +504,8 @@ class staff_ticket_controller extends CI_Controller {
                             // Upload file
                             move_uploaded_file($_FILES['file']['tmp_name'][$i],'../helpme/uploads/'.$filename);
 
-                            $this->db->query("INSERT ost_file_test ( name, created, thread_entry_id )
-                            VALUES ( '$filename', NOW(), '$thread_id' ) ");
+                            $this->db->query("INSERT ost_file_test ( file_guid, name, created, thread_entry_guid )
+                            VALUES ( REPLACE(UPPER(UUID()),'-',''), '$filename', NOW(), '$thread_id' ) ");
                         }
                     }
                         
@@ -526,16 +526,16 @@ class staff_ticket_controller extends CI_Controller {
                     {
                         $this->load->library('email');
 
-                        $thread_id = $this->db->query("SELECT * FROM ost_thread_entry_test WHERE created = now() AND type ='S'")->row('id');
-                        $file_id = $this->db->query("SELECT name FROM ost_file_test WHERE thread_entry_id='$thread_id'");
+                        $thread_id = $this->db->query("SELECT * FROM ost_thread_entry_test WHERE created = now() AND type ='S'")->row('thread_entry_guid');
+                        $file_id = $this->db->query("SELECT name FROM ost_file_test WHERE thread_entry_guid='$thread_id'");
                         $email_attach = $this->db->query("SELECT value FROM ost_config_test WHERE id='69'")->row('value');
                         $allow_auth_tokens = $this->db->query("SELECT value FROM ost_config_test WHERE id='112'")->row('value');
                         $user_name = $this->db->query("SELECT user_name FROM ost_user_test WHERE user_email = '$value'")->row('user_name');
                         $emailinfo = $this->db->query("SELECT * FROM ost_user_test AS a
-                            INNER JOIN ost_ticket_test AS b ON a.user_id = b.user_id
-                            INNER JOIN ost_help_topic_test AS c ON b.topic_id = c.topic_id
-                            INNER JOIN ost_list_items_test AS d ON b.subtopic_id = d.id
-                            WHERE ticket_id = '$result'");
+                            INNER JOIN ost_ticket_test AS b ON a.user_guid = b.user_guid
+                            INNER JOIN ost_help_topic_test AS c ON b.topic_guid = c.topic_guid
+                            INNER JOIN ost_list_items_test AS d ON b.subtopic_guid = d.list_item_guid
+                            WHERE ticket_guid = '$result'");
                         $default_template_id = $this->db->query("SELECT * FROM ost_config_test WHERE id = '87'")->row('value');
 
                         if ($allow_auth_tokens == '0')
@@ -550,16 +550,16 @@ class staff_ticket_controller extends CI_Controller {
                         $data = array(
                             'body' => $this->db->query("SELECT REPLACE(REPLACE(subject, '%subject%', '".$emailinfo->row('value')."'), '%number%', '".$emailinfo->row('number')."') AS email_subject, 
                                 REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(body, '%user_name%', '$user_name'), '%login%', '$login'), '%number%', '".$emailinfo->row('number')."'), '%topic%', '".$emailinfo->row('topic')."'), '%subtopic%', '".$emailinfo->row('value')."') AS email
-                                FROM ost_email_template_test WHERE code_name = 'ticket.notice' AND tpl_id = '$default_template_id'"),
+                                FROM ost_email_template_test WHERE code_name = 'ticket.notice' AND tpl_guid = '$default_template_id'"),
                             'ticketsign' => $this->db->query("SELECT a.*, b.*, a.signature AS staffsign, b.signature AS deptsign FROM ost_staff_test AS a
-                                INNER JOIN ost_department_test AS b ON a.dept_id = b.id
-                                WHERE staff_id = '$poster_id'"),
+                                INNER JOIN ost_department_test AS b ON a.dept_guid = b.department_guid
+                                WHERE staff_guid = '$poster_id'"),
                             'signature' => $signature,
                             'template' => $this->db->query("SELECT * FROM ost_company_test"),
                         );
 
                         $default_email = $this->db->query("SELECT value FROM ost_config_test WHERE id='83'")->row('value');
-                        $sender_email = $this->db->query("SELECT * FROM ost_email_test WHERE email_id='$default_email'")->row();
+                        $sender_email = $this->db->query("SELECT * FROM ost_email_test WHERE email_guid='$default_email'")->row();
 
                         $config = array(
             
@@ -595,15 +595,15 @@ class staff_ticket_controller extends CI_Controller {
                     {
                         $this->load->library('email');
 
-                        $thread_id = $this->db->query("SELECT * FROM ost_thread_entry_test WHERE created = now() AND type ='S'")->row('id');
-                        $file_id = $this->db->query("SELECT name FROM ost_file_test WHERE thread_entry_id='$thread_id'");
+                        $thread_id = $this->db->query("SELECT * FROM ost_thread_entry_test WHERE created = now() AND type ='S'")->row('thread_entry_guid');
+                        $file_id = $this->db->query("SELECT name FROM ost_file_test WHERE thread_entry_guid='$thread_id'");
                         $email_attach = $this->db->query("SELECT value FROM ost_config_test WHERE id='69'")->row('value');
                         $allow_auth_tokens = $this->db->query("SELECT value FROM ost_config_test WHERE id='112'")->row('value');
                         $emailinfo = $this->db->query("SELECT * FROM ost_user_test AS a
-                            INNER JOIN ost_ticket_test AS b ON a.user_id = b.user_id
-                            INNER JOIN ost_help_topic_test AS c ON b.topic_id = c.topic_id
-                            INNER JOIN ost_list_items_test AS d ON b.subtopic_id = d.id
-                            WHERE ticket_id = '$result'");
+                            INNER JOIN ost_ticket_test AS b ON a.user_guid = b.user_guid
+                            INNER JOIN ost_help_topic_test AS c ON b.topic_guid = c.topic_guid
+                            INNER JOIN ost_list_items_test AS d ON b.subtopic_guid = d.list_item_guid
+                            WHERE ticket_guid = '$result'");
                         $default_template_id = $this->db->query("SELECT * FROM ost_config_test WHERE id = '87'")->row('value');
                         
                         if ($allow_auth_tokens == '0')
@@ -618,16 +618,16 @@ class staff_ticket_controller extends CI_Controller {
                         $data = array(
                             'body' => $this->db->query("SELECT REPLACE(REPLACE(subject, '%subject%', '".$emailinfo->row('value')."'), '%number%', '".$emailinfo->row('number')."') AS email_subject, 
                                 REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(body, '%user_name%', '".$emailinfo->row('user_name')."'), '%login%', '$login'), '%number%', '".$emailinfo->row('number')."'), '%topic%', '".$emailinfo->row('topic')."'), '%subtopic%', '".$emailinfo->row('value')."') AS email
-                                FROM ost_email_template_test WHERE code_name = 'ticket.notice' AND tpl_id = '$default_template_id'"),
+                                FROM ost_email_template_test WHERE code_name = 'ticket.notice' AND tpl_guid = '$default_template_id'"),
                             'signature' => $signature,
                             'ticketsign' => $this->db->query("SELECT a.*, b.*, a.signature AS staffsign, b.signature AS deptsign FROM ost_staff_test AS a
-                                INNER JOIN ost_department_test AS b ON a.dept_id = b.id
-                                WHERE staff_id = '$poster_id'"),
+                                INNER JOIN ost_department_test AS b ON a.dept_guid = b.department_guid
+                                WHERE staff_guid = '$poster_id'"),
                             'template' => $this->db->query("SELECT * FROM ost_company_test"),
                         );
 
                         $default_email = $this->db->query("SELECT value FROM ost_config_test WHERE id='83'")->row('value');
-                        $sender_email = $this->db->query("SELECT * FROM ost_email_test WHERE email_id='$default_email'")->row();
+                        $sender_email = $this->db->query("SELECT * FROM ost_email_test WHERE email_guid='$default_email'")->row();
 
                         $config = array(
             
@@ -678,14 +678,14 @@ class staff_ticket_controller extends CI_Controller {
 
             $ticketid = $_REQUEST['id'];
             $staffid =$_SESSION['staffid'];
-            $staff_id =$_SESSION['staffid'];
-            $userid = $this->db->query("SELECT * FROM ost_ticket_test WHERE ticket_id = $ticketid")->row('user_id');
-            $taskid = $this->db->query("SELECT * FROM ost_task_test WHERE ticket_id = $ticketid")->row('task_id');
+            $staff_guid =$_SESSION['staffid'];
+            $userid = $this->db->query("SELECT * FROM ost_ticket_test WHERE ticket_guid = $ticketid")->row('user_guid');
+            $taskid = $this->db->query("SELECT * FROM ost_task_test WHERE ticket_guid = $ticketid")->row('task_guid');
             $userticket = $this->db->query("SELECT * FROM ost_user_test AS a 
-                INNER JOIN ost_ticket_test AS b ON a.user_id = b.user_id 
-                WHERE ticket_id = $ticketid");
+                INNER JOIN ost_ticket_test AS b ON a.user_guid = b.user_guid 
+                WHERE ticket_guid = $ticketid");
             $default_depart = $this->db->query("SELECT name, value FROM ost_config_test a 
-                INNER JOIN ost_department_test b ON a.value = b.id WHERE a.id = '85'");
+                INNER JOIN ost_department_test b ON a.value = b.department_guid WHERE a.id = '85'");
 
             $phone = $userticket->row('user_phone');
             $phoneext = $userticket->row('user_phoneext');
@@ -700,81 +700,81 @@ class staff_ticket_controller extends CI_Controller {
             }
             else
             {
-                $department = $this->db->query("SELECT dept_id, role_id, permissions ,c.`name`,c.`id` FROM (SELECT dept_id , role_id FROM ost_staff_test WHERE staff_id = '$staff_id' UNION SELECT dept_id , role_id FROM ost_staff_dept_access_test WHERE staff_id = '$staff_id' ) a INNER JOIN ost_role_test b ON a.role_id=b.id INNER JOIN ost_department_test c ON a.dept_id = c.id WHERE permissions LIKE '%ticket.transfer%' AND c.name != '".$default_depart->row('name')."'");
+                $department = $this->db->query("SELECT dept_guid, a.role_guid, b.permissions ,c.`name`,c.`department_guid` FROM (SELECT dept_guid , role_guid FROM ost_staff_test WHERE staff_guid = '$staff_guid' UNION SELECT dept_guid , role_guid FROM ost_staff_dept_access_test WHERE staff_guid = '$staff_guid' ) a INNER JOIN ost_role_test b ON a.role_guid=b.role_guid INNER JOIN ost_department_test c ON a.dept_guid = c.department_guid WHERE permissions LIKE '%ticket.transfer%' AND c.name != '".$default_depart->row('name')."'");
             }            
 
             $data = array(
-                'result' => $this->db->query("SELECT a.*, b.*, c.*, d.*, e.*, a.team_id as ticket_team_id FROM ost_ticket_test AS a
-                    INNER JOIN ost_help_topic_test AS b ON b.topic_id = a.topic_id 
-                    INNER JOIN ost_ticket_status_test AS c ON c.id = a.status_id
-                    INNER JOIN ost_ticket_priority_test AS d ON a.priority_id = d.priority_id 
-                    INNER JOIN ost_list_items_test AS e ON a.subtopic_id = e.id
-                    WHERE ticket_id = '$ticketid'"),
+                'result' => $this->db->query("SELECT a.*, b.*, c.*, d.*, e.*, a.team_guid as ticket_team_guid FROM ost_ticket_test AS a
+                    INNER JOIN ost_help_topic_test AS b ON b.topic_guid = a.topic_guid 
+                    INNER JOIN ost_ticket_status_test AS c ON c.status_guid = a.status_guid
+                    INNER JOIN ost_ticket_priority_test AS d ON a.priority_guid = d.priority_guid 
+                    INNER JOIN ost_list_items_test AS e ON a.subtopic_guid = e.list_item_guid
+                    WHERE ticket_guid = '$ticketid'"),
 
                 'department' => $department, 
 
-                'editallow' => $this->db->query(" SELECT * FROM (SELECT dept_id , role_id FROM ost_staff_test WHERE staff_id = '$staffid' UNION SELECT dept_id , role_id FROM ost_staff_dept_access_test WHERE staff_id = '$staffid' ) a INNER JOIN ost_role_test b ON a.role_id=b.id INNER JOIN (SELECT ost_department_test.id FROM ost_ticket_test LEFT JOIN ost_department_test ON ost_ticket_test.`department` = ost_department_test.`name` WHERE ticket_id= '$ticketid') c ON a.dept_id = c.id  WHERE permissions LIKE '%ticket.edit%'")->num_rows(),
+                'editallow' => $this->db->query(" SELECT * FROM (SELECT dept_guid , role_guid FROM ost_staff_test WHERE staff_guid = '$staffid' UNION SELECT dept_guid , role_guid FROM ost_staff_dept_access_test WHERE staff_guid = '$staffid' ) a INNER JOIN ost_role_test b ON a.role_guid=b.role_guid INNER JOIN (SELECT ost_department_test.department_guid FROM ost_ticket_test LEFT JOIN ost_department_test ON ost_ticket_test.`department` = ost_department_test.`name` WHERE ticket_guid= '$ticketid') c ON a.dept_guid = c.department_guid  WHERE permissions LIKE '%ticket.edit%'")->num_rows(),
 
-                'assignallow' => $this->db->query(" SELECT * FROM (SELECT dept_id , role_id FROM ost_staff_test WHERE staff_id = '$staffid' UNION SELECT dept_id , role_id FROM ost_staff_dept_access_test WHERE staff_id = '$staffid' ) a INNER JOIN ost_role_test b ON a.role_id=b.id INNER JOIN (SELECT ost_department_test.id FROM ost_ticket_test LEFT JOIN ost_department_test ON ost_ticket_test.`department` = ost_department_test.`name` WHERE ticket_id= '$ticketid') c ON a.dept_id = c.id  WHERE permissions LIKE '%ticket.assign%'")->num_rows(),
+                'assignallow' => $this->db->query(" SELECT * FROM (SELECT dept_guid , role_guid FROM ost_staff_test WHERE staff_guid = '$staffid' UNION SELECT dept_guid , role_guid FROM ost_staff_dept_access_test WHERE staff_guid = '$staffid' ) a INNER JOIN ost_role_test b ON a.role_guid=b.role_guid INNER JOIN (SELECT ost_department_test.department_guid FROM ost_ticket_test LEFT JOIN ost_department_test ON ost_ticket_test.`department` = ost_department_test.`name` WHERE ticket_guid= '$ticketid') c ON a.dept_guid = c.department_guid  WHERE permissions LIKE '%ticket.assign%'")->num_rows(),
 
-                'replyallow' => $this->db->query(" SELECT * FROM (SELECT dept_id , role_id FROM ost_staff_test WHERE staff_id = '$staffid' UNION SELECT dept_id , role_id FROM ost_staff_dept_access_test WHERE staff_id = '$staffid' ) a INNER JOIN ost_role_test b ON a.role_id=b.id INNER JOIN (SELECT ost_department_test.id FROM ost_ticket_test LEFT JOIN ost_department_test ON ost_ticket_test.`department` = ost_department_test.`name` WHERE ticket_id= '$ticketid') c ON a.dept_id = c.id  WHERE permissions LIKE '%ticket.reply%'")->num_rows(),
+                'replyallow' => $this->db->query(" SELECT * FROM (SELECT dept_guid , role_guid FROM ost_staff_test WHERE staff_guid = '$staffid' UNION SELECT dept_guid , role_guid FROM ost_staff_dept_access_test WHERE staff_guid = '$staffid' ) a INNER JOIN ost_role_test b ON a.role_guid=b.role_guid INNER JOIN (SELECT ost_department_test.department_guid FROM ost_ticket_test LEFT JOIN ost_department_test ON ost_ticket_test.`department` = ost_department_test.`name` WHERE ticket_guid= '$ticketid') c ON a.dept_guid = c.department_guid  WHERE permissions LIKE '%ticket.reply%'")->num_rows(),
 
-                'transferallow' => $this->db->query(" SELECT * FROM (SELECT dept_id , role_id FROM ost_staff_test WHERE staff_id = '$staffid' UNION SELECT dept_id , role_id FROM ost_staff_dept_access_test WHERE staff_id = '$staffid' ) a INNER JOIN ost_role_test b ON a.role_id=b.id INNER JOIN (SELECT ost_department_test.id FROM ost_ticket_test LEFT JOIN ost_department_test ON ost_ticket_test.`department` = ost_department_test.`name` WHERE ticket_id= '$ticketid') c ON a.dept_id = c.id  WHERE permissions LIKE '%ticket.transfer%'")->num_rows(),
+                'transferallow' => $this->db->query(" SELECT * FROM (SELECT dept_guid , role_guid FROM ost_staff_test WHERE staff_guid = '$staffid' UNION SELECT dept_guid , role_guid FROM ost_staff_dept_access_test WHERE staff_guid = '$staffid' ) a INNER JOIN ost_role_test b ON a.role_guid=b.role_guid INNER JOIN (SELECT ost_department_test.department_guid FROM ost_ticket_test LEFT JOIN ost_department_test ON ost_ticket_test.`department` = ost_department_test.`name` WHERE ticket_guid= '$ticketid') c ON a.dept_guid = c.department_guid  WHERE permissions LIKE '%ticket.transfer%'")->num_rows(),
 
-                'deleteallow' => $this->db->query(" SELECT * FROM (SELECT dept_id , role_id FROM ost_staff_test WHERE staff_id = '$staffid' UNION SELECT dept_id , role_id FROM ost_staff_dept_access_test WHERE staff_id = '$staffid' ) a INNER JOIN ost_role_test b ON a.role_id=b.id INNER JOIN (SELECT ost_department_test.id FROM ost_ticket_test LEFT JOIN ost_department_test ON ost_ticket_test.`department` = ost_department_test.`name` WHERE ticket_id= '$ticketid') c ON a.dept_id = c.id  WHERE permissions LIKE '%ticket.delete%'")->num_rows(),
+                'deleteallow' => $this->db->query(" SELECT * FROM (SELECT dept_guid , role_guid FROM ost_staff_test WHERE staff_guid = '$staffid' UNION SELECT dept_guid , role_guid FROM ost_staff_dept_access_test WHERE staff_guid = '$staffid' ) a INNER JOIN ost_role_test b ON a.role_guid=b.role_guid INNER JOIN (SELECT ost_department_test.department_guid FROM ost_ticket_test LEFT JOIN ost_department_test ON ost_ticket_test.`department` = ost_department_test.`name` WHERE ticket_guid= '$ticketid') c ON a.dept_guid = c.department_guid  WHERE permissions LIKE '%ticket.delete%'")->num_rows(),
 
-                'departmentsign' => $this->db->query("SELECT ost_department_test.signature FROM ost_department_test INNER JOIN ost_staff_test ON ost_department_test.id = ost_staff_test.dept_id WHERE staff_id='$staffid'"), 
+                'departmentsign' => $this->db->query("SELECT ost_department_test.signature FROM ost_department_test INNER JOIN ost_staff_test ON ost_department_test.department_guid = ost_staff_test.dept_guid WHERE staff_guid='$staffid'"), 
 
                 'default_depart' => $default_depart,
 
-                'staff' => $this->db->query("SELECT * FROM ost_staff_test WHERE dept_id = (SELECT id FROM ost_department_test WHERE NAME = (SELECT department FROM ost_ticket_test WHERE ticket_id = '$ticketid'))"),
+                'staff' => $this->db->query("SELECT * FROM ost_staff_test WHERE dept_guid = (SELECT department_guid FROM ost_department_test WHERE NAME = (SELECT department FROM ost_ticket_test WHERE ticket_guid = '$ticketid'))"),
 
-                'stafflogin' => $this->db->query("SELECT * FROM ost_staff_test WHERE staff_id = '$staffid'")->row(),
+                'stafflogin' => $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = '$staffid'")->row(),
 
                 'team' => $this->db->query("SELECT * FROM ost_team_test WHERE flags = 1 "), 
 
-                'task' => $this->db->query("SELECT a.*, b.*, c.*, d.*, e.*, c.name AS deptname, e.name AS teamname, a.staff_id AS taskstaff, a.team_id AS taskteam FROM ost_task_test AS a 
-                    INNER JOIN ost_task__cdata_test AS b ON a.task_id = b.tasksub_id
-                    INNER JOIN ost_department_test AS c ON a.dept_id = c.id
-                    LEFT JOIN ost_staff_test AS d ON a.staff_id = d.staff_id
-                    LEFT JOIN ost_team_test AS e ON a.team_id = e.team_id
-                    WHERE a.ticket_id = '$ticketid' ORDER BY a.task_created DESC"),
+                'task' => $this->db->query("SELECT a.*, b.*, c.*, d.*, e.*, c.name AS deptname, e.name AS teamname, a.staff_guid AS taskstaff, a.team_guid AS taskteam FROM ost_task_test AS a 
+                    INNER JOIN ost_task__cdata_test AS b ON a.task_guid = b.tasksub_guid
+                    INNER JOIN ost_department_test AS c ON a.dept_guid = c.department_guid
+                    LEFT JOIN ost_staff_test AS d ON a.staff_guid = d.staff_guid
+                    LEFT JOIN ost_team_test AS e ON a.team_guid = e.team_guid
+                    WHERE a.ticket_guid = '$ticketid' ORDER BY a.task_created DESC"),
 
-                'thread' => $this->db->query("SELECT * FROM ost_thread_entry_test WHERE ticket_id = $ticketid"),
+                'thread' => $this->db->query("SELECT * FROM ost_thread_entry_test WHERE ticket_guid = $ticketid"),
 
-                'thread_num' => $this->db->query("SELECT * FROM ost_thread_entry_test WHERE ticket_id = '$ticketid' AND type != 'E'"),
+                'thread_num' => $this->db->query("SELECT * FROM ost_thread_entry_test WHERE ticket_guid = '$ticketid' AND type != 'E'"),
 
                 'threadname' => $this->db->query("SELECT * FROM ost_staff_test AS a
-                    INNER JOIN ost_thread_entry_test AS b ON a.staff_id = b.staff_id
-                    INNER JOIN ost_ticket_test AS c ON b.`ticket_id` = c.`ticket_id`
-                    INNER JOIN ost_department_test AS d ON a.dept_id = d.id
+                    INNER JOIN ost_thread_entry_test AS b ON a.staff_guid = b.staff_guid
+                    INNER JOIN ost_ticket_test AS c ON b.`ticket_guid` = c.`ticket_guid`
+                    INNER JOIN ost_department_test AS d ON a.dept_guid = d.department_guid
                     
-                    WHERE c.ticket_id = $ticketid")->row(),
+                    WHERE c.ticket_guid = $ticketid")->row(),
                 
                 'user' => $this->db->query("SELECT * FROM ost_user_test AS a
-                    INNER JOIN ost_ticket_test AS b ON a.user_id = b.user_id
-                    LEFT JOIN ost_organization_test AS c ON c.id = a.user_org_id
-                    WHERE ticket_id = '$ticketid'"),
+                    INNER JOIN ost_ticket_test AS b ON a.user_guid = b.user_guid
+                    LEFT JOIN ost_organization_test AS c ON c.organization_guid = a.user_org_guid
+                    WHERE ticket_guid = '$ticketid'"),
 
                 'phone' => $phone,
 
-                'editticket' => $this->db->query("SELECT * FROM ost_ticket_test WHERE ticket_id = $ticketid"),
+                'editticket' => $this->db->query("SELECT * FROM ost_ticket_test WHERE ticket_guid = $ticketid"),
 
-                'openclose' => $this->db->query("SELECT * FROM ost_ticket_test WHERE ticket_id = $ticketid")->row(),
+                'openclose' => $this->db->query("SELECT * FROM ost_ticket_test WHERE ticket_guid = $ticketid")->row(),
 
                 'org' => $this->db->query("SELECT * FROM ost_user_test AS a 
-                    INNER JOIN ost_ticket_test AS b ON a.user_id = b.user_id 
-                    LEFT JOIN ost_staff_test AS c ON a.usernote_poster = c.staff_id
-                    LEFT JOIN ost_organization__cdata_test AS d ON a.user_org_id = d.org_id
-                    WHERE ticket_id = $ticketid")->row(),
+                    INNER JOIN ost_ticket_test AS b ON a.user_guid = b.user_guid 
+                    LEFT JOIN ost_staff_test AS c ON a.usernote_poster = c.staff_guid
+                    LEFT JOIN ost_organization__cdata_test AS d ON a.user_org_guid = d.org_guid
+                    WHERE ticket_guid = $ticketid")->row(),
 
                 'ticketstatus' => $this->db->query("SELECT * FROM ost_ticket_status_test"),
 
-                'userticketcount' => $this->db->query("SELECT * FROM ost_ticket_test WHERE user_id = $userid"),
+                'userticketcount' => $this->db->query("SELECT * FROM ost_ticket_test WHERE user_guid = $userid"),
 
-                'userticketopen' => $this->db->query("SELECT * FROM ost_ticket_test AS a INNER JOIN ost_ticket_status_test AS b ON a.status_id = b.id WHERE b.state = 'open' AND a.user_id = $userid"),
+                'userticketopen' => $this->db->query("SELECT * FROM ost_ticket_test AS a INNER JOIN ost_ticket_status_test AS b ON a.status_guid = b.status_guid WHERE b.state = 'open' AND a.user_guid = $userid"),
 
-                'userticketclose' => $this->db->query("SELECT * FROM ost_ticket_test AS a INNER JOIN ost_ticket_status_test AS b ON a.status_id = b.id WHERE b.state = 'closed' AND a.user_id = $userid"),
+                'userticketclose' => $this->db->query("SELECT * FROM ost_ticket_test AS a INNER JOIN ost_ticket_status_test AS b ON a.status_guid = b.status_guid WHERE b.state = 'closed' AND a.user_guid = $userid"),
 
                 'enable_avatars' => $this->db->query("SELECT value FROM ost_config_test WHERE id = '93'"),
 
@@ -814,12 +814,12 @@ class staff_ticket_controller extends CI_Controller {
         {
             $ticketid = $_REQUEST['id'];
             $poster_id = $_SESSION["staffid"];   
-            $status = $this->input->post('status_id');
+            $status = $this->input->post('status_guid');
             $depart = $this->input->post('departmentid');
             $assignto = $this->input->post('assignto');
             $delete = $this->input->post('deletetask');
 
-            $ticketinfo = $this->db->query("SELECT assigned_to, ticket_updated, ticket_updated_by_id, ticket_updated_by_role FROM ost_ticket_test WHERE ticket_id = '$ticketid'");
+            $ticketinfo = $this->db->query("SELECT assigned_to, ticket_updated, ticket_updated_by_id, ticket_updated_by_role FROM ost_ticket_test WHERE ticket_guid = '$ticketid'");
             $autolock_minutes = $this->db->query("SELECT value FROM ost_config_test WHERE id = '23'");
             $autolock_time = date("Y-m-d H:i:s", strtotime("+{$autolock_minutes->row('value')} minutes", strtotime($ticketinfo->row('ticket_updated'))));
 
@@ -829,55 +829,55 @@ class staff_ticket_controller extends CI_Controller {
                 {
                     if ($status == 3)
                     {
-                        $primaryclosecheck = $this->db->query("SELECT a.dept_id , a.role_id, b.`permissions` FROM ost_staff_test a INNER JOIN ost_role_test b ON a.`role_id` = b.id INNER JOIN ost_department_test c ON a.dept_id = c.`id` INNER JOIN ost_ticket_test d ON C.`name` = d.`department` WHERE staff_id = '$poster_id' AND b.permissions LIKE '%ticket.close%' AND ticket_id = '$ticketid'")->num_rows();
-                        $closecheck = $this->db->query("SELECT * FROM ost_ticket_test a INNER JOIN ost_department_test b ON a.`department` = b.`name` INNER JOIN ost_staff_dept_access_test c ON b.`id` = c.dept_id INNER JOIN ost_role_test d ON c.`role_id` = d.`id` WHERE a.ticket_id = '$ticketid' AND d.permissions LIKE '%ticket.close%' AND C.`staff_id` = '$poster_id'")->num_rows();
+                        $primaryclosecheck = $this->db->query("SELECT a.dept_guid , a.role_guid, b.`permissions` FROM ost_staff_test a INNER JOIN ost_role_test b ON a.`role_guid` = b.role_guid INNER JOIN ost_department_test c ON a.dept_guid = c.`department_guid` INNER JOIN ost_ticket_test d ON C.`name` = d.`department` WHERE staff_guid = '$poster_id' AND b.permissions LIKE '%ticket.close%' AND ticket_guid = '$ticketid'")->num_rows();
+                        $closecheck = $this->db->query("SELECT * FROM ost_ticket_test a INNER JOIN ost_department_test b ON a.`department` = b.`name` INNER JOIN ost_staff_dept_access_test c ON b.`department_guid` = c.dept_guid INNER JOIN ost_role_test d ON c.`role_guid` = d.`role_guid` WHERE a.ticket_guid = '$ticketid' AND d.permissions LIKE '%ticket.close%' AND C.`staff_guid` = '$poster_id'")->num_rows();
 
                         if ($primaryclosecheck != 0)
                         {
-                            $original = $this->db->query("SELECT * FROM ost_ticket_test WHERE ticket_id = '$ticketid'")->row('status_id');
+                            $original = $this->db->query("SELECT * FROM ost_ticket_test WHERE ticket_guid = '$ticketid'")->row('status_guid');
 
-                            $this->db->query("UPDATE ost_ticket_test SET status_id = '$status', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_id = '$ticketid' ");
+                            $this->db->query("UPDATE ost_ticket_test SET status_guid = '$status', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_guid = '$ticketid' ");
 
-                            $new = $this->db->query("SELECT * FROM ost_ticket_status_test WHERE id = '$status'")->row('state');
+                            $new = $this->db->query("SELECT * FROM ost_ticket_status_test WHERE status_guid = '$status'")->row('state');
 
                             if ($original != '3' && $new == 'closed')
                             {
-                                $this->db->query("UPDATE ost_ticket_test SET closed = now(), reopened = NULL, ticket_updated = now(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_id = '$ticketid'");
+                                $this->db->query("UPDATE ost_ticket_test SET closed = now(), reopened = NULL, ticket_updated = now(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_guid = '$ticketid'");
                             }
 
                             $poster_id = $_SESSION['staffid'];      
                             $ipaddress = $_SERVER['REMOTE_ADDR'];
-                            $posterfname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_id = $poster_id")->row('firstname');
-                            $posterlname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_id = $poster_id")->row('lastname');
+                            $posterfname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = $poster_id")->row('firstname');
+                            $posterlname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = $poster_id")->row('lastname');
                             $description = 'Closed by <b>'.$posterfname.''.$posterlname.'</b>';
 
-                            $this->db->query("INSERT INTO osticket.ost_thread_entry_test ( ticket_id , staff_id , type, poster , body , ip_address, created, updated, class, avatar )
-                            VALUES ('$ticketid' ,'$poster_id', 'E' ,'$posterfname $posterlname', '$description', '$ipaddress', now(), now(), 'thumbs-up-alt', 'left')");
+                            $this->db->query("INSERT INTO osticket.ost_thread_entry_test ( thread_entry_guid, ticket_guid , staff_guid , type, poster , body , ip_address, created, updated, class, avatar )
+                            VALUES (REPLACE(UPPER(UUID()),'-',''), '$ticketid' ,'$poster_id', 'E' ,'$posterfname $posterlname', '$description', '$ipaddress', now(), now(), 'thumbs-up-alt', 'left')");
 
                             echo "<script> alert('Successfully change status');</script>";
                         }
 
                         else if ($closecheck != 0)
                         {
-                            $original = $this->db->query("SELECT * FROM ost_ticket_test WHERE ticket_id = '$ticketid'")->row('status_id');
+                            $original = $this->db->query("SELECT * FROM ost_ticket_test WHERE ticket_guid = '$ticketid'")->row('status_guid');
 
-                            $this->db->query("UPDATE ost_ticket_test SET status_id = '$status', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_id = '$ticketid' ");
+                            $this->db->query("UPDATE ost_ticket_test SET status_guid = '$status', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_guid = '$ticketid' ");
 
-                            $new = $this->db->query("SELECT * FROM ost_ticket_status_test WHERE id = '$status'")->row('state');
+                            $new = $this->db->query("SELECT * FROM ost_ticket_status_test WHERE status_guid = '$status'")->row('state');
 
                             if ($original != '3' && $new == 'closed')
                             {
-                                $this->db->query("UPDATE ost_ticket_test SET closed = now(), reopened = NULL, ticket_updated = now(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_id = '$ticketid'");
+                                $this->db->query("UPDATE ost_ticket_test SET closed = now(), reopened = NULL, ticket_updated = now(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_guid = '$ticketid'");
                             }
 
                             $poster_id = $_SESSION['staffid'];      
                             $ipaddress = $_SERVER['REMOTE_ADDR'];
-                            $posterfname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_id = $poster_id")->row('firstname');
-                            $posterlname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_id = $poster_id")->row('lastname');
+                            $posterfname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = $poster_id")->row('firstname');
+                            $posterlname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = $poster_id")->row('lastname');
                             $description = 'Closed by <b>'.$posterfname.''.$posterlname.'</b>';
 
-                            $this->db->query("INSERT INTO osticket.ost_thread_entry_test ( ticket_id , staff_id , type, poster , body , ip_address, created, updated, class, avatar )
-                            VALUES ('$ticketid' ,'$poster_id', 'E' ,'$posterfname $posterlname', '$description', '$ipaddress', now(), now(), 'thumbs-up-alt', 'left')");
+                            $this->db->query("INSERT INTO osticket.ost_thread_entry_test ( thread_entry_guid, ticket_guid , staff_guid , type, poster , body , ip_address, created, updated, class, avatar )
+                            VALUES (REPLACE(UPPER(UUID()),'-',''), '$ticketid' ,'$poster_id', 'E' ,'$posterfname $posterlname', '$description', '$ipaddress', now(), now(), 'thumbs-up-alt', 'left')");
 
                             echo "<script> alert('Successfully change status');</script>";
                         }
@@ -890,34 +890,34 @@ class staff_ticket_controller extends CI_Controller {
                     
                     else
                     {
-                        $original = $this->db->query("SELECT * FROM ost_ticket_test WHERE ticket_id = '$ticketid'")->row('status_id');
-                        $statusname = $this->db->query("SELECT * FROM ost_ticket_status_test WHERE id = $status")->row('name');
+                        $original = $this->db->query("SELECT * FROM ost_ticket_test WHERE ticket_guid = '$ticketid'")->row('status_guid');
+                        $statusname = $this->db->query("SELECT * FROM ost_ticket_status_test WHERE status_guid = $status")->row('name');
 
-                        $this->db->query("UPDATE ost_ticket_test SET status_id = '$status', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_id = '$ticketid' ");
+                        $this->db->query("UPDATE ost_ticket_test SET status_guid = '$status', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_guid = '$ticketid' ");
                         
                         $poster_id = $_SESSION['staffid'];      
                         $ipaddress = $_SERVER['REMOTE_ADDR'];
-                        $posterfname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_id = $poster_id")->row('firstname');
-                        $posterlname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_id = $poster_id")->row('lastname');
+                        $posterfname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = $poster_id")->row('firstname');
+                        $posterlname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = $poster_id")->row('lastname');
                         $description = '<b>'.$posterfname.''.$posterlname.'</b> change status of this ticket to <strong>'.$statusname.'</strong>' ;
 
-                        $this->db->query("INSERT INTO osticket.ost_thread_entry_test ( ticket_id , staff_id , type, poster , body , ip_address, created, updated, class, avatar )
-                        VALUES ('$ticketid' ,'$poster_id', 'E' ,'$posterfname $posterlname', '$description', '$ipaddress', now(), now(), 'pencil', 'left')");
+                        $this->db->query("INSERT INTO osticket.ost_thread_entry_test (thread_entry_guid, ticket_guid , staff_guid , type, poster , body , ip_address, created, updated, class, avatar )
+                        VALUES (REPLACE(UPPER(UUID()),'-',''), '$ticketid' ,'$poster_id', 'E' ,'$posterfname $posterlname', '$description', '$ipaddress', now(), now(), 'pencil', 'left')");
                         
-                        $new = $this->db->query("SELECT * FROM ost_ticket_status_test WHERE id = '$status'")->row('state');
+                        $new = $this->db->query("SELECT * FROM ost_ticket_status_test WHERE status_guid = '$status'")->row('state');
 
                         if ($original == '3' && $new == 'open')
                         {
-                            $this->db->query("UPDATE ost_ticket_test SET closed = NULL, reopened = now(), ticket_updated = now(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_id = '$ticketid'");
+                            $this->db->query("UPDATE ost_ticket_test SET closed = NULL, reopened = now(), ticket_updated = now(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_guid = '$ticketid'");
 
                             $poster_id = $_SESSION['staffid'];      
                             $ipaddress = $_SERVER['REMOTE_ADDR'];
-                            $posterfname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_id = $poster_id")->row('firstname');
-                            $posterlname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_id = $poster_id")->row('lastname');
+                            $posterfname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = $poster_id")->row('firstname');
+                            $posterlname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = $poster_id")->row('lastname');
                             $description = 'Reopened by <b>'.$posterfname.''.$posterlname.'</b>';
 
-                            $this->db->query("INSERT INTO osticket.ost_thread_entry_test ( ticket_id , staff_id , type, poster , body , ip_address, created, updated, class, avatar )
-                            VALUES ('$ticketid' ,'$poster_id', 'E' ,'$posterfname $posterlname', '$description', '$ipaddress', now(), now(), 'rotate-right', 'left')");
+                            $this->db->query("INSERT INTO osticket.ost_thread_entry_test (thread_entry_guid, ticket_guid , staff_guid , type, poster , body , ip_address, created, updated, class, avatar )
+                            VALUES (REPLACE(UPPER(UUID()),'-',''), '$ticketid' ,'$poster_id', 'E' ,'$posterfname $posterlname', '$description', '$ipaddress', now(), now(), 'rotate-right', 'left')");
                         }
 
                         echo "<script> alert('Successfully change status');</script>";
@@ -926,65 +926,65 @@ class staff_ticket_controller extends CI_Controller {
                 
                 else if ($depart != "" )
                 {
-                    $transfer_sla_id = $this->db->query("SELECT sla_id FROM `ost_department_test` WHERE name = '$depart' ")->row('sla_id');
+                    $transfer_sla_guid = $this->db->query("SELECT sla_guid FROM `ost_department_test` WHERE name = '$depart' ")->row('sla_guid');
 
-                    $this->db->query("UPDATE ost_ticket_test SET department = '$depart', status_id = '8', sla_id = '$transfer_sla_id', assigned_to = '0', team_id = '0', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_id = '$ticketid' ");
+                    $this->db->query("UPDATE ost_ticket_test SET department = '$depart', status_guid = '8', sla_guid = '$transfer_sla_guid', assigned_to = '0', team_guid = '0', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_guid = '$ticketid' ");
 
                     $poster_id = $_SESSION['staffid'];      
                     $ipaddress = $_SERVER['REMOTE_ADDR'];
-                    $posterfname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_id = $poster_id")->row('firstname');
-                    $posterlname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_id = $poster_id")->row('lastname');
+                    $posterfname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = $poster_id")->row('firstname');
+                    $posterlname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = $poster_id")->row('lastname');
                     $departmentname = $this->db->query("SELECT * FROM ost_department_test WHERE name = '$depart'")->row('name');
                     $description = '<b>'.$posterfname.''.$posterlname.'</b> transfered this ticket to <strong>'.$departmentname. '</strong>';
 
-                    $this->db->query("INSERT INTO osticket.ost_thread_entry_test ( ticket_id , staff_id , type, poster , body , ip_address, created, updated, class, avatar )
-                    VALUES ('$ticketid' ,'$poster_id', 'E' ,'$posterfname $posterlname', '$description', '$ipaddress', now(), now(), 'share-alt', 'left')");
+                    $this->db->query("INSERT INTO osticket.ost_thread_entry_test (thread_entry_guid, ticket_guid , staff_guid , type, poster , body , ip_address, created, updated, class, avatar )
+                    VALUES (REPLACE(UPPER(UUID()),'-',''), '$ticketid' ,'$poster_id', 'E' ,'$posterfname $posterlname', '$description', '$ipaddress', now(), now(), 'share-alt', 'left')");
 
                     echo "<script> alert('Successfully change department');</script>";
                 }
 
                 else if ($assignto{0} == 'a')
                 {
-                    $staff_id = substr($assignto, 1);
-                    $team_id = '0';
+                    $staff_guid = substr($assignto, 1);
+                    $team_guid = '0';
                     $poster_id = $_SESSION['staffid'];      
                     $ipaddress = $_SERVER['REMOTE_ADDR'];
-                    $posterfname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_id = $poster_id")->row('firstname');
-                    $posterlname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_id = $poster_id")->row('lastname');
-                    $assignstafffname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_id = $staff_id")->row('firstname');
-                    $assignstafflname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_id = $staff_id")->row('lastname');
+                    $posterfname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = $poster_id")->row('firstname');
+                    $posterlname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = $poster_id")->row('lastname');
+                    $assignstafffname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = $staff_guid")->row('firstname');
+                    $assignstafflname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = $staff_guid")->row('lastname');
                     $description = '<b>'.$posterfname.''.$posterlname.'</b> assigned this ticket to <strong>'.$assignstafffname. ''.$assignstafflname. '</strong>';
 
-                    $this->db->query("INSERT INTO osticket.ost_thread_entry_test ( ticket_id , staff_id , type, poster , body , ip_address, created, updated, class, avatar )
-                    VALUES ('$ticketid' ,'$poster_id', 'E' ,'$posterfname $posterlname', '$description', '$ipaddress', now(), now(), 'hand-right', 'left')");
+                    $this->db->query("INSERT INTO osticket.ost_thread_entry_test (thread_entry_guid, ticket_guid , staff_guid , type, poster , body , ip_address, created, updated, class, avatar )
+                    VALUES (REPLACE(UPPER(UUID()),'-',''), '$ticketid' ,'$poster_id', 'E' ,'$posterfname $posterlname', '$description', '$ipaddress', now(), now(), 'hand-right', 'left')");
 
-                    $this->db->query("UPDATE ost_ticket_test SET assigned_to = '$staff_id' , team_id = '$team_id', status_id = '7', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_id = '$ticketid' ");
+                    $this->db->query("UPDATE ost_ticket_test SET assigned_to = '$staff_guid' , team_guid = '$team_guid', status_guid = '7', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_guid = '$ticketid' ");
                     echo "<script> alert('Successfully assigned to agent');</script>";
                 }
 
                 else if ($assignto{0} == 't')
                 {
-                    $team_id = substr($assignto, 1);
-                    $staff_id = '0';
+                    $team_guid = substr($assignto, 1);
+                    $staff_guid = '0';
 
                     $poster_id = $_SESSION['staffid'];      
                     $ipaddress = $_SERVER['REMOTE_ADDR'];
-                    $posterfname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_id = $poster_id")->row('firstname');
-                    $posterlname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_id = $poster_id")->row('lastname');
-                    $assignteamname = $this->db->query("SELECT * FROM ost_team_test WHERE team_id = '$team_id' ")->row('name');
+                    $posterfname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = $poster_id")->row('firstname');
+                    $posterlname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = $poster_id")->row('lastname');
+                    $assignteamname = $this->db->query("SELECT * FROM ost_team_test WHERE team_guid = '$team_guid' ")->row('name');
                     $description = '<b>'.$posterfname.''.$posterlname.'</b> assigned this ticket to <strong>'.$assignteamname. '</strong>';
 
-                    $this->db->query("INSERT INTO osticket.ost_thread_entry_test ( ticket_id , staff_id , type, poster , body , ip_address, created, updated, class, avatar )
-                    VALUES ('$ticketid' ,'$poster_id', 'E' ,'$posterfname $posterlname', '$description', '$ipaddress', now(), now(), 'hand-right', 'left')");
+                    $this->db->query("INSERT INTO osticket.ost_thread_entry_test (thread_entry_guid, ticket_guid , staff_guid , type, poster , body , ip_address, created, updated, class, avatar )
+                    VALUES (REPLACE(UPPER(UUID()),'-',''), '$ticketid' ,'$poster_id', 'E' ,'$posterfname $posterlname', '$description', '$ipaddress', now(), now(), 'hand-right', 'left')");
 
-                    $this->db->query("UPDATE ost_ticket_test SET assigned_to = '$staff_id' , team_id = '$team_id', status_id = '7', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_id = '$ticketid' ");
+                    $this->db->query("UPDATE ost_ticket_test SET assigned_to = '$staff_guid' , team_guid = '$team_guid', status_guid = '7', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_guid = '$ticketid' ");
 
                     echo "<script> alert('Successfully assigned to team');</script>";
                 }
 
                 else if ($delete == '5')
                 {
-                    $this->db->query("DELETE FROM ost_ticket_test WHERE ticket_id = '$ticketid'");
+                    $this->db->query("DELETE FROM ost_ticket_test WHERE ticket_guid = '$ticketid'");
 
                     echo "<script> alert('Successfully deleted');</script>";
                     echo "<script> document.location='" . base_url() . "/index.php/staff_ticket_controller/main?title=Open' </script>";    
@@ -1000,15 +1000,15 @@ class staff_ticket_controller extends CI_Controller {
                     'deletenote' => addslashes($this->input->post('deletenote')),
                 );
 
-                $posterfname = $this->db->query("SELECT firstname FROM ost_staff_test WHERE staff_id = '$poster_id'")->row('firstname');
-                $posterlname = $this->db->query("SELECT lastname FROM ost_staff_test WHERE staff_id = '$poster_id'")->row('lastname');
+                $posterfname = $this->db->query("SELECT firstname FROM ost_staff_test WHERE staff_guid = '$poster_id'")->row('firstname');
+                $posterlname = $this->db->query("SELECT lastname FROM ost_staff_test WHERE staff_guid = '$poster_id'")->row('lastname');
 
                 foreach ($notearr as $note)
                 {
                     if ($note != "")
                     {
-                        $this->db->query("INSERT INTO ost_thread_entry_test ( ticket_id, staff_id, type, poster, body, ip_address, created, updated, class, avatar )
-                        VALUES ('$ticketid', '$poster_id', 'N','$posterfname $posterlname', '$note', '$ipaddress', now(), now(), 'note', 'left')");
+                        $this->db->query("INSERT INTO ost_thread_entry_test (thread_entry_guid, ticket_guid, staff_guid, type, poster, body, ip_address, created, updated, class, avatar )
+                        VALUES (REPLACE(UPPER(UUID()),'-',''), '$ticketid', '$poster_id', 'N','$posterfname $posterlname', '$note', '$ipaddress', now(), now(), 'note', 'left')");
                     }
                 }
             }
@@ -1034,12 +1034,12 @@ class staff_ticket_controller extends CI_Controller {
             $userid = $_REQUEST['uid'];
 
             $phone = $this->db->query("SELECT * FROM ost_ticket_test AS a 
-                INNER JOIN ost_user_test AS b ON a.user_id = b.user_id
-                WHERE ticket_id = $ticketid")->row('user_phone');
+                INNER JOIN ost_user_test AS b ON a.user_guid = b.user_guid
+                WHERE ticket_guid = $ticketid")->row('user_phone');
             $phoneext = $this->db->query("SELECT * FROM ost_ticket_test AS a 
-                INNER JOIN ost_user_test AS b ON a.user_id = b.user_id
-                WHERE ticket_id = $ticketid")->row('user_phoneext');
-            $current_topic = $this->db->query("SELECT topic_id FROM ost_ticket_test WHERE ticket_id = '$ticketid'");
+                INNER JOIN ost_user_test AS b ON a.user_guid = b.user_guid
+                WHERE ticket_guid = $ticketid")->row('user_phoneext');
+            $current_topic = $this->db->query("SELECT topic_guid FROM ost_ticket_test WHERE ticket_guid = '$ticketid'");
 
             if ($phoneext != "")
             {
@@ -1048,33 +1048,33 @@ class staff_ticket_controller extends CI_Controller {
 
             $data = array(
                 'result' => $this->db->query("SELECT * FROM  ost_ticket_test AS a
-                    INNER JOIN ost_help_topic_test AS b ON b.topic_id = a.topic_id 
-                    INNER JOIN ost_ticket_status_test AS c ON c.id = a.status_id
-                    INNER JOIN ost_ticket_priority_test AS d ON a.priority_id = d.priority_id 
-                    INNER JOIN ost_list_items_test AS e ON a.subtopic_id = e.id
-                    WHERE ticket_id = $ticketid"),
+                    INNER JOIN ost_help_topic_test AS b ON b.topic_guid = a.topic_guid 
+                    INNER JOIN ost_ticket_status_test AS c ON c.status_guid = a.status_guid
+                    INNER JOIN ost_ticket_priority_test AS d ON a.priority_guid = d.priority_guid 
+                    INNER JOIN ost_list_items_test AS e ON a.subtopic_guid = e.list_item_guid
+                    WHERE ticket_guid = $ticketid"),
 
                 'topic' => $this->db->query("SELECT * FROM ost_help_topic_test ORDER BY topic"),
 
-                'inventory' => $this->db->query("SELECT * FROM  ost_list_items_test AS a INNER JOIN ost_help_topic_test AS b ON a.topic_id = b.topic_id INNER JOIN ost_ticket_test AS c ON b.topic_id = c.topic_id WHERE c.ticket_id = $ticketid"),
+                'inventory' => $this->db->query("SELECT * FROM  ost_list_items_test AS a INNER JOIN ost_help_topic_test AS b ON a.topic_guid = b.topic_guid INNER JOIN ost_ticket_test AS c ON b.topic_guid = c.topic_guid WHERE c.ticket_guid = $ticketid"),
 
-                'subt' => $this->db->query("SELECT * FROM  ost_list_items_test INNER JOIN ost_ticket_test ON ost_list_items_test.id = ost_ticket_test.subtopic_id WHERE ticket_id = $ticketid"),
+                'subt' => $this->db->query("SELECT * FROM  ost_list_items_test INNER JOIN ost_ticket_test ON ost_list_items_test.list_item_guid = ost_ticket_test.subtopic_guid WHERE ticket_guid = $ticketid"),
 
-                'current_sub' => $this->db->query("SELECT id, value FROM ost_list_items_test WHERE topic_id = '".$current_topic->row('topic_id')."' ORDER BY value"),
+                'current_sub' => $this->db->query("SELECT list_item_guid, value FROM ost_list_items_test WHERE topic_guid = '".$current_topic->row('topic_guid')."' ORDER BY value"),
 
                 'sla' => $this->db->query("SELECT * FROM ost_sla_test"),
 
                 'status' => $this->db->query("SELECT * FROM ost_ticket_priority_test"),
                 
-                'user' => $this->db->query("SELECT * FROM ost_user_test AS a INNER JOIN ost_ticket_test AS b ON a.user_id = b.user_id WHERE ticket_id = '$ticketid'"),
+                'user' => $this->db->query("SELECT * FROM ost_user_test AS a INNER JOIN ost_ticket_test AS b ON a.user_guid = b.user_guid WHERE ticket_guid = '$ticketid'"),
 
-                'newuser' => $this->db->query("SELECT * FROM ost_user_test WHERE user_id = '$userid'"),
+                'newuser' => $this->db->query("SELECT * FROM ost_user_test WHERE user_guid = '$userid'"),
 
                 'phone' => $phone,
 
-                'editticket' => $this->db->query("SELECT * FROM ost_ticket_test WHERE ticket_id = $ticketid"),
+                'editticket' => $this->db->query("SELECT * FROM ost_ticket_test WHERE ticket_guid = $ticketid"),
 
-                'departmt' => $this->db->query("SELECT * FROM  ost_department_test AS a INNER JOIN ost_user_test AS b ON a.id = b.user_depart INNER JOIN ost_ticket_test AS c ON b.user_id = c.user_id WHERE ticket_id = $ticketid")->row(),
+                'departmt' => $this->db->query("SELECT * FROM  ost_department_test AS a INNER JOIN ost_user_test AS b ON a.department_guid = b.user_depart INNER JOIN ost_ticket_test AS c ON b.user_guid = c.user_guid WHERE ticket_guid = $ticketid")->row(),
             );            
 
             $browser_id = $_SERVER["HTTP_USER_AGENT"];
@@ -1108,23 +1108,23 @@ class staff_ticket_controller extends CI_Controller {
             $status = $_REQUEST['status'];
             $poster_id = $_SESSION['staffid'];
 
-            $user_id = $this->db->query("SELECT * FROM ost_ticket_test WHERE ticket_id = '$ticketid'")->row('user_id');
+            $user_guid = $this->db->query("SELECT * FROM ost_ticket_test WHERE ticket_guid = '$ticketid'")->row('user_guid');
             $cemail = addslashes($this->input->post('cemail'));
             $cusername = addslashes($this->input->post('cusername'));
             $cphone = addslashes($this->input->post('cphone'));
             $cphoneext = addslashes($this->input->post('cphoneext'));
             $cnote = addslashes($this->input->post('cnote'));
 
-            $usernamecheck = $this->db->query("SELECT * FROM ost_user_test WHERE user_id != '$user_id' AND user_name = '$cusername' ")->num_rows();
+            $usernamecheck = $this->db->query("SELECT * FROM ost_user_test WHERE user_guid != '$user_guid' AND user_name = '$cusername' ")->num_rows();
 
-            $useremailcheck = $this->db->query("SELECT * FROM ost_user_test WHERE user_id != '$user_id' AND user_email = '$cemail' ")->num_rows();
+            $useremailcheck = $this->db->query("SELECT * FROM ost_user_test WHERE user_guid != '$user_guid' AND user_email = '$cemail' ")->num_rows();
 
             $splitemail = explode('@', $cemail);
             $domain = '@'.$splitemail[1];
             $org = $this->db->query("SELECT * FROM ost_organization_test");
             $user_orgid = $this->db->query("SELECT * FROM ost_user_test AS a
-                LEFT JOIN ost_organization_test AS b ON a.user_org_id = b.id
-                WHERE user_id = '$user_id'")->row('id');
+                LEFT JOIN ost_organization_test AS b ON a.user_org_guid = b.id
+                WHERE user_guid = '$user_guid'")->row('id');
 
             if ($usernamecheck != '0' && $useremailcheck != '0')
                 echo "<script> alert('Name and email duplicated');</script>";
@@ -1143,22 +1143,22 @@ class staff_ticket_controller extends CI_Controller {
                     user_phoneext = '$cphoneext' ,
                     notes = '$cnote',
                     user_updated_at = NOW()
-                    WHERE user_id = '$user_id' ");
+                    WHERE user_guid = '$user_guid' ");
 
                 foreach ($org->result() as $orgdomain)
                 {
-                    if ($orgdomain->id != $user_orgid && $orgdomain->domain == $domain)
+                    if ($orgdomain->organization_guid != $user_orgid && $orgdomain->domain == $domain)
                     {
-                        $this->db->query("UPDATE ost_user_test SET user_org_id = '$orgdomain->id' WHERE user_id = '$user_id' ");
+                        $this->db->query("UPDATE ost_user_test SET user_org_guid = '$orgdomain->organization_guid' WHERE user_guid = '$user_guid' ");
 
                         echo "<script> alert('User has been auto add into organization $orgdomain->name due to email domain setting in organization page.');</script>";
                     }
                 }
 
                 if ($cnote != "")
-                    $this->db->query("UPDATE ost_user_test SET usernote_poster = '$poster_id', usernote_created = now() WHERE user_id = '$user_id' ");
+                    $this->db->query("UPDATE ost_user_test SET usernote_poster = '$poster_id', usernote_created = now() WHERE user_guid = '$user_guid' ");
                 else
-                    $this->db->query("UPDATE ost_user_test SET usernote_poster = '0', usernote_created = NULL WHERE user_id = '$user_id' ");
+                    $this->db->query("UPDATE ost_user_test SET usernote_poster = '0', usernote_created = NULL WHERE user_guid = '$user_guid' ");
 
                 echo "<script> alert('Edit Profile Successfully');</script>";
 
@@ -1200,12 +1200,12 @@ class staff_ticket_controller extends CI_Controller {
             $datetime = date('Y-m-d H:i', strtotime("$dt"));
             $todaydatetime = date('Y-m-d H:i');
 
-            $posterfname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_id = $poster_id")->row('firstname');
-            $posterlname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_id = $poster_id")->row('lastname');
+            $posterfname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = $poster_id")->row('firstname');
+            $posterlname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = $poster_id")->row('lastname');
 
-            $count_user_tickets = $this->db->query("SELECT COUNT(*) AS count FROM ost_ticket_test a INNER JOIN ost_ticket_status_test b ON a.status_id = b.id WHERE a.user_id = '$userid' AND b.state = 'open'")->row('count');
+            $count_user_tickets = $this->db->query("SELECT COUNT(*) AS count FROM ost_ticket_test a INNER JOIN ost_ticket_status_test b ON a.status_guid = b.status_guid WHERE a.user_guid = '$userid' AND b.state = 'open'")->row('count');
             $max_open_tickets = $this->db->query("SELECT value FROM ost_config_test WHERE id = '22'")->row('value');
-            $ticketinfo = $this->db->query("SELECT assigned_to, ticket_updated, ticket_updated_by_id, ticket_updated_by_role FROM ost_ticket_test WHERE ticket_id = '$ticketid'");
+            $ticketinfo = $this->db->query("SELECT assigned_to, ticket_updated, ticket_updated_by_id, ticket_updated_by_role FROM ost_ticket_test WHERE ticket_guid = '$ticketid'");
             $autolock_minutes = $this->db->query("SELECT value FROM ost_config_test WHERE id = '23'");
             $autolock_time = date("Y-m-d H:i:s", strtotime("+{$autolock_minutes->row('value')} minutes", strtotime($ticketinfo->row('ticket_updated'))));
 
@@ -1214,25 +1214,25 @@ class staff_ticket_controller extends CI_Controller {
                 if ($ticketinfo->row('assigned_to') == $poster_id || date('Y-m-d H:i:s') > $autolock_time || $ticketinfo->row('ticket_updated_by_id') == $poster_id || $ticketinfo->row('ticket_updated_by_role') == 'user')
                 {
                     $this->db->query("UPDATE ost_ticket_test 
-                        SET source = '$source', topic_id = '$topicid', subtopic_id = '$subtopicid', sla_id = '$slaid', priority_id = '$priorityid', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent'
-                        WHERE ticket_id = '$ticketid'");
+                        SET source = '$source', topic_guid = '$topicid', subtopic_guid = '$subtopicid', sla_guid = '$slaid', priority_guid = '$priorityid', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent'
+                        WHERE ticket_guid = '$ticketid'");
 
                     if ($userid != '')
                     {
-                        $this->db->query("UPDATE ost_ticket_test SET user_id = '$userid' WHERE ticket_id = '$ticketid'");
+                        $this->db->query("UPDATE ost_ticket_test SET user_guid = '$userid' WHERE ticket_guid = '$ticketid'");
                     }
 
                     if ($datetime > $todaydatetime)
                     {
-                        $this->db->query("UPDATE ost_ticket_test SET duedate = '$datetime' WHERE ticket_id = '$ticketid'");
+                        $this->db->query("UPDATE ost_ticket_test SET duedate = '$datetime' WHERE ticket_guid = '$ticketid'");
                     }
                     else
                     {
-                        $this->db->query("UPDATE ost_ticket_test SET duedate = NULL WHERE ticket_id = '$ticketid'");
+                        $this->db->query("UPDATE ost_ticket_test SET duedate = NULL WHERE ticket_guid = '$ticketid'");
                     }
 
-                    $this->db->query("INSERT INTO ost_thread_entry_test ( ticket_id , staff_id , type, poster , body , ip_address, created, updated, class, avatar )
-                    VALUES ('$ticketid' ,'$poster_id', 'N' ,'$posterfname $posterlname', '$note', '$ipaddress', now(), now(), 'note', 'left')");
+                    $this->db->query("INSERT INTO ost_thread_entry_test (thread_entry_guid, ticket_guid , staff_guid , type, poster , body , ip_address, created, updated, class, avatar )
+                    VALUES (REPLACE(UPPER(UUID()),'-',''), '$ticketid' ,'$poster_id', 'N' ,'$posterfname $posterlname', '$note', '$ipaddress', now(), now(), 'note', 'left')");
 
                     redirect('staff_ticket_controller/ticketinfo?id='.$ticketid);
                 }
@@ -1263,18 +1263,18 @@ class staff_ticket_controller extends CI_Controller {
         $data = array(
             
             'result' => $this->db->query("SELECT * FROM  ost_ticket_test AS a
-                INNER JOIN ost_help_topic_test AS b ON b.topic_id = a.topic_id
-                INNER JOIN ost_ticket_priority_test AS c ON c.priority_id = a.priority_id
-                LEFT JOIN ost_staff_test AS d ON a.assigned_to = d.staff_id
-                LEFT JOIN ost_team_test AS e ON a.team_id = e.team_id
-                LEFT JOIN ost_sla_test AS f ON a.sla_id = f.id
-                WHERE ticket_id = $ticketid"),
+                INNER JOIN ost_help_topic_test AS b ON b.topic_guid = a.topic_guid
+                INNER JOIN ost_ticket_priority_test AS c ON c.priority_guid = a.priority_guid
+                LEFT JOIN ost_staff_test AS d ON a.assigned_to = d.staff_guid
+                LEFT JOIN ost_team_test AS e ON a.team_guid = e.team_guid
+                LEFT JOIN ost_sla_test AS f ON a.sla_guid = f.sla_guid
+                WHERE ticket_guid = $ticketid"),
 
-            'thread' => $this->db->query("SELECT * FROM  ost_thread_entry_test WHERE ticket_id = $ticketid"),
+            'thread' => $this->db->query("SELECT * FROM  ost_thread_entry_test WHERE ticket_guid = $ticketid"),
             
             'user' => $this->db->query("SELECT * FROM ost_user_test 
-                INNER JOIN ost_ticket_test ON ost_user_test.user_id = ost_ticket_test.user_id 
-                WHERE ticket_id = '$ticketid'"),
+                INNER JOIN ost_ticket_test ON ost_user_test.user_guid = ost_ticket_test.user_guid 
+                WHERE ticket_guid = '$ticketid'"),
         );
 
         $browser_id = $_SERVER["HTTP_USER_AGENT"];
@@ -1305,7 +1305,7 @@ class staff_ticket_controller extends CI_Controller {
         if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
         {   
             $id= $_REQUEST['id'];
-            $data = $this->db->query("SELECT id, VALUE FROM ost_list_items_test AS a INNER JOIN ost_help_topic_test AS b ON a.`topic_id` = b.`topic_id` WHERE b.topic_id = '$id' ORDER BY value")->result();
+            $data = $this->db->query("SELECT list_item_guid, VALUE FROM ost_list_items_test AS a INNER JOIN ost_help_topic_test AS b ON a.`topic_guid` = b.`topic_guid` WHERE b.topic_guid = '$id' ORDER BY value")->result();
             echo json_encode($data);
         }
 
@@ -1317,25 +1317,25 @@ class staff_ticket_controller extends CI_Controller {
 
     public function ticketuser_notes()
     {
-        $ticket_id = $_REQUEST['id'];
+        $ticket_guid = $_REQUEST['id'];
         $poster_id = $_SESSION['staffid'];
-        $user_id = $this->db->query("SELECT * FROM ost_ticket_test WHERE ticket_id = $ticket_id")->row('user_id');
+        $user_guid = $this->db->query("SELECT * FROM ost_ticket_test WHERE ticket_guid = $ticket_guid")->row('user_guid');
         $usernote = addslashes($this->input->post('usernote'));
 
         $this->db->query("UPDATE ost_user_test 
-            SET notes = '$usernote', usernote_poster = '$poster_id', usernote_created = now(), user_updated_at = now() WHERE user_id = '$user_id'");
+            SET notes = '$usernote', usernote_poster = '$poster_id', usernote_created = now(), user_updated_at = now() WHERE user_guid = '$user_guid'");
 
-        redirect('staff_ticket_controller/ticketinfo?id='.$ticket_id);
+        redirect('staff_ticket_controller/ticketinfo?id='.$ticket_guid);
     }
 
     public function deleteticketusernote()
     {
-        $ticket_id = $_REQUEST['id'];
-        $user_id = $this->db->query("SELECT * FROM ost_ticket_test WHERE ticket_id = '$ticket_id'")->row('user_id');
+        $ticket_guid = $_REQUEST['id'];
+        $user_guid = $this->db->query("SELECT * FROM ost_ticket_test WHERE ticket_guid = '$ticket_guid'")->row('user_guid');
 
-        $this->db->query("UPDATE ost_user_test SET notes = NULL, usernote_poster = '0', usernote_created = NULL, user_updated_at = NOW() WHERE user_id = '$user_id'");
+        $this->db->query("UPDATE ost_user_test SET notes = NULL, usernote_poster = '0', usernote_created = NULL, user_updated_at = NOW() WHERE user_guid = '$user_guid'");
 
-        redirect('staff_ticket_controller/ticketinfo?id='.$ticket_id);
+        redirect('staff_ticket_controller/ticketinfo?id='.$ticket_guid);
     }
 
     public function staffupdate()
@@ -1349,11 +1349,11 @@ class staff_ticket_controller extends CI_Controller {
             $signature = $this->input->post('signature');
             $sign = $this->input->post('sign');
             
-            $email = $this->db->query("SELECT b.user_email, b.user_name FROM ost_ticket_test a INNER JOIN ost_user_test b ON a.user_id = b.user_id WHERE ticket_id = '$ticketid'");
-            $ticket_info = $this->db->query("SELECT a.number, a.assigned_to, a.team_id, a.reopened, a.ticket_updated, a.ticket_updated_by_id, a.ticket_updated_by_role, b.state, c.value FROM ost_ticket_test a 
-                INNER JOIN ost_ticket_status_test b ON a.status_id = b.id 
-                INNER JOIN ost_list_items_test c ON a.subtopic_id = c.id WHERE a.ticket_id = '$ticketid'");
-            $poster_info = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_id = $poster_id");
+            $email = $this->db->query("SELECT b.user_email, b.user_name FROM ost_ticket_test a INNER JOIN ost_user_test b ON a.user_guid = b.user_guid WHERE ticket_guid = '$ticketid'");
+            $ticket_info = $this->db->query("SELECT a.number, a.assigned_to, a.team_guid, a.reopened, a.ticket_updated, a.ticket_updated_by_id, a.ticket_updated_by_role, b.state, c.value FROM ost_ticket_test a 
+                INNER JOIN ost_ticket_status_test b ON a.status_guid = b.status_guid 
+                INNER JOIN ost_list_items_test c ON a.subtopic_guid = c.list_item_guid WHERE a.ticket_guid = '$ticketid'");
+            $poster_info = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = $poster_id");
             $posterfname = $poster_info->row('firstname');
             $posterlname = $poster_info->row('lastname');
 
@@ -1366,41 +1366,41 @@ class staff_ticket_controller extends CI_Controller {
             {
                 if ($signature == 'none') 
                 {
-                    $sql = $this->db->query("INSERT INTO osticket.ost_thread_entry_test ( ticket_id , staff_id , type, poster , body , ip_address, created, updated, class, avatar )
-                    VALUES ('$ticketid' ,'$poster_id', 'S' ,'$posterfname $posterlname', '$description', '$ipaddress', now(), now(), 'response', 'left')");
+                    $sql = $this->db->query("INSERT INTO osticket.ost_thread_entry_test (thread_entry_guid, ticket_guid , staff_guid , type, poster , body , ip_address, created, updated, class, avatar )
+                    VALUES (REPLACE(UPPER(UUID()),'-',''), '$ticketid' ,'$poster_id', 'S' ,'$posterfname $posterlname', '$description', '$ipaddress', now(), now(), 'response', 'left')");
                 }
 
                 else if ($signature == 'mine')
                 {
-                    $sql = $this->db->query("INSERT INTO osticket.ost_thread_entry_test ( ticket_id , staff_id , type, poster , body , ip_address, created, updated, class, avatar )
-                    VALUES ('$ticketid' ,'$poster_id', 'S' ,'$posterfname $posterlname', '$description<br>$sign', '$ipaddress', now(), now(), 'response', 'left')");
+                    $sql = $this->db->query("INSERT INTO osticket.ost_thread_entry_test (thread_entry_guid, ticket_guid , staff_guid , type, poster , body , ip_address, created, updated, class, avatar )
+                    VALUES (REPLACE(UPPER(UUID()),'-',''), '$ticketid' ,'$poster_id', 'S' ,'$posterfname $posterlname', '$description<br>$sign', '$ipaddress', now(), now(), 'response', 'left')");
                 }
 
                 if ($auto_claim_tickets->row('value') == 1)
                 { 
-                    if ((empty($ticket_info->row('assigned_to')) && empty($ticket_info->row('team_id')) || (!empty($ticket_info->row('reopened')) && $ticket_info->row('state') == 'open')))
+                    if ((empty($ticket_info->row('assigned_to')) && empty($ticket_info->row('team_guid')) || (!empty($ticket_info->row('reopened')) && $ticket_info->row('state') == 'open')))
                     {
-                        $this->db->query("UPDATE ost_ticket_test SET assigned_to = '$poster_id' WHERE ticket_id = '$ticketid'");
+                        $this->db->query("UPDATE ost_ticket_test SET assigned_to = '$poster_id' WHERE ticket_guid = '$ticketid'");
                     }
                 }
 
-                /*$autoresponseusercheck = $this->db->query("SELECT message_auto_response FROM ost_department_test WHERE NAME = (SELECT department FROM ost_ticket_test WHERE ticket_id = '$ticketid')")->row('message_auto_response');
+                /*$autoresponseusercheck = $this->db->query("SELECT message_auto_response FROM ost_department_test WHERE NAME = (SELECT department FROM ost_ticket_test WHERE ticket_guid = '$ticketid')")->row('message_auto_response');
                 $message_autoresponder = $this->db->query("SELECT value FROM ost_config_test WHERE id='37'")->row('value');
                 $default_template_id = $this->db->query("SELECT * FROM ost_config_test WHERE id = '87'")->row('value');
 
                 if ($autoresponseusercheck == '1' && $message_autoresponder == '1')
                 {
                     $data = array(
-                        'body' => $this->db->query("SELECT REPLACE(REPLACE(body, '%user_name%', '".$email->row('user_name')."'), '%number%', '".$ticket_info->row('number')."') AS email, subject FROM ost_email_template_test WHERE code_name = 'message.autoresp' AND tpl_id = '$default_template_id'"),
+                        'body' => $this->db->query("SELECT REPLACE(REPLACE(body, '%user_name%', '".$email->row('user_name')."'), '%number%', '".$ticket_info->row('number')."') AS email, subject FROM ost_email_template_test WHERE code_name = 'message.autoresp' AND tpl_guid = '$default_template_id'"),
                         'signature' => $signature,
                         'ticketsign' => $this->db->query("SELECT a.*, b.*, a.signature AS staffsign, b.signature AS deptsign FROM ost_staff_test AS a
-                            INNER JOIN ost_department_test AS b ON a.dept_id = b.id
-                            WHERE staff_id = '$poster_id'"),
+                            INNER JOIN ost_department_test AS b ON a.dept_guid = b.id
+                            WHERE staff_guid = '$poster_id'"),
                         'template' => $this->db->query("SELECT * FROM ost_company_test"),
                     );
                     
                     $default_email = $this->db->query("SELECT value FROM ost_config_test WHERE id='83'")->row('value');
-                    $sender_email = $this->db->query("SELECT * FROM ost_email_test WHERE email_id='$default_email'")->row();
+                    $sender_email = $this->db->query("SELECT * FROM ost_email_test WHERE email_guid='$default_email'")->row();
 
                     $config = array(
                         'smtp_user' => $sender_email->userid,
@@ -1421,7 +1421,7 @@ class staff_ticket_controller extends CI_Controller {
                 }*/
                 
                 $solve = $this->input->post('solve');
-                $this->db->query("UPDATE ost_ticket_test SET status_id = '$solve', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_id = '$ticketid' ");
+                $this->db->query("UPDATE ost_ticket_test SET status_guid = '$solve', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_guid = '$ticketid' ");
 
                 if(isset($_POST['submit']))
                 {
@@ -1433,14 +1433,14 @@ class staff_ticket_controller extends CI_Controller {
                         // Looping all files
                         for($i=0;$i<$countfiles;$i++)
                         {
-                            $thread_id = $this->db->query("SELECT max(id) AS id FROM ost_thread_entry_test")->row('id');
+                            $thread_id = $this->db->query("SELECT max(thread_entry_guid) AS id FROM ost_thread_entry_test")->row('id');
                             $filename = $thread_id.'_'.$_FILES['file']['name'][$i];
 
                             // Upload file
                             move_uploaded_file($_FILES['file']['tmp_name'][$i],'../helpme/uploads/'.$filename);
 
-                            $this->db->query("INSERT ost_file_test ( name, created , thread_entry_id )
-                            VALUES ( '$filename', NOW(), '$thread_id' ) ");
+                            $this->db->query("INSERT ost_file_test ( file_guid, name, created , thread_entry_guid )
+                            VALUES ( REPLACE(UPPER(UUID()),'-',''), '$filename', NOW(), '$thread_id' ) ");
                         }
                         echo "<script> alert('$i File(s) and message successfully sent.');</script>";
                     }
@@ -1471,23 +1471,23 @@ class staff_ticket_controller extends CI_Controller {
             $ticketid = $this->input->post('id');
             $title = $this->input->post('title');
             $note = addslashes($this->input->post('note'));
-            $statusid = $this->input->post('note_status_id');
+            $statusid = $this->input->post('note_status_guid');
             $poster_id = $_SESSION['staffid'];
             $ipaddress = $_SERVER['REMOTE_ADDR'];
 
-            $posterfname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_id = $poster_id")->row('firstname');
-            $posterlname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_id = $poster_id")->row('lastname');
+            $posterfname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = $poster_id")->row('firstname');
+            $posterlname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = $poster_id")->row('lastname');
 
-            $ticketinfo = $this->db->query("SELECT assigned_to, ticket_updated, ticket_updated_by_id, ticket_updated_by_role FROM ost_ticket_test WHERE ticket_id = '$ticketid'");
+            $ticketinfo = $this->db->query("SELECT assigned_to, ticket_updated, ticket_updated_by_id, ticket_updated_by_role FROM ost_ticket_test WHERE ticket_guid = '$ticketid'");
             $autolock_minutes = $this->db->query("SELECT value FROM ost_config_test WHERE id = '23'");
             $autolock_time = date("Y-m-d H:i:s", strtotime("+{$autolock_minutes->row('value')} minutes", strtotime($ticketinfo->row('ticket_updated'))));
 
             if ($ticketinfo->row('assigned_to') == $poster_id || date('Y-m-d H:i:s') > $autolock_time || $ticketinfo->row('ticket_updated_by_id') == $poster_id || $ticketinfo->row('ticket_updated_by_role') == 'user')
             {
-                $this->db->query("INSERT INTO osticket.ost_thread_entry_test ( ticket_id , staff_id , type, poster , title , body , ip_address, created, updated, class, avatar )
-                VALUES ('$ticketid' ,'$poster_id', 'N' ,'$posterfname $posterlname', '$title', '$note', '$ipaddress', now(), now(), 'note', 'left')");
+                $this->db->query("INSERT INTO osticket.ost_thread_entry_test ( thread_entry_guid, ticket_guid , staff_guid , type, poster , title , body , ip_address, created, updated, class, avatar )
+                VALUES (REPLACE(UPPER(UUID()),'-',''), '$ticketid' ,'$poster_id', 'N' ,'$posterfname $posterlname', '$title', '$note', '$ipaddress', now(), now(), 'note', 'left')");
 
-                $this->db->query("UPDATE ost_ticket_test SET status_id = '$statusid', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_id = '$ticketid' ");
+                $this->db->query("UPDATE ost_ticket_test SET status_guid = '$statusid', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_guid = '$ticketid' ");
 
                 if(isset($_POST['submit']))
                 {
@@ -1499,14 +1499,14 @@ class staff_ticket_controller extends CI_Controller {
                         // Looping all files
                         for($i=0;$i<$countfiles;$i++)
                         {
-                            $thread_id = $this->db->query("SELECT max(id) AS id FROM ost_thread_entry_test")->row('id');
+                            $thread_id = $this->db->query("SELECT max(thread_entry_guid) AS id FROM ost_thread_entry_test")->row('id');
                             $filename = $thread_id.'_'.$_FILES['file']['name'][$i];
 
                             // Upload file
                             move_uploaded_file($_FILES['file']['tmp_name'][$i],'../helpme/uploads/'.$filename);
 
-                            $this->db->query("INSERT ost_file_test ( name, created , thread_entry_id )
-                            VALUES ( '$filename', NOW(), '$thread_id' ) ");
+                            $this->db->query("INSERT ost_file_test ( file_guid, name, created , thread_entry_guid )
+                            VALUES ( REPLACE(UPPER(UUID()),'-',''), '$filename', NOW(), '$thread_id' ) ");
                         }
                         echo "<script> alert('$i File(s) and message successfully sent.');</script>";
                     }
@@ -1535,7 +1535,7 @@ class staff_ticket_controller extends CI_Controller {
         if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
         {
             $check = $this->input->post('tids[]');
-            $status = $this->input->post('status_id');
+            $status = $this->input->post('status_guid');
             $depart = $this->input->post('departmentid');
             $assignto = $this->input->post('assignto');
             $delete = $this->input->post('deleteticket'); 
@@ -1549,20 +1549,20 @@ class staff_ticket_controller extends CI_Controller {
                 'deletenote' => addslashes($this->input->post('deletenote')),
             );
 
-            $posterfname = $this->db->query("SELECT firstname FROM ost_staff_test WHERE staff_id = '$poster_id'")->row('firstname');
-            $posterlname = $this->db->query("SELECT lastname FROM ost_staff_test WHERE staff_id = '$poster_id'")->row('lastname');
+            $posterfname = $this->db->query("SELECT firstname FROM ost_staff_test WHERE staff_guid = '$poster_id'")->row('firstname');
+            $posterlname = $this->db->query("SELECT lastname FROM ost_staff_test WHERE staff_guid = '$poster_id'")->row('lastname');
 
             foreach ($check as $value)
             {
-                $ticketinfo = $this->db->query("SELECT assigned_to, ticket_updated, ticket_updated_by_id, ticket_updated_by_role FROM ost_ticket_test WHERE ticket_id = '$value'");
+                $ticketinfo = $this->db->query("SELECT assigned_to, ticket_updated, ticket_updated_by_id, ticket_updated_by_role FROM ost_ticket_test WHERE ticket_guid = '$value'");
                 $autolock_minutes = $this->db->query("SELECT value FROM ost_config_test WHERE id = '23'");
                 $autolock_time = date("Y-m-d H:i:s", strtotime("+{$autolock_minutes->row('value')} minutes", strtotime($ticketinfo->row('ticket_updated'))));
 
                 if ($ticketinfo->row('assigned_to') == $poster_id || date('Y-m-d H:i:s') > $autolock_time || $ticketinfo->row('ticket_updated_by_id') == $poster_id || $ticketinfo->row('ticket_updated_by_role') == 'user')
                 {
-                    $primarypermscheck = $this->db->query("SELECT a.dept_id , a.role_id, b.`permissions` FROM ost_staff_test a INNER JOIN ost_role_test b ON a.`role_id` = b.id INNER JOIN ost_department_test c ON a.dept_id = c.`id` INNER JOIN ost_ticket_test d ON C.`name` = d.`department` WHERE staff_id = '$poster_id' AND b.permissions LIKE '%ticket.edit%' AND ticket_id = '$value'")->num_rows();
-                    $permissionscheck = $this->db->query("SELECT * FROM ost_ticket_test a INNER JOIN ost_department_test b ON a.`department` = b.`name` INNER JOIN ost_staff_dept_access_test c ON b.`id` = c.dept_id INNER JOIN ost_role_test d ON c.`role_id` = d.`id` WHERE a.ticket_id = '$value' AND d.permissions LIKE '%ticket.edit%' AND C.`staff_id` = '$poster_id'")->num_rows();
-                    $number = $this->db->query("SELECT number FROM osticket.ost_ticket_test WHERE ticket_id = '$value'")->row('number');
+                    $primarypermscheck = $this->db->query("SELECT a.dept_guid , a.role_guid, b.`permissions` FROM ost_staff_test a INNER JOIN ost_role_test b ON a.`role_guid` = b.role_guid INNER JOIN ost_department_test c ON a.dept_guid = c.`department_guid` INNER JOIN ost_ticket_test d ON C.`name` = d.`department` WHERE staff_guid = '$poster_id' AND b.permissions LIKE '%ticket.edit%' AND ticket_guid = '$value'")->num_rows();
+                    $permissionscheck = $this->db->query("SELECT * FROM ost_ticket_test a INNER JOIN ost_department_test b ON a.`department` = b.`name` INNER JOIN ost_staff_dept_access_test c ON b.`department_guid` = c.dept_guid INNER JOIN ost_role_test d ON c.`role_guid` = d.`role_guid` WHERE a.ticket_guid = '$value' AND d.permissions LIKE '%ticket.edit%' AND C.`staff_guid` = '$poster_id'")->num_rows();
+                    $number = $this->db->query("SELECT number FROM osticket.ost_ticket_test WHERE ticket_guid = '$value'")->row('number');
 
                     if ($permissionscheck != 0)
                     {
@@ -1570,24 +1570,24 @@ class staff_ticket_controller extends CI_Controller {
                         {
                             if ($status == 3)
                             {
-                                $primaryclosecheck = $this->db->query("SELECT a.dept_id , a.role_id, b.`permissions` FROM ost_staff_test a INNER JOIN ost_role_test b ON a.`role_id` = b.id INNER JOIN ost_department_test c ON a.dept_id = c.`id` INNER JOIN ost_ticket_test d ON C.`name` = d.`department` WHERE staff_id = '$poster_id' AND b.permissions LIKE '%ticket.close%' AND ticket_id = '$value'")->num_rows();
-                                $closecheck = $this->db->query("SELECT * FROM ost_ticket_test a INNER JOIN ost_department_test b ON a.`department` = b.`name` INNER JOIN ost_staff_dept_access_test c ON b.`id` = c.dept_id INNER JOIN ost_role_test d ON c.`role_id` = d.`id` WHERE a.ticket_id = '$value' AND d.permissions LIKE '%ticket.close%' AND C.`staff_id` = '$poster_id'")->num_rows();
+                                $primaryclosecheck = $this->db->query("SELECT a.dept_guid , a.role_guid, b.`permissions` FROM ost_staff_test a INNER JOIN ost_role_test b ON a.`role_guid` = b.role_guid INNER JOIN ost_department_test c ON a.dept_guid = c.`department_guid` INNER JOIN ost_ticket_test d ON C.`name` = d.`department` WHERE staff_guid = '$poster_id' AND b.permissions LIKE '%ticket.close%' AND ticket_guid = '$value'")->num_rows();
+                                $closecheck = $this->db->query("SELECT * FROM ost_ticket_test a INNER JOIN ost_department_test b ON a.`department` = b.`name` INNER JOIN ost_staff_dept_access_test c ON b.`department_guid` = c.dept_guid INNER JOIN ost_role_test d ON c.`role_guid` = d.`role_guid` WHERE a.ticket_guid = '$value' AND d.permissions LIKE '%ticket.close%' AND C.`staff_guid` = '$poster_id'")->num_rows();
 
                                 if ($primaryclosecheck != 0) 
                                 {
-                                    $original = $this->db->query("SELECT * FROM ost_ticket_test WHERE ticket_id = '$value'")->row('status_id');
+                                    $original = $this->db->query("SELECT * FROM ost_ticket_test WHERE ticket_guid = '$value'")->row('status_guid');
 
-                                    $this->db->query("UPDATE ost_ticket_test SET status_id = '$status', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_id = '$value' ");
+                                    $this->db->query("UPDATE ost_ticket_test SET status_guid = '$status', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_guid = '$value' ");
 
-                                    $new = $this->db->query("SELECT * FROM ost_ticket_status_test WHERE id = '$status'")->row('state');
+                                    $new = $this->db->query("SELECT * FROM ost_ticket_status_test WHERE status_guid = '$status'")->row('state');
 
                                     if ($original == '3' && $new == 'open')
                                     {
-                                        $this->db->query("UPDATE ost_ticket_test SET reopened = now() WHERE ticket_id = '$value'");
+                                        $this->db->query("UPDATE ost_ticket_test SET reopened = now() WHERE ticket_guid = '$value'");
                                     }
                                     else if ($original != '3' && $new == 'closed')
                                     {
-                                        $this->db->query("UPDATE ost_ticket_test SET closed = now(), reopened = NULL WHERE ticket_id = '$value'");
+                                        $this->db->query("UPDATE ost_ticket_test SET closed = now(), reopened = NULL WHERE ticket_guid = '$value'");
                                     }
 
                                     echo "<script> alert('#$number Successfully change status');</script>";
@@ -1595,19 +1595,19 @@ class staff_ticket_controller extends CI_Controller {
 
                                 else if ($closecheck != 0)
                                 {
-                                    $original = $this->db->query("SELECT * FROM ost_ticket_test WHERE ticket_id = '$value'")->row('status_id');
+                                    $original = $this->db->query("SELECT * FROM ost_ticket_test WHERE ticket_guid = '$value'")->row('status_guid');
 
-                                    $this->db->query("UPDATE ost_ticket_test SET status_id = '$status', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_id = '$value' ");
+                                    $this->db->query("UPDATE ost_ticket_test SET status_guid = '$status', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_guid = '$value' ");
 
-                                    $new = $this->db->query("SELECT * FROM ost_ticket_status_test WHERE id = '$status'")->row('state');
+                                    $new = $this->db->query("SELECT * FROM ost_ticket_status_test WHERE status_guid = '$status'")->row('state');
 
                                     if ($original == '3' && $new == 'open')
                                     {
-                                        $this->db->query("UPDATE ost_ticket_test SET reopened = now() WHERE ticket_id = '$value'");
+                                        $this->db->query("UPDATE ost_ticket_test SET reopened = now() WHERE ticket_guid = '$value'");
                                     }
                                     else if ($original != '3' && $new == 'closed')
                                     {
-                                        $this->db->query("UPDATE ost_ticket_test SET closed = now(), reopened = NULL WHERE ticket_id = '$value'");
+                                        $this->db->query("UPDATE ost_ticket_test SET closed = now(), reopened = NULL WHERE ticket_guid = '$value'");
                                     }
 
                                     echo "<script> alert('#$number Successfully change status');</script>";
@@ -1620,19 +1620,19 @@ class staff_ticket_controller extends CI_Controller {
 
                             else
                             {
-                                $original = $this->db->query("SELECT * FROM ost_ticket_test WHERE ticket_id = '$value'")->row('status_id');
+                                $original = $this->db->query("SELECT * FROM ost_ticket_test WHERE ticket_guid = '$value'")->row('status_guid');
 
-                                $this->db->query("UPDATE ost_ticket_test SET status_id = '$status', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_id = '$value' ");
+                                $this->db->query("UPDATE ost_ticket_test SET status_guid = '$status', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_guid = '$value' ");
 
-                                $new = $this->db->query("SELECT * FROM ost_ticket_status_test WHERE id = '$status'")->row('state');
+                                $new = $this->db->query("SELECT * FROM ost_ticket_status_test WHERE status_guid = '$status'")->row('state');
 
                                 if ($original == '3' && $new == 'open')
                                 {
-                                    $this->db->query("UPDATE ost_ticket_test SET reopened = now() WHERE ticket_id = '$value'");
+                                    $this->db->query("UPDATE ost_ticket_test SET reopened = now() WHERE ticket_guid = '$value'");
                                 }
                                 else if ($original != '3' && $new == 'closed')
                                 {
-                                    $this->db->query("UPDATE ost_ticket_test SET closed = now(), reopened = NULL WHERE ticket_id = '$value'");
+                                    $this->db->query("UPDATE ost_ticket_test SET closed = now(), reopened = NULL WHERE ticket_guid = '$value'");
                                 }
 
                                 echo "<script> alert('#$number Successfully change status');</script>";
@@ -1641,29 +1641,29 @@ class staff_ticket_controller extends CI_Controller {
                     
                         else if ($depart != "" )
                         {
-                            $transfer_sla_id = $this->db->query("SELECT sla_id FROM `ost_department_test` WHERE name = '$depart' ")->row('sla_id');
+                            $transfer_sla_guid = $this->db->query("SELECT sla_guid FROM `ost_department_test` WHERE name = '$depart' ")->row('sla_guid');
 
-                            $this->db->query("UPDATE ost_ticket_test SET department = '$depart', status_id = '8', sla_id = '$transfer_sla_id', assigned_to = '0', team_id = '0', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_id = '$value' ");
+                            $this->db->query("UPDATE ost_ticket_test SET department = '$depart', status_guid = '8', sla_guid = '$transfer_sla_guid', assigned_to = '0', team_guid = '0', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_guid = '$value' ");
                             echo "<script> alert('#$number Successfully change department');</script>";
                         }
 
                         else if ($assignto{0} == 'a')
                         {
-                            $staff_id = substr($assignto, 1);
-                            $team_id = '0';
+                            $staff_guid = substr($assignto, 1);
+                            $team_guid = '0';
 
-                            $primaryassigncheck = $this->db->query("SELECT a.dept_id , a.role_id, b.`permissions` FROM ost_staff_test a INNER JOIN ost_role_test b ON a.`role_id` = b.id INNER JOIN ost_department_test c ON a.dept_id = c.`id` INNER JOIN ost_ticket_test d ON C.`name` = d.`department` WHERE staff_id = '$poster_id' AND b.permissions LIKE '%ticket.assign%' AND ticket_id = '$value'")->num_rows();
-                            $assgincheck = $this->db->query("SELECT * FROM ost_ticket_test a INNER JOIN ost_department_test b ON a.`department` = b.`name` INNER JOIN ost_staff_dept_access_test c ON b.`id` = c.dept_id INNER JOIN ost_role_test d ON c.`role_id` = d.`id` WHERE a.ticket_id = '$value' AND d.permissions LIKE '%ticket.assign%' AND C.`staff_id` = '$poster_id'")->num_rows();
+                            $primaryassigncheck = $this->db->query("SELECT a.dept_guid , a.role_guid, b.`permissions` FROM ost_staff_test a INNER JOIN ost_role_test b ON a.`role_guid` = b.role_guid INNER JOIN ost_department_test c ON a.dept_guid = c.`department_guid` INNER JOIN ost_ticket_test d ON C.`name` = d.`department` WHERE staff_guid = '$poster_id' AND b.permissions LIKE '%ticket.assign%' AND ticket_guid = '$value'")->num_rows();
+                            $assgincheck = $this->db->query("SELECT * FROM ost_ticket_test a INNER JOIN ost_department_test b ON a.`department` = b.`name` INNER JOIN ost_staff_dept_access_test c ON b.`department_guid` = c.dept_guid INNER JOIN ost_role_test d ON c.`role_guid` = d.`role_guid` WHERE a.ticket_guid = '$value' AND d.permissions LIKE '%ticket.assign%' AND C.`staff_guid` = '$poster_id'")->num_rows();
 
                             if ($primaryassigncheck != 0)
                             {
-                                $this->db->query("UPDATE ost_ticket_test SET assigned_to = '$staff_id' , team_id = '$team_id' , status_id = '7', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_id = '$value' ");
+                                $this->db->query("UPDATE ost_ticket_test SET assigned_to = '$staff_guid' , team_guid = '$team_guid' , status_guid = '7', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_guid = '$value' ");
                                 echo "<script> alert('#$number Successfully assigned to agent');</script>";
                             }
 
                             else if ($assgincheck != 0)
                             {
-                                $this->db->query("UPDATE ost_ticket_test SET assigned_to = '$staff_id' , team_id = '$team_id' , status_id = '7', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_id = '$value' ");
+                                $this->db->query("UPDATE ost_ticket_test SET assigned_to = '$staff_guid' , team_guid = '$team_guid' , status_guid = '7', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_guid = '$value' ");
                                 echo "<script> alert('#$number Successfully assigned to agent');</script>";
                             }
 
@@ -1675,21 +1675,21 @@ class staff_ticket_controller extends CI_Controller {
 
                         else if ($assignto{0} == 't')
                         {
-                            $team_id = substr($assignto, 1);
-                            $staff_id = '0';
+                            $team_guid = substr($assignto, 1);
+                            $staff_guid = '0';
 
-                            $primaryassigncheck = $this->db->query("SELECT a.dept_id , a.role_id, b.`permissions` FROM ost_staff_test a INNER JOIN ost_role_test b ON a.`role_id` = b.id INNER JOIN ost_department_test c ON a.dept_id = c.`id` INNER JOIN ost_ticket_test d ON C.`name` = d.`department` WHERE staff_id = '$poster_id' AND b.permissions LIKE '%ticket.assign%' AND ticket_id = '$value'")->num_rows();
-                            $assgincheck = $this->db->query("SELECT * FROM ost_ticket_test a INNER JOIN ost_department_test b ON a.`department` = b.`name` INNER JOIN ost_staff_dept_access_test c ON b.`id` = c.dept_id INNER JOIN ost_role_test d ON c.`role_id` = d.`id` WHERE a.ticket_id = '$value' AND d.permissions LIKE '%ticket.assign%' AND C.`staff_id` = '$poster_id'")->num_rows();
+                            $primaryassigncheck = $this->db->query("SELECT a.dept_guid , a.role_guid, b.`permissions` FROM ost_staff_test a INNER JOIN ost_role_test b ON a.`role_guid` = b.role_guid INNER JOIN ost_department_test c ON a.dept_guid = c.`department_guid` INNER JOIN ost_ticket_test d ON C.`name` = d.`department` WHERE staff_guid = '$poster_id' AND b.permissions LIKE '%ticket.assign%' AND ticket_guid = '$value'")->num_rows();
+                            $assgincheck = $this->db->query("SELECT * FROM ost_ticket_test a INNER JOIN ost_department_test b ON a.`department` = b.`name` INNER JOIN ost_staff_dept_access_test c ON b.`department_guid` = c.dept_guid INNER JOIN ost_role_test d ON c.`role_guid` = d.`role_guid` WHERE a.ticket_guid = '$value' AND d.permissions LIKE '%ticket.assign%' AND C.`staff_guid` = '$poster_id'")->num_rows();
 
                             if ($primaryassigncheck != 0)
                             {
-                                $this->db->query("UPDATE ost_ticket_test SET assigned_to = '$staff_id' , team_id = '$team_id' , status_id = '7', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_id = '$value' ");
+                                $this->db->query("UPDATE ost_ticket_test SET assigned_to = '$staff_guid' , team_guid = '$team_guid' , status_guid = '7', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_guid = '$value' ");
                                 echo "<script> alert('#$number Successfully assigned to agent');</script>";
                             }
 
                             else if ($assgincheck != 0)
                             {
-                                $this->db->query("UPDATE ost_ticket_test SET assigned_to = '$staff_id' , team_id = '$team_id' , status_id = '7', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_id = '$value' ");
+                                $this->db->query("UPDATE ost_ticket_test SET assigned_to = '$staff_guid' , team_guid = '$team_guid' , status_guid = '7', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_guid = '$value' ");
                                 echo "<script> alert('#$number Successfully assigned to agent');</script>";
                             }
 
@@ -1700,18 +1700,18 @@ class staff_ticket_controller extends CI_Controller {
 
                         else if ($delete == '5')
                         {
-                            $primarydeletecheck = $this->db->query("SELECT a.dept_id , a.role_id, b.`permissions` FROM ost_staff_test a INNER JOIN ost_role_test b ON a.`role_id` = b.id INNER JOIN ost_department_test c ON a.dept_id = c.`id` INNER JOIN ost_ticket_test d ON C.`name` = d.`department` WHERE staff_id = '$poster_id' AND b.permissions LIKE '%ticket.delete%' AND ticket_id = '$value'")->num_rows();
-                            $deletecheck = $this->db->query("SELECT * FROM ost_ticket_test a INNER JOIN ost_department_test b ON a.`department` = b.`name` INNER JOIN ost_staff_dept_access_test c ON b.`id` = c.dept_id INNER JOIN ost_role_test d ON c.`role_id` = d.`id` WHERE a.ticket_id = '$value' AND d.permissions LIKE '%ticket.delete%' AND C.`staff_id` = '$poster_id'")->num_rows();
+                            $primarydeletecheck = $this->db->query("SELECT a.dept_guid , a.role_guid, b.`permissions` FROM ost_staff_test a INNER JOIN ost_role_test b ON a.`role_guid` = b.role_guid INNER JOIN ost_department_test c ON a.dept_guid = c.`department_guid` INNER JOIN ost_ticket_test d ON C.`name` = d.`department` WHERE staff_guid = '$poster_id' AND b.permissions LIKE '%ticket.delete%' AND ticket_guid = '$value'")->num_rows();
+                            $deletecheck = $this->db->query("SELECT * FROM ost_ticket_test a INNER JOIN ost_department_test b ON a.`department` = b.`name` INNER JOIN ost_staff_dept_access_test c ON b.`department_guid` = c.dept_guid INNER JOIN ost_role_test d ON c.`role_guid` = d.`role_guid` WHERE a.ticket_guid = '$value' AND d.permissions LIKE '%ticket.delete%' AND C.`staff_guid` = '$poster_id'")->num_rows();
 
                             if ($primarydeletecheck != 0)
                             {
-                                $this->db->query("DELETE FROM ost_ticket_test WHERE ticket_id = '$value' ");
+                                $this->db->query("DELETE FROM ost_ticket_test WHERE ticket_guid = '$value' ");
                                 echo "<script> alert('#$number Successfully delete');</script>";
                             }
 
                             else if ($deletecheck != 0)
                             {
-                                $this->db->query("DELETE FROM ost_ticket_test WHERE ticket_id = '$value' ");
+                                $this->db->query("DELETE FROM ost_ticket_test WHERE ticket_guid = '$value' ");
                                 echo "<script> alert('#$number Successfully delete');</script>";
                             }
 
@@ -1725,7 +1725,7 @@ class staff_ticket_controller extends CI_Controller {
                         {
                             if ($note != "")
                             {
-                                $this->db->query("INSERT INTO ost_thread_entry_test ( ticket_id, staff_id, type, poster, body, ip_address, created, updated, class, avatar ) VALUES ('$value', '$poster_id', 'N','$posterfname $posterlname', '$note', '$ipaddress', now(), now(), 'note', 'left')");
+                                $this->db->query("INSERT INTO ost_thread_entry_test (thread_entry_guid, ticket_guid, staff_guid, type, poster, body, ip_address, created, updated, class, avatar ) VALUES (REPLACE(UPPER(UUID()),'-',''), '$value', '$poster_id', 'N','$posterfname $posterlname', '$note', '$ipaddress', now(), now(), 'note', 'left')");
                             }
                         }
                     }
@@ -1736,24 +1736,24 @@ class staff_ticket_controller extends CI_Controller {
                         {
                             if ($status == 3)
                             {
-                                $primaryclosecheck = $this->db->query("SELECT a.dept_id , a.role_id, b.`permissions` FROM ost_staff_test a INNER JOIN ost_role_test b ON a.`role_id` = b.id INNER JOIN ost_department_test c ON a.dept_id = c.`id` INNER JOIN ost_ticket_test d ON C.`name` = d.`department` WHERE staff_id = '$poster_id' AND b.permissions LIKE '%ticket.close%' AND ticket_id = '$value'")->num_rows();
-                                $closecheck = $this->db->query("SELECT * FROM ost_ticket_test a INNER JOIN ost_department_test b ON a.`department` = b.`name` INNER JOIN ost_staff_dept_access_test c ON b.`id` = c.dept_id INNER JOIN ost_role_test d ON c.`role_id` = d.`id` WHERE a.ticket_id = '$value' AND d.permissions LIKE '%ticket.close%' AND C.`staff_id` = '$poster_id'")->num_rows();
+                                $primaryclosecheck = $this->db->query("SELECT a.dept_guid , a.role_guid, b.`permissions` FROM ost_staff_test a INNER JOIN ost_role_test b ON a.`role_guid` = b.role_guid INNER JOIN ost_department_test c ON a.dept_guid = c.`department_guid` INNER JOIN ost_ticket_test d ON C.`name` = d.`department` WHERE staff_guid = '$poster_id' AND b.permissions LIKE '%ticket.close%' AND ticket_guid = '$value'")->num_rows();
+                                $closecheck = $this->db->query("SELECT * FROM ost_ticket_test a INNER JOIN ost_department_test b ON a.`department` = b.`name` INNER JOIN ost_staff_dept_access_test c ON b.`department_guid` = c.dept_guid INNER JOIN ost_role_test d ON c.`role_guid` = d.`role_guid` WHERE a.ticket_guid = '$value' AND d.permissions LIKE '%ticket.close%' AND C.`staff_guid` = '$poster_id'")->num_rows();
 
                                 if ($primaryclosecheck != 0)
                                 {
-                                    $original = $this->db->query("SELECT * FROM ost_ticket_test WHERE ticket_id = '$value'")->row('status_id');
+                                    $original = $this->db->query("SELECT * FROM ost_ticket_test WHERE ticket_guid = '$value'")->row('status_guid');
 
-                                    $this->db->query("UPDATE ost_ticket_test SET status_id = '$status', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_id = '$value' ");
+                                    $this->db->query("UPDATE ost_ticket_test SET status_guid = '$status', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_guid = '$value' ");
 
-                                    $new = $this->db->query("SELECT * FROM ost_ticket_status_test WHERE id = '$status'")->row('state');
+                                    $new = $this->db->query("SELECT * FROM ost_ticket_status_test WHERE status_guid = '$status'")->row('state');
 
                                     if ($original == '3' && $new == 'open')
                                     {
-                                        $this->db->query("UPDATE ost_ticket_test SET reopened = now() WHERE ticket_id = '$value'");
+                                        $this->db->query("UPDATE ost_ticket_test SET reopened = now() WHERE ticket_guid = '$value'");
                                     }
                                     else if ($original != '3' && $new == 'closed')
                                     {
-                                        $this->db->query("UPDATE ost_ticket_test SET closed = now(), reopened = NULL WHERE ticket_id = '$value'");
+                                        $this->db->query("UPDATE ost_ticket_test SET closed = now(), reopened = NULL WHERE ticket_guid = '$value'");
                                     }
 
                                     echo "<script> alert('#$number Successfully change status');</script>";
@@ -1761,19 +1761,19 @@ class staff_ticket_controller extends CI_Controller {
 
                                 else if ($closecheck != 0)
                                 {
-                                    $original = $this->db->query("SELECT * FROM ost_ticket_test WHERE ticket_id = '$value'")->row('status_id');
+                                    $original = $this->db->query("SELECT * FROM ost_ticket_test WHERE ticket_guid = '$value'")->row('status_guid');
 
-                                    $this->db->query("UPDATE ost_ticket_test SET status_id = '$status', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_id = '$value' ");
+                                    $this->db->query("UPDATE ost_ticket_test SET status_guid = '$status', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_guid = '$value' ");
 
-                                    $new = $this->db->query("SELECT * FROM ost_ticket_status_test WHERE id = '$status'")->row('state');
+                                    $new = $this->db->query("SELECT * FROM ost_ticket_status_test WHERE status_guid = '$status'")->row('state');
 
                                     if ($original == '3' && $new == 'open')
                                     {
-                                        $this->db->query("UPDATE ost_ticket_test SET reopened = now() WHERE ticket_id = '$value'");
+                                        $this->db->query("UPDATE ost_ticket_test SET reopened = now() WHERE ticket_guid = '$value'");
                                     }
                                     else if ($original != '3' && $new == 'closed')
                                     {
-                                        $this->db->query("UPDATE ost_ticket_test SET closed = now(), reopened = NULL WHERE ticket_id = '$value'");
+                                        $this->db->query("UPDATE ost_ticket_test SET closed = now(), reopened = NULL WHERE ticket_guid = '$value'");
                                     }
 
                                     echo "<script> alert('#$number Successfully change status');</script>";
@@ -1788,27 +1788,27 @@ class staff_ticket_controller extends CI_Controller {
                     
                         else if ($depart != "" )
                         {
-                          $this->db->query("UPDATE ost_ticket_test SET department = '$depart', status_id = '8', assigned_to = '0', team_id = '0', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_id = '$value' ");
+                          $this->db->query("UPDATE ost_ticket_test SET department = '$depart', status_guid = '8', assigned_to = '0', team_guid = '0', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_guid = '$value' ");
                           echo "<script> alert('#$number Successfully change department');</script>";
                         }
 
                         else if ($assignto{0} == 'a')
                         {
-                            $staff_id = substr($assignto, 1);
-                            $team_id = '0';
+                            $staff_guid = substr($assignto, 1);
+                            $team_guid = '0';
 
-                            $primaryassigncheck = $this->db->query("SELECT a.dept_id , a.role_id, b.`permissions` FROM ost_staff_test a INNER JOIN ost_role_test b ON a.`role_id` = b.id INNER JOIN ost_department_test c ON a.dept_id = c.`id` INNER JOIN ost_ticket_test d ON C.`name` = d.`department` WHERE staff_id = '$poster_id' AND b.permissions LIKE '%ticket.assign%' AND ticket_id = '$value'")->num_rows();
-                            $assgincheck = $this->db->query("SELECT * FROM ost_ticket_test a INNER JOIN ost_department_test b ON a.`department` = b.`name` INNER JOIN ost_staff_dept_access_test c ON b.`id` = c.dept_id INNER JOIN ost_role_test d ON c.`role_id` = d.`id` WHERE a.ticket_id = '$value' AND d.permissions LIKE '%ticket.assign%' AND C.`staff_id` = '$poster_id'")->num_rows();
+                            $primaryassigncheck = $this->db->query("SELECT a.dept_guid , a.role_guid, b.`permissions` FROM ost_staff_test a INNER JOIN ost_role_test b ON a.`role_guid` = b.role_guid INNER JOIN ost_department_test c ON a.dept_guid = c.`department_guid` INNER JOIN ost_ticket_test d ON C.`name` = d.`department` WHERE staff_guid = '$poster_id' AND b.permissions LIKE '%ticket.assign%' AND ticket_guid = '$value'")->num_rows();
+                            $assgincheck = $this->db->query("SELECT * FROM ost_ticket_test a INNER JOIN ost_department_test b ON a.`department` = b.`name` INNER JOIN ost_staff_dept_access_test c ON b.`department_guid` = c.dept_guid INNER JOIN ost_role_test d ON c.`role_guid` = d.`role_guid` WHERE a.ticket_guid = '$value' AND d.permissions LIKE '%ticket.assign%' AND C.`staff_guid` = '$poster_id'")->num_rows();
 
                             if ($primaryassigncheck != 0)
                             {
-                                $this->db->query("UPDATE ost_ticket_test SET assigned_to = '$staff_id' , team_id = '$team_id' , status_id = '7', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_id = '$value' ");
+                                $this->db->query("UPDATE ost_ticket_test SET assigned_to = '$staff_guid' , team_guid = '$team_guid' , status_guid = '7', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_guid = '$value' ");
                                 echo "<script> alert('#$number Successfully assigned to agent');</script>";
                             }
 
                             else if ($assgincheck != 0)
                             {
-                                $this->db->query("UPDATE ost_ticket_test SET assigned_to = '$staff_id' , team_id = '$team_id' , status_id = '7', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_id = '$value' ");
+                                $this->db->query("UPDATE ost_ticket_test SET assigned_to = '$staff_guid' , team_guid = '$team_guid' , status_guid = '7', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_guid = '$value' ");
                                 echo "<script> alert('#$number Successfully assigned to agent');</script>";
                             }
 
@@ -1820,21 +1820,21 @@ class staff_ticket_controller extends CI_Controller {
 
                         else if ($assignto{0} == 't')
                         {
-                            $team_id = substr($assignto, 1);
-                            $staff_id = '0';
+                            $team_guid = substr($assignto, 1);
+                            $staff_guid = '0';
 
-                            $primaryassigncheck = $this->db->query("SELECT a.dept_id , a.role_id, b.`permissions` FROM ost_staff_test a INNER JOIN ost_role_test b ON a.`role_id` = b.id INNER JOIN ost_department_test c ON a.dept_id = c.`id` INNER JOIN ost_ticket_test d ON C.`name` = d.`department` WHERE staff_id = '$poster_id' AND b.permissions LIKE '%ticket.assign%' AND ticket_id = '$value'")->num_rows();
-                            $assgincheck = $this->db->query("SELECT * FROM ost_ticket_test a INNER JOIN ost_department_test b ON a.`department` = b.`name` INNER JOIN ost_staff_dept_access_test c ON b.`id` = c.dept_id INNER JOIN ost_role_test d ON c.`role_id` = d.`id` WHERE a.ticket_id = '$value' AND d.permissions LIKE '%ticket.assign%' AND C.`staff_id` = '$poster_id'")->num_rows();
+                            $primaryassigncheck = $this->db->query("SELECT a.dept_guid , a.role_guid, b.`permissions` FROM ost_staff_test a INNER JOIN ost_role_test b ON a.`role_guid` = b.role_guid INNER JOIN ost_department_test c ON a.dept_guid = c.`department_guid` INNER JOIN ost_ticket_test d ON C.`name` = d.`department` WHERE staff_guid = '$poster_id' AND b.permissions LIKE '%ticket.assign%' AND ticket_guid = '$value'")->num_rows();
+                            $assgincheck = $this->db->query("SELECT * FROM ost_ticket_test a INNER JOIN ost_department_test b ON a.`department` = b.`name` INNER JOIN ost_staff_dept_access_test c ON b.`department_guid` = c.dept_guid INNER JOIN ost_role_test d ON c.`role_guid` = d.`role_guid` WHERE a.ticket_guid = '$value' AND d.permissions LIKE '%ticket.assign%' AND C.`staff_guid` = '$poster_id'")->num_rows();
 
                             if ($primaryassigncheck != 0)
                             {
-                                $this->db->query("UPDATE ost_ticket_test SET assigned_to = '$staff_id' , team_id = '$team_id' , status_id = '7', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_id = '$value' ");
+                                $this->db->query("UPDATE ost_ticket_test SET assigned_to = '$staff_guid' , team_guid = '$team_guid' , status_guid = '7', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_guid = '$value' ");
                                 echo "<script> alert('#$number Successfully assigned to agent');</script>";
                             }
 
                             else if ($assgincheck != 0)
                             {
-                                $this->db->query("UPDATE ost_ticket_test SET assigned_to = '$staff_id' , team_id = '$team_id' , status_id = '7', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_id = '$value' ");
+                                $this->db->query("UPDATE ost_ticket_test SET assigned_to = '$staff_guid' , team_guid = '$team_guid' , status_guid = '7', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_guid = '$value' ");
                                 echo "<script> alert('#$number Successfully assigned to agent');</script>";
                             }
 
@@ -1846,18 +1846,18 @@ class staff_ticket_controller extends CI_Controller {
 
                         else if ($delete == '5')
                         {
-                            $primarydeletecheck = $this->db->query("SELECT a.dept_id , a.role_id, b.`permissions` FROM ost_staff_test a INNER JOIN ost_role_test b ON a.`role_id` = b.id INNER JOIN ost_department_test c ON a.dept_id = c.`id` INNER JOIN ost_ticket_test d ON C.`name` = d.`department` WHERE staff_id = '$poster_id' AND b.permissions LIKE '%ticket.delete%' AND ticket_id = '$value'")->num_rows();
-                            $deletecheck = $this->db->query("SELECT * FROM ost_ticket_test a INNER JOIN ost_department_test b ON a.`department` = b.`name` INNER JOIN ost_staff_dept_access_test c ON b.`id` = c.dept_id INNER JOIN ost_role_test d ON c.`role_id` = d.`id` WHERE a.ticket_id = '$value' AND d.permissions LIKE '%ticket.delete%' AND C.`staff_id` = '$poster_id'")->num_rows();
+                            $primarydeletecheck = $this->db->query("SELECT a.dept_guid , a.role_guid, b.`permissions` FROM ost_staff_test a INNER JOIN ost_role_test b ON a.`role_guid` = b.role_guid INNER JOIN ost_department_test c ON a.dept_guid = c.`department_guid` INNER JOIN ost_ticket_test d ON C.`name` = d.`department` WHERE staff_guid = '$poster_id' AND b.permissions LIKE '%ticket.delete%' AND ticket_guid = '$value'")->num_rows();
+                            $deletecheck = $this->db->query("SELECT * FROM ost_ticket_test a INNER JOIN ost_department_test b ON a.`department` = b.`name` INNER JOIN ost_staff_dept_access_test c ON b.`department_guid` = c.dept_guid INNER JOIN ost_role_test d ON c.`role_guid` = d.`role_guid` WHERE a.ticket_guid = '$value' AND d.permissions LIKE '%ticket.delete%' AND C.`staff_guid` = '$poster_id'")->num_rows();
 
                             if ($primarydeletecheck != 0)
                             {
-                                $this->db->query("DELETE FROM ost_ticket_test WHERE ticket_id = '$value' ");
+                                $this->db->query("DELETE FROM ost_ticket_test WHERE ticket_guid = '$value' ");
                                 echo "<script> alert('#$number Successfully delete');</script>";
                             }
 
                             else if ($deletecheck != 0)
                             {
-                                $this->db->query("DELETE FROM ost_ticket_test WHERE ticket_id = '$value' ");
+                                $this->db->query("DELETE FROM ost_ticket_test WHERE ticket_guid = '$value' ");
                                 echo "<script> alert('#$number Successfully delete');</script>";
                             }
 
@@ -1871,7 +1871,7 @@ class staff_ticket_controller extends CI_Controller {
                         {
                             if ($note != "")
                             {
-                                $this->db->query("INSERT INTO ost_thread_entry_test ( ticket_id, staff_id, type, poster, body, ip_address, created, updated, class, avatar ) VALUES ('$value', '$poster_id', 'N','$posterfname $posterlname', '$note', '$ipaddress', now(), now(), 'note', 'left')");
+                                $this->db->query("INSERT INTO ost_thread_entry_test (thread_entry_guid, ticket_guid, staff_guid, type, poster, body, ip_address, created, updated, class, avatar ) VALUES (REPLACE(UPPER(UUID()),'-',''), '$value', '$poster_id', 'N','$posterfname $posterlname', '$note', '$ipaddress', now(), now(), 'note', 'left')");
                             }
                         }
                     }
@@ -1901,13 +1901,13 @@ class staff_ticket_controller extends CI_Controller {
     {      
         if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
         {
-            $ticket_id = $_REQUEST['tid'];
-            $user_id = $_REQUEST['id'];
+            $ticket_guid = $_REQUEST['tid'];
+            $user_guid = $_REQUEST['id'];
             $poster_id = $_SESSION['staffid'];
 
-            $count_user_tickets = $this->db->query("SELECT COUNT(*) AS count FROM ost_ticket_test a INNER JOIN ost_ticket_status_test b ON a.status_id = b.id WHERE a.user_id = '$user_id' AND b.state = 'open'")->row('count');
+            $count_user_tickets = $this->db->query("SELECT COUNT(*) AS count FROM ost_ticket_test a INNER JOIN ost_ticket_status_test b ON a.status_guid = b.status_guid WHERE a.user_guid = '$user_guid' AND b.state = 'open'")->row('count');
             $max_open_tickets = $this->db->query("SELECT value FROM ost_config_test WHERE id = '22'")->row('value');
-            $ticketinfo = $this->db->query("SELECT assigned_to, ticket_updated, ticket_updated_by_id, ticket_updated_by_role FROM ost_ticket_test WHERE ticket_id = '$ticket_id'");
+            $ticketinfo = $this->db->query("SELECT assigned_to, ticket_updated, ticket_updated_by_id, ticket_updated_by_role FROM ost_ticket_test WHERE ticket_guid = '$ticket_guid'");
             $autolock_minutes = $this->db->query("SELECT value FROM ost_config_test WHERE id = '23'");
             $autolock_time = date("Y-m-d H:i:s", strtotime("+{$autolock_minutes->row('value')} minutes", strtotime($ticketinfo->row('ticket_updated'))));
 
@@ -1915,17 +1915,17 @@ class staff_ticket_controller extends CI_Controller {
             {
                 if ($ticketinfo->row('assigned_to') == $poster_id || date('Y-m-d H:i:s') > $autolock_time || $ticketinfo->row('ticket_updated_by_id') == $poster_id || $ticketinfo->row('ticket_updated_by_role') == 'user')
                 {
-                    $this->db->query("UPDATE ost_ticket_test SET user_id = '$user_id', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_id='$ticket_id' ");
+                    $this->db->query("UPDATE ost_ticket_test SET user_guid = '$user_guid', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_guid='$ticket_guid' ");
 
                     $ipaddress = $_SERVER['REMOTE_ADDR'];
-                    $posterfname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_id = $poster_id")->row('firstname');
-                    $posterlname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_id = $poster_id")->row('lastname');
-                    $user_name = $this->db->query("SELECT * FROM ost_user_test WHERE user_id = $user_id")->row('user_name');
+                    $posterfname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = $poster_id")->row('firstname');
+                    $posterlname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = $poster_id")->row('lastname');
+                    $user_name = $this->db->query("SELECT * FROM ost_user_test WHERE user_guid = $user_guid")->row('user_name');
 
                     $description = '<b>'.$posterfname.''.$posterlname.'</b> change owenership of this ticcket to <strong>'.$user_name.'</strong>' ;
 
-                    $this->db->query("INSERT INTO osticket.ost_thread_entry_test ( ticket_id , staff_id , type, poster , body , ip_address, created, updated, class, avatar )
-                    VALUES ('$ticket_id' ,'$poster_id', 'E' ,'$posterfname $posterlname', '$description', '$ipaddress', now(), now(), 'pencil', 'left')");
+                    $this->db->query("INSERT INTO osticket.ost_thread_entry_test (thread_entry_guid, ticket_guid , staff_guid , type, poster , body , ip_address, created, updated, class, avatar )
+                    VALUES (REPLACE(UPPER(UUID()),'-',''), '$ticket_guid' ,'$poster_id', 'E' ,'$posterfname $posterlname', '$description', '$ipaddress', now(), now(), 'pencil', 'left')");
 
                     echo "<script> alert('Successfully Assigned');</script>";
                 }
@@ -1939,7 +1939,7 @@ class staff_ticket_controller extends CI_Controller {
                 echo "<script> alert('The number of unsolved tickets for this user has exceeded maximum number allowed for a single user. Kindly assign this ticket to another user.');</script>";
             }
 
-            echo "<script> document.location='" . base_url() . "/index.php/staff_ticket_controller/ticketinfo?id=$ticket_id' </script>";
+            echo "<script> document.location='" . base_url() . "/index.php/staff_ticket_controller/ticketinfo?id=$ticket_guid' </script>";
         }
 
         else       
@@ -1952,7 +1952,7 @@ class staff_ticket_controller extends CI_Controller {
     //ajax search user assign ticket
     public function fetch_user()
     {
-        $ticket_id = $_REQUEST['id'];
+        $ticket_guid = $_REQUEST['id'];
         $direct = $_REQUEST['direct'];
         $output = '';
         $query = '';
@@ -1982,7 +1982,7 @@ class staff_ticket_controller extends CI_Controller {
                 {
                     $output .= '
                     <div style="border-style:groove;border-width:1px;">
-                        -- <b><a href ="ticketinfo_assignuser?id='.$nrow->user_id.'&tid='.$ticket_id.'">
+                        -- <b><a href ="ticketinfo_assignuser?id='.$nrow->user_guid.'&tid='.$ticket_guid.'">
                           <span>'.$nrow->user_name.'</span> (<span>'.$nrow->user_email.'</span>)
                         </a></b><br>
                     </div>
@@ -1995,7 +1995,7 @@ class staff_ticket_controller extends CI_Controller {
                 {
                     $output .= '
                     <div style="border-style:groove;border-width:1px;">
-                        -- <b><a href ="ticketinfoedit?id='.$ticket_id.'&uid='.$trow->user_id.'">
+                        -- <b><a href ="ticketinfoedit?id='.$ticket_guid.'&uid='.$trow->user_guid.'">
                           <span>'.$trow->user_name.'</span> (<span>'.$trow->user_email.'</span>)
                         </a></b><br>
                     </div>
@@ -2046,7 +2046,7 @@ class staff_ticket_controller extends CI_Controller {
             {
                 $output .= '
                 <div style="border-style:groove;border-width:1px;">
-                    -- <b><a href ="newticket?id='.$row->user_id.'">
+                    -- <b><a href ="newticket?id='.$row->user_guid.'">
                         <span>'.$row->user_name.'</span> (<span>'.$row->user_email.'</span>)
                     </a></b><br>
                 </div>

@@ -89,17 +89,17 @@ $(function() {
 
                     <tr>
                     <td nowrap="" align="center">
-                        <input type="checkbox" value="<?php echo $value->user_id;?>" name="tids[]" class="ckb">
+                        <input type="checkbox" value="<?php echo $value->user_guid;?>" name="tids[]" class="ckb">
                     </td>
                     <td>&nbsp;
-                        <a class="preview" href="<?php echo site_url('staff_user_controller/user_info');?>?id=<?php echo $value->user_id;?>"><?php echo $value->user_name;?></a>
+                        <a class="preview" href="<?php echo site_url('staff_user_controller/user_info');?>?id=<?php echo $value->user_guid;?>"><?php echo $value->user_name;?></a>
                         &nbsp;
                         
                         <?php 
-                        if ($this->db->query("SELECT COUNT(*) as total FROM ost_ticket_test WHERE user_id = '".$value->user_id."'")->row('total') != '0')
+                        if ($this->db->query("SELECT COUNT(*) as total FROM ost_ticket_test WHERE user_guid = '".$value->user_guid."'")->row('total') != '0')
                         { ?>
                             <i class="icon-fixed-width icon-file-text-alt"></i>
-                            <small>(<?php echo $this->db->query("SELECT COUNT(*) as total FROM ost_ticket_test WHERE user_id = '".$value->user_id."'")->row('total');?>)</small>
+                            <small>(<?php echo $this->db->query("SELECT COUNT(*) as total FROM ost_ticket_test WHERE user_guid = '".$value->user_guid."'")->row('total');?>)</small>
                         <?php } ?>
                         </td>
                     <td><?php echo $value->name;?></td>

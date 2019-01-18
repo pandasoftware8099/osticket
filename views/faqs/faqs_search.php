@@ -21,7 +21,7 @@
 <div><strong>Search Results</strong></div><div class="clear"></div><div id="faq">
                 <ol>
                     <?php foreach ($search->result() as $value) { ?>
-                    <li><a href="<?php echo site_url('staff_faqs_controller/faqinfo');?>?id=<?php echo $value->faq_id;?>" class="previewfaq"><?php echo $value->question;?></a> - <span>
+                    <li><a href="<?php echo site_url('staff_faqs_controller/faqinfo');?>?id=<?php echo $value->faq_guid;?>" class="previewfaq"><?php echo $value->question;?></a> - <span>
 
                          <?php if($value->ispublished == '1') { ?>
 

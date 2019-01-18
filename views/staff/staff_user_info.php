@@ -1,7 +1,7 @@
 <div id="content">
     <div class="col-lg-12" style="min-height:40px;">
     <?php foreach ($inforesult->result() as $info) { ?>
-        <h2 class="pull-left"><a href="<?php echo site_url('staff_user_controller/user_info');?>?id=<?php echo $info->user_id;?>" title="Reload"><i class="icon-refresh"></i> <?php echo $info->user_name;?></a></h2>
+        <h2 class="pull-left"><a href="<?php echo site_url('staff_user_controller/user_info');?>?id=<?php echo $info->user_guid;?>" title="Reload"><i class="icon-refresh"></i> <?php echo $info->user_name;?></a></h2>
     
         <div class="pull-right">
 
@@ -173,17 +173,17 @@
                     : <span id="user-3-org">
                         <?php 
                         
-                        if ($info->user_org_id == ('0' || ''))
+                        if ($info->user_org_guid == ('0' || ''))
                         { ?>
                             <a data-toggle="modal" data-target="#organization-modal" class="user-action">Add Organization</a>
                         <?php }
 
-                        else if ($info->user_org_id != ('0' || ''))
+                        else if ($info->user_org_guid != ('0' || ''))
                         { ?>
                             <a data-toggle="modal" data-target="#organization-modal1" class="user-action">
                             <?php echo $this->db->query("SELECT name FROM ost_user_test AS a
-                                INNER JOIN ost_organization_test AS b ON a.user_org_id = b.id
-                                WHERE a.user_id = '".$info->user_id."'")->row('name');?></a>
+                                INNER JOIN ost_organization_test AS b ON a.user_org_guid = b.organization_guid
+                                WHERE a.user_guid = '".$info->user_guid."'")->row('name');?></a>
                         <?php } ?>
                     </span>
                 </td>
@@ -255,43 +255,43 @@
             <?php foreach ($ticketinfo->result() as $ticket) { ?>
             <tr>
                 <td nowrap="">
-                  <a class="Icon webTicket preview" title="Preview Ticket" href="<?php echo site_url('staff_ticket_controller/ticketinfo');?>?id=<?php echo $ticket->ticket_id;?>"><?php echo $ticket->number;?></a>
+                  <a class="Icon webTicket preview" title="Preview Ticket" href="<?php echo site_url('staff_ticket_controller/ticketinfo');?>?id=<?php echo $ticket->ticket_guid;?>"><?php echo $ticket->number;?></a>
                 </td>
                 <td nowrap=""><?php echo $ticket->ticket_updated;?></td></td>
                 <td><?php echo $ticket->name;?></td>
-                <td><a href="<?php echo site_url('staff_ticket_controller/ticketinfo');?>?id=<?php echo $ticket->ticket_id;?>"><?php echo $ticket->topic;?></a>
+                <td><a href="<?php echo site_url('staff_ticket_controller/ticketinfo');?>?id=<?php echo $ticket->ticket_guid;?>"><?php echo $ticket->topic;?></a>
 
                     <?php 
-                    if ($this->db->query("SELECT COUNT(*) as userthread FROM ost_thread_entry_test WHERE ticket_id = '".$ticket->ticket_id."'")->row('userthread') != '0' && $this->db->query("SELECT COUNT(*) as userthread FROM ost_thread_entry_test WHERE ticket_id = '".$ticket->ticket_id."'")->row('userthread') != '1')
+                    if ($this->db->query("SELECT COUNT(*) as userthread FROM ost_thread_entry_test WHERE ticket_guid = '".$ticket->ticket_guid."'")->row('userthread') != '0' && $this->db->query("SELECT COUNT(*) as userthread FROM ost_thread_entry_test WHERE ticket_guid = '".$ticket->ticket_guid."'")->row('userthread') != '1')
                     { ?>
 
                     <span class="pull-right faded-more">
                         <i class="icon-comments-alt"></i>
-                            <small><?php echo $this->db->query("SELECT COUNT(*) as userthread FROM ost_thread_entry_test WHERE ticket_id = '".$ticket->ticket_id."'")->row('userthread');?></small>
+                            <small><?php echo $this->db->query("SELECT COUNT(*) as userthread FROM ost_thread_entry_test WHERE ticket_guid = '".$ticket->ticket_guid."'")->row('userthread');?></small>
                     </span>
                     <?php } ?>
                 </td>
                 <td><span class="truncate" style="max-wdith:125px"><?php echo $ticket->department;?></span></td>
                 <td><span class="truncate" style="max-width:125px">
                     <?php 
-                    if ($ticket->team_id == '0')
+                    if ($ticket->team_guid == '0')
                     { ?>
                       <?php echo $this->db->query("SELECT firstname FROM ost_staff_test AS a
                                                   INNER JOIN ost_ticket_test AS b
-                                                  ON b.assigned_to = a.staff_id
-                                                  WHERE b.ticket_id = '".$ticket->ticket_id."'")->row('firstname');?> 
+                                                  ON b.assigned_to = a.staff_guid
+                                                  WHERE b.ticket_guid = '".$ticket->ticket_guid."'")->row('firstname');?> 
                       <?php echo $this->db->query("SELECT lastname FROM ost_staff_test AS a
                                                   INNER JOIN ost_ticket_test AS b
-                                                  ON b.assigned_to = a.staff_id
-                                                  WHERE b.ticket_id = '".$ticket->ticket_id."'")->row('lastname');?>
+                                                  ON b.assigned_to = a.staff_guid
+                                                  WHERE b.ticket_guid = '".$ticket->ticket_guid."'")->row('lastname');?>
                     <?php }
 
                     if ($ticket->assigned_to == '0')
                     { ?>
                       <?php echo $this->db->query("SELECT name FROM ost_team_test AS a
                                                   INNER JOIN ost_ticket_test AS b
-                                                  ON b.team_id = a.team_id
-                                                  WHERE b.ticket_id = '".$ticket->ticket_id."'")->row('name');?>
+                                                  ON b.team_guid = a.team_guid
+                                                  WHERE b.ticket_guid = '".$ticket->ticket_guid."'")->row('name');?>
                     <?php } ?>
                     </span>
                 </td>

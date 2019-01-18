@@ -80,10 +80,10 @@
         <label class="col-lg-3 control-label"> Landing Page&nbsp;<font class="error">*</font> :</label>
         <div class="col-lg-9">
             <span>
-                <select name="landing_page_id" class="form-control" required>
+                <select name="landing_page_guid" class="form-control" required>
                     <option value="">— Select Landing Page —</option>
                     <?php foreach ($landpages->result() as $lpages) {?>
-                        <option value="<?php echo $lpages->id;?>" <?php echo $lpages->id == $orilandpages->row('id')?"selected":"";?>><?php echo $lpages->name;?></option>
+                        <option value="<?php echo $lpages->content_guid;?>" <?php echo $lpages->content_guid == $orilandpages->row('content_guid')?"selected":"";?>><?php echo $lpages->name;?></option>
                     <?php }?>
                 </select>&nbsp;
                 <font class="error"></font>
@@ -94,10 +94,10 @@
         <label class="col-lg-3 control-label"> Offline Page&nbsp;<font class="error">*</font> :</label>
         <div class="col-lg-9">
             <span>
-                <select name="offline_page_id" class="form-control" required>
+                <select name="offline_page_guid" class="form-control" required>
                     <option value="">— Select Offline Page —</option>
                     <?php foreach ($offpages->result() as $opages) {?>
-                        <option value="<?php echo $opages->id;?>" <?php echo $opages->id == $orioffpages->row('id')?"selected":"";?>><?php echo $opages->name;?></option>
+                        <option value="<?php echo $opages->content_guid;?>" <?php echo $opages->content_guid == $orioffpages->row('content_guid')?"selected":"";?>><?php echo $opages->name;?></option>
                     <?php }?>
                 </select>&nbsp;
                 <font class="error"></font>
@@ -108,10 +108,10 @@
         <label class="col-lg-3 control-label"> Default Thank-You Page&nbsp;<font class="error">*</font> :</label>
         <div class="col-lg-9">
             <span>
-                <select name="thank-you_page_id" class="form-control" required>
+                <select name="thank-you_page_guid" class="form-control" required>
                     <option value="">— Select Thank-You Page —</option>
                     <?php foreach ($typages->result() as $tpages) {?>
-                        <option value="<?php echo $tpages->id;?>" <?php echo $tpages->id == $oritypages->row('id')?"selected":"";?>><?php echo $tpages->name;?></option>
+                        <option value="<?php echo $tpages->content_guid;?>" <?php echo $tpages->content_guid == $oritypages->row('content_guid')?"selected":"";?>><?php echo $tpages->name;?></option>
                     <?php }?>
                 </select>
             </span>
@@ -134,10 +134,10 @@
                 <?php foreach ($logo->result() as $logoimg) { ?>
                 <tr>
                     <td>
-                        <input type="radio" name="selected-logo" value="<?php echo $logoimg->id;?>" style="margin-left: 1em" <?php echo $defclientlogo->row('id') == "$logoimg->id"?"checked":""; ?>>
+                        <input type="radio" name="selected-logo" value="<?php echo $logoimg->file_guid;?>" style="margin-left: 1em" <?php echo $defclientlogo->row('file_guid') == "$logoimg->file_guid"?"checked":""; ?>>
                     </td>
                     <td>
-                        <input type="radio" name="selected-logo-scp" value="<?php echo $logoimg->id;?>" style="margin-left: 1em" <?php echo $defstafflogo->row('id') == "$logoimg->id"?"checked":""; ?>>
+                        <input type="radio" name="selected-logo-scp" value="<?php echo $logoimg->file_guid;?>" style="margin-left: 1em" <?php echo $defstafflogo->row('file_guid') == "$logoimg->file_guid"?"checked":""; ?>>
                     </td>
                     <td>
                         <img src="/helpme/uploads/<?php echo $logoimg->name;?>" alt="<?php echo $logoimg->name;?>" valign="middle" style="box-shadow: 0 0 0.5em rgba(0,0,0,0.5);
@@ -145,7 +145,7 @@
                             vertical-align: middle">
                     </td>
                     <td style="text-align: center;">
-                        <input class="ckb" type="checkbox" name="dellogo[]" value="<?php echo $logoimg->id;?>">
+                        <input class="ckb" type="checkbox" name="dellogo[]" value="<?php echo $logoimg->file_guid;?>">
                     </td>
                 </tr>
                 <?php } ?>
@@ -180,7 +180,7 @@
             <?php foreach ($backdrop->result() as $backdropimg) { ?>
             <tr>
                 <td>
-                    <input type="radio" name="selected-backdrop" value="<?php echo $backdropimg->id;?>" style="margin-left: 1em" <?php echo $defstaffbackdrop->row('id') == "$backdropimg->id"?"checked":""; ?>>
+                    <input type="radio" name="selected-backdrop" value="<?php echo $backdropimg->file_guid;?>" style="margin-left: 1em" <?php echo $defstaffbackdrop->row('file_guid') == "$backdropimg->file_guid"?"checked":""; ?>>
                 </td>
                 <td>
                     <img src="/helpme/uploads/<?php echo $backdropimg->name;?>" alt="<?php echo $backdropimg->name;?>" valign="middle" style="box-shadow: 0 0 0.5em rgba(0,0,0,0.5);
@@ -188,7 +188,7 @@
                         vertical-align: middle">
                 </td>
                 <td style="text-align: center;">
-                    <input class="ckb" type="checkbox" name="delbackdrop[]" value="<?php echo $backdropimg->id;?>">
+                    <input class="ckb" type="checkbox" name="delbackdrop[]" value="<?php echo $backdropimg->file_guid;?>">
                 </td>
             </tr>
             <?php } ?>

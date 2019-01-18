@@ -25,15 +25,15 @@ class staff_user_controller extends CI_Controller {
             $staffid = $_SESSION["staffid"];    
             $data = array(
                 'result' => $this->db->query("SELECT * FROM  ost_user_test 
-                    LEFT JOIN ost_user_status_test ON ost_user_test.status = ost_user_status_test.user_status_id"), 
+                    LEFT JOIN ost_user_status_test ON ost_user_test.status = ost_user_status_test.user_status_guid"), 
 
-                'adduserallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_id = ' $staffid' AND permissions LIKE '%user.create%'")->num_rows(),
+                'adduserallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = ' $staffid' AND permissions LIKE '%user.create%'")->num_rows(),
 
-                'edituserallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_id = ' $staffid' AND permissions LIKE '%user.edit%'")->num_rows(),
+                'edituserallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = ' $staffid' AND permissions LIKE '%user.edit%'")->num_rows(),
 
-                'deleteallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_id = ' $staffid' AND permissions LIKE '%user.delete%'")->num_rows(),
+                'deleteallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = ' $staffid' AND permissions LIKE '%user.delete%'")->num_rows(),
 
-                'activeallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_id = ' $staffid' AND permissions LIKE '%user.manage%'")->num_rows(),
+                'activeallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = ' $staffid' AND permissions LIKE '%user.manage%'")->num_rows(),
 
                 'max_page_size' => $this->db->query("SELECT value FROM ost_config_test WHERE id = '21'")->row('value'),
             );
@@ -80,31 +80,31 @@ class staff_user_controller extends CI_Controller {
 
         if($usercheck->num_rows() == 0)
         {
-            $sql = $this->db->query("INSERT INTO ost_user_test ( user_name , user_created_at, user_updated_at, user_depart, user_email, user_phone, user_phoneext, notes, status ,active)
-            VALUES ( '$user_name', now(), now(), '1', '$user_email', '$user_phone', '$user_phoneext' ,'$user_note', '4' , '0')");
+            $sql = $this->db->query("INSERT INTO ost_user_test (user_guid, user_name , user_created_at, user_updated_at, user_depart, user_email, user_phone, user_phoneext, notes, status ,active)
+            VALUES (REPLACE(UPPER(UUID()),'-',''), '$user_name', now(), now(), '1', '$user_email', '$user_phone', '$user_phoneext' ,'$user_note', '4' , '0')");
 
-            $user_id = $this->db->query("SELECT user_id FROM ost_user_test WHERE user_name = '$user_name'")->row('user_id');
+            $user_guid = $this->db->query("SELECT user_guid FROM ost_user_test WHERE user_name = '$user_name'")->row('user_guid');
 
             if ($user_note != "")
-                $this->db->query("UPDATE ost_user_test SET usernote_poster = '$poster_id', usernote_created = now() WHERE user_id = $user_id ");
+                $this->db->query("UPDATE ost_user_test SET usernote_poster = '$poster_id', usernote_created = now() WHERE user_guid = $user_guid ");
 
             foreach ($org->result() as $orgdomain)
             {
                 if ($orgdomain->domain == $domain)
-                    $this->db->query("UPDATE ost_user_test SET user_org_id = '$orgdomain->id' WHERE user_id = '$user_id' ");
+                    $this->db->query("UPDATE ost_user_test SET user_org_guid = '$orgdomain->organization_guid' WHERE user_guid = '$user_guid' ");
             }
 
             $ticketid = $_REQUEST['id'];
 
             if ($direct == 'tinfo')
             {
-                $ticketinfo = $this->db->query("SELECT assigned_to, ticket_updated, ticket_updated_by_id, ticket_updated_by_role FROM ost_ticket_test WHERE ticket_id = '$ticketid'");
+                $ticketinfo = $this->db->query("SELECT assigned_to, ticket_updated, ticket_updated_by_id, ticket_updated_by_role FROM ost_ticket_test WHERE ticket_guid = '$ticketid'");
                 $autolock_minutes = $this->db->query("SELECT value FROM ost_config_test WHERE id = '23'");
                 $autolock_time = date("Y-m-d H:i:s", strtotime("+{$autolock_minutes->row('value')} minutes", strtotime($ticketinfo->row('ticket_updated'))));
 
                 if ($ticketinfo->row('assigned_to') == $poster_id || date('Y-m-d H:i:s') > $autolock_time || $ticketinfo->row('ticket_updated_by_id') == $poster_id || $ticketinfo->row('ticket_updated_by_role') == 'user')
                 {
-                    $this->db->query("UPDATE ost_ticket_test SET user_id = '$user_id', ticket_updated = now(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_id = '$ticketid'");
+                    $this->db->query("UPDATE ost_ticket_test SET user_guid = '$user_guid', ticket_updated = now(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_guid = '$ticketid'");
                 }
 
                 else
@@ -116,11 +116,11 @@ class staff_user_controller extends CI_Controller {
             }
             else if ($direct == 'tinfoedit')
             {
-                redirect('staff_ticket_controller/ticketinfoedit?id='.$ticketid.'&uid='.$user_id);
+                redirect('staff_ticket_controller/ticketinfoedit?id='.$ticketid.'&uid='.$user_guid);
             }
             else if ($direct == 'user')
             {
-                redirect('staff_user_controller/user_info?id='.$user_id);
+                redirect('staff_user_controller/user_info?id='.$user_guid);
             }
         }
 
@@ -181,17 +181,17 @@ class staff_user_controller extends CI_Controller {
                 
                 if ($usercheck->num_rows() == 0)
                 {
-                    $this->db->query("INSERT INTO ost_user_test (user_org_id , user_name, user_email, user_phone, user_created_at, user_updated_at, status, active ) VALUES ('0', '$username', '$useremail', '$userphone', now(), now(), '4', '0' )");
+                    $this->db->query("INSERT INTO ost_user_test (user_guid, user_org_guid , user_name, user_email, user_phone, user_created_at, user_updated_at, status, active ) VALUES (REPLACE(UPPER(UUID()),'-',''), '0', '$username', '$useremail', '$userphone', now(), now(), '4', '0' )");
 
                     $splitemail = explode('@', $useremail);
                     $domain = '@'.$splitemail[1];
                     $org = $this->db->query("SELECT * FROM ost_organization_test");
-                    $user_id = $this->db->query("SELECT * FROM ost_user_test WHERE user_name = '$username'")->row('user_id');
+                    $user_guid = $this->db->query("SELECT * FROM ost_user_test WHERE user_name = '$username'")->row('user_guid');
 
                     foreach ($org->result() as $orgdomain)
                     {
                         if ($orgdomain->domain == $domain)
-                            $this->db->query("UPDATE ost_user_test SET user_org_id = '$orgdomain->id' WHERE user_id = '$user_id' ");
+                            $this->db->query("UPDATE ost_user_test SET user_org_guid = '$orgdomain->organization_guid' WHERE user_guid = '$user_guid' ");
                     }
 
                     echo "<script> alert('Import Successfully');</script>";
@@ -218,7 +218,7 @@ class staff_user_controller extends CI_Controller {
         // org page import
         elseif ($direct == "org") {
             $pasted = explode("\n", $_POST["pasted"]);
-            $org_id = $_REQUEST['id'];
+            $org_guid = $_REQUEST['id'];
 
             foreach($pasted as $line) {
                 $total = count(explode(",", $line));
@@ -240,7 +240,7 @@ class staff_user_controller extends CI_Controller {
                 else
                 {   
                     echo "<script> alert('Import failed. Please insert the requirement fields (Username and User Email).');</script>";
-                    echo "<script> document.location='" . base_url() . "/index.php/staff_user_controller/org_info?id=$org_id' </script>";
+                    echo "<script> document.location='" . base_url() . "/index.php/staff_user_controller/org_info?id=$org_guid' </script>";
                 }
 
                 $usercheck = $this->db->query("SELECT * FROM ost_user_test WHERE user_name = '$username' OR user_email = '$useremail' ");
@@ -252,36 +252,36 @@ class staff_user_controller extends CI_Controller {
                     $splitemail = explode('@', $useremail);
                     $domain = '@'.$splitemail[1];
                     $org = $this->db->query("SELECT * FROM ost_organization_test");
-                    $user_id = $this->db->query("SELECT * FROM ost_user_test WHERE user_name = '$username'")->row('user_id');
+                    $user_guid = $this->db->query("SELECT * FROM ost_user_test WHERE user_name = '$username'")->row('user_guid');
 
                     foreach ($org->result() as $orgdomain)
                     {
-                        if ($orgdomain->id != $org_id && $orgdomain->domain == $domain)
+                        if ($orgdomain->organization_guid != $org_guid && $orgdomain->domain == $domain)
                         {
                             echo "<script> alert('Users email domain have been set as default domain for organization $orgdomain->name. Kindly change the setting in organization page if you want to add users to another organization.');</script>";
-                            echo "<script> document.location='" . base_url() . "/index.php/staff_user_controller/org_info?id=$org_id' </script>";die;
+                            echo "<script> document.location='" . base_url() . "/index.php/staff_user_controller/org_info?id=$org_guid' </script>";die;
                         }
                     }
                   
-                    $this->db->query("INSERT INTO ost_user_test (user_org_id, user_name, user_email, user_phone, user_created_at, user_updated_at, status, active ) VALUES ($org_id , '$username', '$useremail', '$userphone', now(), now(), '4', '0' )");
+                    $this->db->query("INSERT INTO ost_user_test (user_guid, user_org_guid, user_name, user_email, user_phone, user_created_at, user_updated_at, status, active ) VALUES (REPLACE(UPPER(UUID()),'-',''), $org_guid , '$username', '$useremail', '$userphone', now(), now(), '4', '0' )");
 
                     echo "<script> alert('Import Successfully');</script>";
-                    echo "<script> document.location='" . base_url() . "/index.php/staff_user_controller/org_info?id=$org_id' </script>";
+                    echo "<script> document.location='" . base_url() . "/index.php/staff_user_controller/org_info?id=$org_guid' </script>";
                 }
                 else if ($emailcheck->num_rows() !== 0 && $namecheck->num_rows() !== 0)
                 {
                     echo "<script> alert('Users already exist');</script>";
-                    echo "<script> document.location='" . base_url() . "/index.php/staff_user_controller/org_info?id=$org_id' </script>";
+                    echo "<script> document.location='" . base_url() . "/index.php/staff_user_controller/org_info?id=$org_guid' </script>";
                 }
                 else if ($emailcheck->num_rows() !== 0)
                 {
                     echo "<script> alert('Email duplicated');</script>";
-                    echo "<script> document.location='" . base_url() . "/index.php/staff_user_controller/org_info?id=$org_id' </script>";
+                    echo "<script> document.location='" . base_url() . "/index.php/staff_user_controller/org_info?id=$org_guid' </script>";
                 }
                 else if ($namecheck->num_rows() !== 0)
                 {
                     echo "<script> alert('Name duplicated');</script>";
-                    echo "<script> document.location='" . base_url() . "/index.php/staff_user_controller/org_info?id=$org_id' </script>";
+                    echo "<script> document.location='" . base_url() . "/index.php/staff_user_controller/org_info?id=$org_guid' </script>";
                 }
             }
         }
@@ -310,17 +310,17 @@ class staff_user_controller extends CI_Controller {
 
                     if ($usercheck->num_rows() == 0)
                     {
-                        $this->db->query("INSERT INTO ost_user_test (user_org_id , user_name, user_email, user_phone, user_created_at, user_updated_at, status, active) VALUES ('0', '$username','$email','$phone', now(), now(), '4', '0')");
+                        $this->db->query("INSERT INTO ost_user_test (user_guid, user_org_guid , user_name, user_email, user_phone, user_created_at, user_updated_at, status, active) VALUES (REPLACE(UPPER(UUID()),'-',''), '0', '$username','$email','$phone', now(), now(), '4', '0')");
 
                         $splitemail = explode('@', $email);
                         $domain = '@'.$splitemail[1];
                         $org = $this->db->query("SELECT * FROM ost_organization_test");
-                        $user_id = $this->db->query("SELECT * FROM ost_user_test WHERE user_name = '$username'")->row('user_id');
+                        $user_guid = $this->db->query("SELECT * FROM ost_user_test WHERE user_name = '$username'")->row('user_guid');
 
                         foreach ($org->result() as $orgdomain)
                         {
                             if ($orgdomain->domain == $domain)
-                                $this->db->query("UPDATE ost_user_test SET user_org_id = '$orgdomain->id' WHERE user_id = '$user_id' ");
+                                $this->db->query("UPDATE ost_user_test SET user_org_guid = '$orgdomain->organization_guid' WHERE user_guid = '$user_guid' ");
                         }
 
                         echo "<script> alert('Import Successfully');</script>";
@@ -349,7 +349,7 @@ class staff_user_controller extends CI_Controller {
         {
             if(isset($_POST["submit_file"]))
             {
-                $org_id = $_REQUEST['id'];
+                $org_guid = $_REQUEST['id'];
                 $file = $_FILES["file"]["tmp_name"];
                 $file_open = fopen($file,"r");
                 fgetcsv($file_open, 1000, ",");  // pop the headers
@@ -369,36 +369,36 @@ class staff_user_controller extends CI_Controller {
                         $splitemail = explode('@', $email);
                         $domain = '@'.$splitemail[1];
                         $org = $this->db->query("SELECT * FROM ost_organization_test");
-                        $user_id = $this->db->query("SELECT * FROM ost_user_test WHERE user_name = '$username'")->row('user_id');
+                        $user_guid = $this->db->query("SELECT * FROM ost_user_test WHERE user_name = '$username'")->row('user_guid');
 
                         foreach ($org->result() as $orgdomain)
                         {
-                            if ($orgdomain->id != $org_id && $orgdomain->domain == $domain)
+                            if ($orgdomain->organization_guid != $org_guid && $orgdomain->domain == $domain)
                             {
                                 echo "<script> alert('Users email domain have been set as default domain for organization $orgdomain->name. Kindly change the setting in organization page if you want to add users to another organization.');</script>";
-                                echo "<script> document.location='" . base_url() . "/index.php/staff_user_controller/org_info?id=$org_id' </script>";die;
+                                echo "<script> document.location='" . base_url() . "/index.php/staff_user_controller/org_info?id=$org_guid' </script>";die;
                             }
                         }
 
-                        $this->db->query("INSERT INTO ost_user_test (user_org_id , user_name, user_email, user_phone, user_created_at, user_updated_at, status, active) VALUES ('$org_id' , '$username', '$email', '$phone', now(), now(), '4' , '0')");
+                        $this->db->query("INSERT INTO ost_user_test (user_guid, user_org_guid , user_name, user_email, user_phone, user_created_at, user_updated_at, status, active) VALUES (REPLACE(UPPER(UUID()),'-',''), '$org_guid' , '$username', '$email', '$phone', now(), now(), '4' , '0')");
 
                         echo "<script> alert('Import Successfully');</script>";
-                        echo "<script> document.location='" . base_url() . "/index.php/staff_user_controller/org_info?id=$org_id' </script>";
+                        echo "<script> document.location='" . base_url() . "/index.php/staff_user_controller/org_info?id=$org_guid' </script>";
                     }
                     else if ($emailcheck->num_rows() !== 0 && $namecheck->num_rows() !== 0)
                     {
                         echo "<script> alert('Users already exist');</script>";
-                        echo "<script> document.location='" . base_url() . "/index.php/staff_user_controller/org_info?id=$org_id' </script>";
+                        echo "<script> document.location='" . base_url() . "/index.php/staff_user_controller/org_info?id=$org_guid' </script>";
                     }
                     else if ($emailcheck->num_rows() !== 0)
                     {
                         echo "<script> alert('Email duplicated');</script>";
-                        echo "<script> document.location='" . base_url() . "/index.php/staff_user_controller/org_info?id=$org_id' </script>";
+                        echo "<script> document.location='" . base_url() . "/index.php/staff_user_controller/org_info?id=$org_guid' </script>";
                     }
                     else if ($namecheck->num_rows() !== 0)
                     {
                         echo "<script> alert('Name duplicated');</script>";
-                        echo "<script> document.location='" . base_url() . "/index.php/staff_user_controller/org_info?id=$org_id' </script>";
+                        echo "<script> document.location='" . base_url() . "/index.php/staff_user_controller/org_info?id=$org_guid' </script>";
                     }
                 }
             }
@@ -416,10 +416,10 @@ class staff_user_controller extends CI_Controller {
         foreach ($check as $value) {
 
 
-            $checkstatus = $this->db->query("SELECT status FROM osticket.ost_user_test WHERE user_id = '$value'")->row('status');
-            $checkactive = $this->db->query("SELECT active FROM osticket.ost_user_test WHERE user_id = '$value'")->row('active');
-            $user_email = $this->db->query("SELECT user_email FROM osticket.ost_user_test WHERE user_id = '$value'")->row('user_email');
-            $user_name = $this->db->query("SELECT user_name FROM osticket.ost_user_test WHERE user_id = '$value'")->row('user_name');
+            $checkstatus = $this->db->query("SELECT status FROM osticket.ost_user_test WHERE user_guid = '$value'")->row('status');
+            $checkactive = $this->db->query("SELECT active FROM osticket.ost_user_test WHERE user_guid = '$value'")->row('active');
+            $user_email = $this->db->query("SELECT user_email FROM osticket.ost_user_test WHERE user_guid = '$value'")->row('user_email');
+            $user_name = $this->db->query("SELECT user_name FROM osticket.ost_user_test WHERE user_guid = '$value'")->row('user_name');
 
 
             if($moreoption == 1)
@@ -428,7 +428,7 @@ class staff_user_controller extends CI_Controller {
 
                     $this->db->query("UPDATE osticket.ost_user_test SET 
                         status = '3' , 
-                        user_updated_at = NOW() WHERE user_id = '$value'");
+                        user_updated_at = NOW() WHERE user_guid = '$value'");
 
                     $this->load->library('email');
 
@@ -437,12 +437,12 @@ class staff_user_controller extends CI_Controller {
 
                     $data = array(
                         'body' => $this->db->query("SELECT REPLACE(name, '%company_name%', '$company_name') AS subject,
-                            REPLACE(REPLACE(REPLACE(body, '%user_name%', '".$result->row('user_name')."'), 'activateuser', 'register'), '%user_id%', '".$result->row('user_id')."') AS email FROM ost_content_test WHERE type = 'registration-client'"),
+                            REPLACE(REPLACE(REPLACE(body, '%user_name%', '".$result->row('user_name')."'), 'activateuser', 'register'), '%user_guid%', '".$result->row('user_guid')."') AS email FROM ost_content_test WHERE type = 'registration-client'"),
                         'template' => $this->db->query("SELECT * FROM ost_company_test"),
                     );
 
                     $default_email = $this->db->query("SELECT value FROM ost_config_test WHERE id='83'")->row('value');
-                    $sender_email = $this->db->query("SELECT * FROM ost_email_test WHERE email_id='$default_email'")->row();
+                    $sender_email = $this->db->query("SELECT * FROM ost_email_test WHERE email_guid='$default_email'")->row();
 
                     $config = array(
             
@@ -491,7 +491,7 @@ class staff_user_controller extends CI_Controller {
 
                 else if ($checkstatus != '4') {
                     
-                    $this->db->query("UPDATE osticket.ost_user_test SET status = '2',user_updated_at =NOW() WHERE user_id = '$value'");
+                    $this->db->query("UPDATE osticket.ost_user_test SET status = '2',user_updated_at =NOW() WHERE user_guid = '$value'");
 
                      echo "<script> alert('$user_name Locked');</script>";
 
@@ -510,7 +510,7 @@ class staff_user_controller extends CI_Controller {
 
                     if ($checkactive == '1') {
 
-                        $this->db->query("UPDATE osticket.ost_user_test SET status = '1', user_updated_at =NOW() WHERE user_id = '$value'");
+                        $this->db->query("UPDATE osticket.ost_user_test SET status = '1', user_updated_at =NOW() WHERE user_guid = '$value'");
 
                         echo "<script> alert('$user_name Unlocked'); </script>";
 
@@ -518,7 +518,7 @@ class staff_user_controller extends CI_Controller {
 
                     else if ($checkactive == '0') {
                     
-                        $this->db->query("UPDATE osticket.ost_user_test SET status = '3' ,user_updated_at =NOW() WHERE user_id = '$value'");
+                        $this->db->query("UPDATE osticket.ost_user_test SET status = '3' ,user_updated_at =NOW() WHERE user_guid = '$value'");
                         echo "<script> alert('$user_name Unlocked'); </script>";
 
                     }
@@ -546,15 +546,15 @@ class staff_user_controller extends CI_Controller {
             else if ($moreoption == 4 && $deleteticket == 1)
             {
 
-                $this->db->query("DELETE FROM osticket.ost_user_test WHERE user_id = '$value'");
-                $this->db->query("DELETE FROM osticket.ost_ticket_test WHERE user_id = '$value'");
+                $this->db->query("DELETE FROM osticket.ost_user_test WHERE user_guid = '$value'");
+                $this->db->query("DELETE FROM osticket.ost_ticket_test WHERE user_guid = '$value'");
 
             }
 
             else if ($moreoption == 4 && $deleteticket != 1)
             {
 
-                $this->db->query("DELETE FROM osticket.ost_user_test WHERE user_id = '$value'");
+                $this->db->query("DELETE FROM osticket.ost_user_test WHERE user_guid = '$value'");
                 
             }
 
@@ -575,7 +575,7 @@ class staff_user_controller extends CI_Controller {
                         );
 
                         $default_email = $this->db->query("SELECT value FROM ost_config_test WHERE id='83'")->row('value');
-                        $sender_email = $this->db->query("SELECT * FROM ost_email_test WHERE email_id='$default_email'")->row();
+                        $sender_email = $this->db->query("SELECT * FROM ost_email_test WHERE email_guid='$default_email'")->row();
 
                         $config = array(
             
@@ -630,8 +630,8 @@ class staff_user_controller extends CI_Controller {
         foreach ($check as $value) {
             if ($moreoption == 4)
             {
-                $this->db->query("DELETE FROM osticket.ost_organization_test WHERE id = '$value'");
-                $this->db->query("UPDATE osticket.ost_user_test SET user_org_id = '0', user_updated_at = now() WHERE user_org_id = '$value'");
+                $this->db->query("DELETE FROM osticket.ost_organization_test WHERE organization_guid = '$value'");
+                $this->db->query("UPDATE osticket.ost_user_test SET user_org_guid = '0', user_updated_at = now() WHERE user_org_guid = '$value'");
             }
 
         }
@@ -642,13 +642,13 @@ class staff_user_controller extends CI_Controller {
     {      
         if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
         {
-            $user_id = $_REQUEST['id'];
+            $user_guid = $_REQUEST['id'];
             $staffid = $_SESSION["staffid"];
             
-            $org_id = $this->db->query("SELECT * FROM ost_user_test WHERE user_id = $user_id")->row('user_org_id');
-            if ($org_id != "")
+            $org_guid = $this->db->query("SELECT * FROM ost_user_test WHERE user_guid = $user_guid")->row('user_org_guid');
+            if ($org_guid != "")
             {
-                $orgphone = $this->db->query("SELECT * FROM ost_organization__cdata_test WHERE org_id = $org_id")->row('phone');
+                $orgphone = $this->db->query("SELECT * FROM ost_organization__cdata_test WHERE org_guid = $org_guid")->row('phone');
                 $splitarr = explode('X', $orgphone);
 
                 if (count($splitarr) == "2")
@@ -670,25 +670,25 @@ class staff_user_controller extends CI_Controller {
 
             $data = array(
                 'organization' => $this->db->query("SELECT * FROM ost_organization_test 
-                    INNER JOIN ost_user_test ON ost_user_test.user_org_id = ost_organization_test.id
-                    INNER JOIN ost_organization__cdata_test ON ost_organization__cdata_test.org_id = ost_organization_test.id
-                    WHERE user_id = '$user_id'"),
+                    INNER JOIN ost_user_test ON ost_user_test.user_org_guid = ost_organization_test.organization_guid
+                    INNER JOIN ost_organization__cdata_test ON ost_organization__cdata_test.org_guid = ost_organization_test.organization_guid
+                    WHERE user_guid = '$user_guid'"),
                 'inforesult' => $this->db->query("SELECT * FROM ost_user_test
-                    INNER JOIN ost_user_status_test ON ost_user_test.status = ost_user_status_test.user_status_id
-                    WHERE user_id = $user_id"),
+                    INNER JOIN ost_user_status_test ON ost_user_test.status = ost_user_status_test.user_status_guid
+                    WHERE user_guid = $user_guid"),
                 'inforesultcheckbox' => $this->db->query("SELECT a.*, b.*, c.*, a.notes AS usernote, c.notes AS staffnote FROM ost_user_test AS a
-                    INNER JOIN ost_user_status_test AS b ON a.status = b.user_status_id
-                    LEFT JOIN ost_staff_test AS c ON a.usernote_poster = c.staff_id
-                    WHERE a.user_id = $user_id")->row(),
+                    INNER JOIN ost_user_status_test AS b ON a.status = b.user_status_guid
+                    LEFT JOIN ost_staff_test AS c ON a.usernote_poster = c.staff_guid
+                    WHERE a.user_guid = $user_guid")->row(),
                 'ticketinfo' => $this->db->query("SELECT * FROM ost_ticket_test AS a
-                    INNER JOIN ost_ticket_status_test AS b ON a.status_id = b.id
-                    INNER JOIN ost_help_topic_test AS c ON a.topic_id = c.topic_id
-                    WHERE a.user_id = $user_id"),
+                    INNER JOIN ost_ticket_status_test AS b ON a.status_guid = b.status_guid
+                    INNER JOIN ost_help_topic_test AS c ON a.topic_guid = c.topic_guid
+                    WHERE a.user_guid = $user_guid"),
                 'phone' => $phone,
                 'phoneext' => $phoneext,
-                'edituserallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_id = ' $staffid' AND permissions LIKE '%user.edit%'")->num_rows(),
-                'deleteallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_id = ' $staffid' AND permissions LIKE '%user.delete%'")->num_rows(),
-                'activeallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_id = ' $staffid' AND permissions LIKE '%user.manage%'")->num_rows(),
+                'edituserallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = ' $staffid' AND permissions LIKE '%user.edit%'")->num_rows(),
+                'deleteallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = ' $staffid' AND permissions LIKE '%user.delete%'")->num_rows(),
+                'activeallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = ' $staffid' AND permissions LIKE '%user.manage%'")->num_rows(),
                 'max_page_size' => $this->db->query("SELECT value FROM ost_config_test WHERE id = '21'")->row('value'),
             );
 
@@ -722,8 +722,8 @@ class staff_user_controller extends CI_Controller {
     {
 
         $sendemail = $this->input->post('sendemail');
-        $user_id = $_REQUEST['id'];
-        $user_email = $this->db->query("SELECT user_email FROM osticket.ost_user_test WHERE user_id = '$user_id'")->row('user_email');
+        $user_guid = $_REQUEST['id'];
+        $user_email = $this->db->query("SELECT user_email FROM osticket.ost_user_test WHERE user_guid = '$user_guid'")->row('user_email');
 
             if ($sendemail == 1)
             {
@@ -734,12 +734,12 @@ class staff_user_controller extends CI_Controller {
 
                 $data = array(
                     'body' => $this->db->query("SELECT REPLACE(name, '%company_name%', '$company_name') AS subject,
-                        REPLACE(REPLACE(REPLACE(body, '%user_name%', '".$result->row('user_name')."'), 'activateuser', 'register'), '%user_id%', '".$result->row('user_id')."') AS email FROM ost_content_test WHERE type = 'registration-client'"),
+                        REPLACE(REPLACE(REPLACE(body, '%user_name%', '".$result->row('user_name')."'), 'activateuser', 'register'), '%user_guid%', '".$result->row('user_guid')."') AS email FROM ost_content_test WHERE type = 'registration-client'"),
                     'template' => $this->db->query("SELECT * FROM ost_company_test"),
                 );
 
                 $default_email = $this->db->query("SELECT value FROM ost_config_test WHERE id='83'")->row('value');
-                $sender_email = $this->db->query("SELECT * FROM ost_email_test WHERE email_id='$default_email'")->row();
+                $sender_email = $this->db->query("SELECT * FROM ost_email_test WHERE email_guid='$default_email'")->row();
 
                 $config = array(
             
@@ -782,7 +782,7 @@ class staff_user_controller extends CI_Controller {
                     echo "<script> alert('Do no leave blank password');</script>";
 
                 else if ($passwd1 == $passwd2) {
-                    $this->db->query("UPDATE ost_user_test SET user_pas = '$passwd2', status = '1', active = '1', resetpass = '$pwreset', changepass = '$changepass', user_updated_at = NOW() WHERE user_id = '$user_id'");
+                    $this->db->query("UPDATE ost_user_test SET user_pas = '$passwd2', status = '1', active = '1', resetpass = '$pwreset', changepass = '$changepass', user_updated_at = NOW() WHERE user_guid = '$user_guid'");
                     echo "<script> alert('Successfully Register');</script>";
                 }
 
@@ -790,14 +790,14 @@ class staff_user_controller extends CI_Controller {
                     echo "<script> alert('Confirm Password Wrong');</script>";
             }
 
-        echo "<script> document.location='" . base_url() . "/index.php/staff_user_controller/user_info?id=$user_id' </script>";
+        echo "<script> document.location='" . base_url() . "/index.php/staff_user_controller/user_info?id=$user_guid' </script>";
     }
 
     public function user_infoupdate()
     {      
         if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
         {
-            $user_id = $_REQUEST['id'];
+            $user_guid = $_REQUEST['id'];
             $direct = $_REQUEST['direct'];
             $poster_id = $_SESSION['staffid'];
             $cemail = addslashes($this->input->post('cemail'));
@@ -811,16 +811,16 @@ class staff_user_controller extends CI_Controller {
             $resetpass = addslashes($this->input->post('pwreset-flag'));
             $changepass = addslashes($this->input->post('forbid-pwchange-flag'));
 
-            $usernamecheck = $this->db->query("SELECT * FROM ost_user_test WHERE user_id != '$user_id' AND user_name = '$cusername' ")->num_rows();
+            $usernamecheck = $this->db->query("SELECT * FROM ost_user_test WHERE user_guid != '$user_guid' AND user_name = '$cusername' ")->num_rows();
 
-            $useremailcheck = $this->db->query("SELECT * FROM ost_user_test WHERE user_id != '$user_id' AND user_email = '$cemail' ")->num_rows();
+            $useremailcheck = $this->db->query("SELECT * FROM ost_user_test WHERE user_guid != '$user_guid' AND user_email = '$cemail' ")->num_rows();
 
             $splitemail = explode('@', $cemail);
             $domain = '@'.$splitemail[1];
             $org = $this->db->query("SELECT * FROM ost_organization_test");
             $user_orgid = $this->db->query("SELECT * FROM ost_user_test AS a
-                LEFT JOIN ost_organization_test AS b ON a.user_org_id = b.id
-                WHERE user_id = '$user_id'")->row('id');
+                LEFT JOIN ost_organization_test AS b ON a.user_org_guid = b.organization_guid
+                WHERE user_guid = '$user_guid'")->row('organization_guid');
 
             if ($cpass1 != $cpass2)
                 echo "<script> alert('Confirm Password Wrong');</script>";
@@ -843,44 +843,44 @@ class staff_user_controller extends CI_Controller {
                     user_phoneext = '$cphoneext' ,
                     notes = '$cnote',
                     user_updated_at = NOW()
-                    WHERE user_id = $user_id ");
+                    WHERE user_guid = $user_guid ");
 
                 foreach ($org->result() as $orgdomain)
                 {
                     if ($orgdomain->id != $user_orgid && $orgdomain->domain == $domain)
                     {
-                        $this->db->query("UPDATE ost_user_test SET user_org_id = '$orgdomain->id' WHERE user_id = '$user_id' ");
+                        $this->db->query("UPDATE ost_user_test SET user_org_guid = '$orgdomain->id' WHERE user_guid = '$user_guid' ");
 
                         echo "<script> alert('User has been auto add into organization $orgdomain->name due to email domain setting in organization page.');</script>";
                     }
                 }
 
                 if ($cnote != "")
-                    $this->db->query("UPDATE ost_user_test SET usernote_poster = '$poster_id', usernote_created = now() , user_updated_at = NOW() WHERE user_id = $user_id ");
+                    $this->db->query("UPDATE ost_user_test SET usernote_poster = '$poster_id', usernote_created = now() , user_updated_at = NOW() WHERE user_guid = $user_guid ");
                 else
-                    $this->db->query("UPDATE ost_user_test SET usernote_poster = '0', usernote_created = NULL, user_updated_at = NOW() WHERE user_id = $user_id ");
+                    $this->db->query("UPDATE ost_user_test SET usernote_poster = '0', usernote_created = NULL, user_updated_at = NOW() WHERE user_guid = $user_guid ");
 
                 if ($direct == 'manageuser')
                 {
                     $this->db->query("UPDATE ost_user_test SET
                         resetpass = '$resetpass',
                         changepass = '$changepass'
-                        WHERE user_id = $user_id ");
+                        WHERE user_guid = $user_guid ");
 
                     if ($cpass1 == "" && $adminlock == "2")
-                        $this->db->query("UPDATE ost_user_test SET status = '$adminlock' ,user_updated_at = NOW() WHERE user_id = $user_id ");
+                        $this->db->query("UPDATE ost_user_test SET status = '$adminlock' ,user_updated_at = NOW() WHERE user_guid = $user_guid ");
                     else if ($cpass1 == "" && $adminlock == "")
-                        $this->db->query("UPDATE ost_user_test SET status = '1' , user_updated_at = NOW() WHERE user_id =$user_id ");
+                        $this->db->query("UPDATE ost_user_test SET status = '1' , user_updated_at = NOW() WHERE user_guid =$user_guid ");
                     else if ($cpass1 != "" && $adminlock == "2")
-                        $this->db->query("UPDATE ost_user_test SET user_pas = '$cpass2', status = '$adminlock' , user_updated_at = NOW() WHERE user_id = $user_id "); 
+                        $this->db->query("UPDATE ost_user_test SET user_pas = '$cpass2', status = '$adminlock' , user_updated_at = NOW() WHERE user_guid = $user_guid "); 
                     else if ($cpass1 != "" && $adminlock == "")
-                        $this->db->query("UPDATE ost_user_test SET user_pas = '$cpass2', status = '1', user_updated_at = NOW() WHERE user_id = $user_id ");
+                        $this->db->query("UPDATE ost_user_test SET user_pas = '$cpass2', status = '1', user_updated_at = NOW() WHERE user_guid = $user_guid ");
                 }
 
                 echo "<script> alert('Edit Profile Successfully');</script>";
             }
 
-            echo "<script> document.location='" . base_url() . "/index.php/staff_user_controller/user_info?id=$user_id' </script>";
+            echo "<script> document.location='" . base_url() . "/index.php/staff_user_controller/user_info?id=$user_guid' </script>";
         }
         else       
         {
@@ -894,20 +894,20 @@ class staff_user_controller extends CI_Controller {
     {
 
         $deleteticket = $this->input->post('deleteticket');
-        $user_id = $_REQUEST['id'];
+        $user_guid = $_REQUEST['id'];
 
             if ($deleteticket == 1)
             {
 
-                $this->db->query("DELETE FROM osticket.ost_user_test WHERE user_id = '$user_id'");
-                $this->db->query("DELETE FROM osticket.ost_ticket_test WHERE user_id = '$user_id'");
+                $this->db->query("DELETE FROM osticket.ost_user_test WHERE user_guid = '$user_guid'");
+                $this->db->query("DELETE FROM osticket.ost_ticket_test WHERE user_guid = '$user_guid'");
 
             }
 
             else if ($deleteticket != 1)
             {
 
-                $this->db->query("DELETE FROM osticket.ost_user_test WHERE user_id = '$user_id'");
+                $this->db->query("DELETE FROM osticket.ost_user_test WHERE user_guid = '$user_guid'");
                 
             }
 
@@ -919,8 +919,8 @@ class staff_user_controller extends CI_Controller {
 
     public function user_info_resetpass()
     {
-        $user_id = $_REQUEST['id'];
-        $user_email = $this->db->query("SELECT user_email FROM osticket.ost_user_test WHERE user_id = '$user_id'")->row('user_email');
+        $user_guid = $_REQUEST['id'];
+        $user_email = $this->db->query("SELECT user_email FROM osticket.ost_user_test WHERE user_guid = '$user_guid'")->row('user_email');
 
         $this->load->library('email');
         $company_name = $this->db->query("SELECT * FROM ost_company_test")->row('name_template');
@@ -933,7 +933,7 @@ class staff_user_controller extends CI_Controller {
         );
 
         $default_email = $this->db->query("SELECT value FROM ost_config_test WHERE id='83'")->row('value');
-        $sender_email = $this->db->query("SELECT * FROM ost_email_test WHERE email_id='$default_email'")->row();
+        $sender_email = $this->db->query("SELECT * FROM ost_email_test WHERE email_guid='$default_email'")->row();
 
         $config = array(
             
@@ -961,14 +961,14 @@ class staff_user_controller extends CI_Controller {
 
         exit;*/
         echo "<script> alert('Reset password request sent.');</script>";
-        echo "<script> document.location='" . base_url() . "/index.php/staff_user_controller/user_info?id=$user_id' </script>";
+        echo "<script> document.location='" . base_url() . "/index.php/staff_user_controller/user_info?id=$user_guid' </script>";
 
     }
 
     public function user_info_activationemail()
     {
-        $user_id = $_REQUEST['id'];
-        $user_email = $this->db->query("SELECT user_email FROM osticket.ost_user_test WHERE user_id = '$user_id'")->row('user_email');
+        $user_guid = $_REQUEST['id'];
+        $user_email = $this->db->query("SELECT user_email FROM osticket.ost_user_test WHERE user_guid = '$user_guid'")->row('user_email');
 
         $this->load->library('email');
 
@@ -977,12 +977,12 @@ class staff_user_controller extends CI_Controller {
 
         $data = array(
             'body' => $this->db->query("SELECT REPLACE(name, '%company_name%', '$company_name') AS subject,
-                REPLACE(REPLACE(body, '%user_name%', '".$result->row('user_name')."'), '%user_id%', '".$result->row('user_id')."') AS email FROM ost_content_test WHERE type = 'registration-client'"),
+                REPLACE(REPLACE(body, '%user_name%', '".$result->row('user_name')."'), '%user_guid%', '".$result->row('user_guid')."') AS email FROM ost_content_test WHERE type = 'registration-client'"),
             'template' => $this->db->query("SELECT * FROM ost_company_test"),
         );
 
         $default_email = $this->db->query("SELECT value FROM ost_config_test WHERE id='83'")->row('value');
-        $sender_email = $this->db->query("SELECT * FROM ost_email_test WHERE email_id='$default_email'")->row();
+        $sender_email = $this->db->query("SELECT * FROM ost_email_test WHERE email_guid='$default_email'")->row();
 
         $config = array(
             
@@ -1010,15 +1010,15 @@ class staff_user_controller extends CI_Controller {
 
         exit;*/
         echo "<script> alert('Account activation link had sent to your registered email.');</script>";
-        echo "<script> document.location='" . base_url() . "/index.php/staff_user_controller/user_info?id=$user_id' </script>";
+        echo "<script> document.location='" . base_url() . "/index.php/staff_user_controller/user_info?id=$user_guid' </script>";
 
     }
 
     public function user_orgupdate()
     {
-        $user_id = $_REQUEST['id'];
+        $user_guid = $_REQUEST['id'];
         $poster_id = $_SESSION['staffid'];
-        $org_id = $this->db->query("SELECT * FROM ost_user_test WHERE user_id = $user_id")->row('user_org_id');
+        $org_guid = $this->db->query("SELECT * FROM ost_user_test WHERE user_guid = $user_guid")->row('user_org_guid');
         $org_name = addslashes($this->input->post('orgname'));
         $org_address = addslashes($this->input->post('orgadd'));
         $org_phone = addslashes($this->input->post('orgphone'));
@@ -1034,7 +1034,7 @@ class staff_user_controller extends CI_Controller {
             $org_ph = "$org_phone$org_ph";
         }
 
-        $orgnamecheck = $this->db->query("SELECT * FROM ost_organization_test WHERE id != '$org_id' AND name = '$org_name' ")->num_rows();
+        $orgnamecheck = $this->db->query("SELECT * FROM ost_organization_test WHERE organization_guid != '$org_guid' AND name = '$org_name' ")->num_rows();
 
             if ($orgnamecheck != '0'){
                 echo "<script> alert(' Organization name duplicated');</script>";
@@ -1043,46 +1043,46 @@ class staff_user_controller extends CI_Controller {
             else{
 
         $this->db->query("UPDATE ost_organization_test 
-            SET name = '$org_name', updated = NOW() WHERE id = '$org_id'");
+            SET name = '$org_name', updated = NOW() WHERE organization_guid = '$org_guid'");
 
         $this->db->query("UPDATE ost_organization__cdata_test
             SET address = '$org_address' ,
                 phone = '$org_ph',
                 website = '$org_web',
                 notes = '$org_notes'
-            WHERE org_id = '$org_id'");
+            WHERE org_guid = '$org_guid'");
 
         if ($org_notes != "")
             $this->db->query("UPDATE ost_organization__cdata_test 
-                SET orgnote_poster = '$poster_id', orgnote_created = now() WHERE org_id = '$org_id'");
+                SET orgnote_poster = '$poster_id', orgnote_created = now() WHERE org_guid = '$org_guid'");
         else
             $this->db->query("UPDATE ost_organization__cdata_test 
-                SET orgnote_poster = '0', orgnote_created = NULL WHERE org_id = '$org_id'");
+                SET orgnote_poster = '0', orgnote_created = NULL WHERE org_guid = '$org_guid'");
 
         echo "<script> alert('Edit successfuly');</script>";
         }
-        echo "<script> document.location='" . base_url() . "/index.php/staff_user_controller/user_info?id=$user_id' </script>";
+        echo "<script> document.location='" . base_url() . "/index.php/staff_user_controller/user_info?id=$user_guid' </script>";
     }
 
     public function user_notes()
     {
-        $user_id = $_REQUEST['id'];
+        $user_guid = $_REQUEST['id'];
         $poster_id = $_SESSION['staffid'];
         $usernote = addslashes($this->input->post('usernote'));
 
         $this->db->query("UPDATE ost_user_test 
-            SET notes = '$usernote', usernote_poster = '$poster_id', usernote_created = now() ,user_updated_at = NOW() WHERE user_id = '$user_id'");
+            SET notes = '$usernote', usernote_poster = '$poster_id', usernote_created = now() ,user_updated_at = NOW() WHERE user_guid = '$user_guid'");
 
-        redirect('staff_user_controller/user_info?id='.$user_id);
+        redirect('staff_user_controller/user_info?id='.$user_guid);
     }
 
     public function deleteusernote()
     {
-        $user_id = $_REQUEST['id'];
+        $user_guid = $_REQUEST['id'];
 
-        $this->db->query("UPDATE ost_user_test SET notes = NULL, usernote_poster = '0', usernote_created = NULL, user_updated_at = NOW() WHERE user_id = '$user_id'");
+        $this->db->query("UPDATE ost_user_test SET notes = NULL, usernote_poster = '0', usernote_created = NULL, user_updated_at = NOW() WHERE user_guid = '$user_guid'");
 
-        redirect('staff_user_controller/user_info?id='.$user_id);
+        redirect('staff_user_controller/user_info?id='.$user_guid);
     }
 
     public function organization()
@@ -1094,9 +1094,9 @@ class staff_user_controller extends CI_Controller {
         $data = array(
             'organization' => $this->db->query("SELECT * FROM ost_organization_test"), 
 
-            'creteorgallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_id = ' $staffid' AND permissions LIKE '%org.create%'")->num_rows(),
+            'creteorgallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = ' $staffid' AND permissions LIKE '%org.create%'")->num_rows(),
 
-            'deleteorgallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_id = ' $staffid' AND permissions LIKE '%org.delete%'")->num_rows(),
+            'deleteorgallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = ' $staffid' AND permissions LIKE '%org.delete%'")->num_rows(),
 
             'max_page_size' => $this->db->query("SELECT value FROM ost_config_test WHERE id = '21'")->row('value'),
         );
@@ -1148,18 +1148,18 @@ class staff_user_controller extends CI_Controller {
 
             if ($orgnamecheck->num_rows() == 0)
             {
-                $createorg = $this->db->query("INSERT INTO ost_organization_test ( name, autoassignment, ticketsharing, status, created, updated )
-                VALUES ( '$org_name', '0', '0', '8', now(), now() )");
+                $createorg = $this->db->query("INSERT INTO ost_organization_test (organization_guid, name, autoassignment, ticketsharing, status, created, updated )
+                VALUES ( REPLACE(UPPER(UUID()),'-',''), '$org_name', '0', '0', '8', now(), now() )");
 
-                $org_id = $this->db->query("SELECT * FROM ost_organization_test WHERE name = '$org_name'")->row('id');
+                $org_guid = $this->db->query("SELECT * FROM ost_organization_test WHERE name = '$org_name'")->row('id');
 
-                $orgdata = $this->db->query("INSERT INTO ost_organization__cdata_test ( org_id, address, phone, website, notes )
-                VALUES ( '$org_id', '$org_address', '$org_ph', '$org_web', '$org_notes' )");
+                $orgdata = $this->db->query("INSERT INTO ost_organization__cdata_test ( org_guid, address, phone, website, notes )
+                VALUES ( '$org_guid', '$org_address', '$org_ph', '$org_web', '$org_notes' )");
 
                 if ($org_notes !="")
-                    $this->db->query("UPDATE ost_organization__cdata_test SET orgnote_poster = '$poster_id', orgnote_created = now() WHERE org_id = '$org_id'");
+                    $this->db->query("UPDATE ost_organization__cdata_test SET orgnote_poster = '$poster_id', orgnote_created = now() WHERE org_guid = '$org_guid'");
 
-                redirect('staff_user_controller/org_info?id='.$org_id);
+                redirect('staff_user_controller/org_info?id='.$org_guid);
             }
 
             else if ($orgnamecheck->num_rows() != 0)
@@ -1181,9 +1181,9 @@ class staff_user_controller extends CI_Controller {
         if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
         {
             $staffid = $_SESSION["staffid"];
-            $org_id = $_REQUEST['id'];
+            $org_guid = $_REQUEST['id'];
 
-            $orgphone = $this->db->query("SELECT * FROM ost_organization__cdata_test WHERE org_id = $org_id")->row('phone');
+            $orgphone = $this->db->query("SELECT * FROM ost_organization__cdata_test WHERE org_guid = $org_guid")->row('phone');
             $splitarr = explode('X', $orgphone);
 
             if (count($splitarr) == "2")
@@ -1199,24 +1199,24 @@ class staff_user_controller extends CI_Controller {
 
             $data = array(
                 'orgresult' => $this->db->query("SELECT a.*, b.*, c.*, b.notes AS orgnote, c.notes AS staffnote, a.created AS orgcreated, a.updated AS orgupdated FROM ost_organization_test AS a
-                    INNER JOIN ost_organization__cdata_test AS b ON a.id = b.org_id
-                    LEFT JOIN ost_staff_test AS c ON c.staff_id = b.orgnote_poster
-                    WHERE id = $org_id"),
+                    INNER JOIN ost_organization__cdata_test AS b ON a.organization_guid = b.org_guid
+                    LEFT JOIN ost_staff_test AS c ON c.staff_guid = b.orgnote_poster
+                    WHERE organization_guid = $org_guid"),
                 'userinfo' => $this->db->query("SELECT * FROM ost_user_test
-                    WHERE user_org_id = $org_id"),
+                    WHERE user_org_guid = $org_guid"),
                 'tinfo' => $this->db->query("SELECT * FROM ost_user_test AS a
-                    INNER JOIN ost_ticket_test AS b ON a.user_id = b.user_id
-                    INNER JOIN ost_ticket_status_test AS c ON b.status_id = c.id
-                    INNER JOIN ost_help_topic_test AS d ON b.topic_id = d.topic_id
-                    WHERE a.user_org_id = $org_id"),
+                    INNER JOIN ost_ticket_test AS b ON a.user_guid = b.user_guid
+                    INNER JOIN ost_ticket_status_test AS c ON b.status_guid = c.status_guid
+                    INNER JOIN ost_help_topic_test AS d ON b.topic_guid = d.topic_guid
+                    WHERE a.user_org_guid = $org_guid"),
                 'orgstaff' => $this->db->query("SELECT * FROM ost_staff_test"),
                 'orgteam' => $this->db->query("SELECT * FROM ost_team_test"),
                 'phone' => $phone,
                 'phoneext' => $phoneext,
-                'adduserallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_id = ' $staffid' AND permissions LIKE '%user.create%'")->num_rows(),
-                'deleteuserallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_id = ' $staffid' AND permissions LIKE '%user.delete%'")->num_rows(),
-                'editorgallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_id = ' $staffid' AND permissions LIKE '%org.edit%'")->num_rows(),
-                'deleteorgallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_id = ' $staffid' AND permissions LIKE '%org.delete%'")->num_rows(),
+                'adduserallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = ' $staffid' AND permissions LIKE '%user.create%'")->num_rows(),
+                'deleteuserallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = ' $staffid' AND permissions LIKE '%user.delete%'")->num_rows(),
+                'editorgallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = ' $staffid' AND permissions LIKE '%org.edit%'")->num_rows(),
+                'deleteorgallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = ' $staffid' AND permissions LIKE '%org.delete%'")->num_rows(),
                 'max_page_size' => $this->db->query("SELECT value FROM ost_config_test WHERE id = '21'")->row('value'),
             );
 
@@ -1249,12 +1249,12 @@ class staff_user_controller extends CI_Controller {
     {
 
         $deleteticket = $this->input->post('deleteticket');
-        $org_id = $_REQUEST['id'];
+        $org_guid = $_REQUEST['id'];
 
 
-                $this->db->query("DELETE FROM osticket.ost_organization_test WHERE id = '$org_id'");
-                $this->db->query("DELETE FROM osticket.ost_organization__cdata_test WHERE org_id = '$org_id'");
-                $this->db->query("UPDATE osticket.ost_user_test SET user_org_id = '0', user_updated_at = now() WHERE user_org_id = '$org_id'");
+                $this->db->query("DELETE FROM osticket.ost_organization_test WHERE organization_guid = '$org_guid'");
+                $this->db->query("DELETE FROM osticket.ost_organization__cdata_test WHERE org_guid = '$org_guid'");
+                $this->db->query("UPDATE osticket.ost_user_test SET user_org_guid = '0', user_updated_at = now() WHERE user_org_guid = '$org_guid'");
         
         echo "<script> document.location='" . base_url() . "/index.php/staff_user_controller/organization' </script>";
     }
@@ -1266,7 +1266,7 @@ class staff_user_controller extends CI_Controller {
         $user_phone = addslashes($this->input->post('phone'));
         $user_phoneext = addslashes($this->input->post('phoneext'));
         $user_note = addslashes($this->input->post('note'));
-        $org_id = $_REQUEST['id'];
+        $org_guid = $_REQUEST['id'];
         $poster_id = $_SESSION['staffid'];
 
         $splitemail = explode('@', $user_email);
@@ -1281,22 +1281,22 @@ class staff_user_controller extends CI_Controller {
         {
             foreach ($org->result() as $orgdomain)
             {
-                if ($orgdomain->id != $org_id && $orgdomain->domain == $domain)
+                if ($orgdomain->organization_guid != $org_guid && $orgdomain->domain == $domain)
                 {
                     echo "<script> alert('Users email domain have been set as default domain for organization $orgdomain->name. Kindly change the setting in organization page if you want to add users to another organization.');</script>";
-                    echo "<script> document.location='" . base_url() . "/index.php/staff_user_controller/org_info?id=$org_id' </script>";die;
+                    echo "<script> document.location='" . base_url() . "/index.php/staff_user_controller/org_info?id=$org_guid' </script>";die;
                 }
             }
 
-            $sql = $this->db->query("INSERT INTO osticket.ost_user_test ( user_org_id, user_name, user_created_at, user_updated_at, user_depart, user_email, user_phone, user_phoneext, notes, status, active)
-            VALUES ('$org_id', '$user_name', now(), now(), '1', '$user_email', '$user_phone', '$user_phoneext' ,'$user_note', '4' , '0')");
+            $sql = $this->db->query("INSERT INTO osticket.ost_user_test (user_guid, user_org_guid, user_name, user_created_at, user_updated_at, user_depart, user_email, user_phone, user_phoneext, notes, status, active)
+            VALUES (REPLACE(UPPER(UUID()),'-',''), '$org_guid', '$user_name', now(), now(), '1', '$user_email', '$user_phone', '$user_phoneext' ,'$user_note', '4' , '0')");
 
-            $user_id = $this->db->query("SELECT user_id FROM ost_user_test WHERE user_created_at = now()")->row('user_id');
+            $user_guid = $this->db->query("SELECT user_guid FROM ost_user_test WHERE user_created_at = now()")->row('user_guid');
 
             if ($user_note != "")
                 $this->db->query("UPDATE ost_user_test SET usernote_poster = '$poster_id', usernote_created = now(), user_updated_at = NOW() WHERE user_name = '$user_name'");
             
-            redirect('staff_user_controller/org_info?id='.$org_id);
+            redirect('staff_user_controller/org_info?id='.$org_guid);
         }
 
         else if ($emailcheck->num_rows() !== 0 && $namecheck->num_rows() !== 0)
@@ -1308,13 +1308,13 @@ class staff_user_controller extends CI_Controller {
         else if ($emailcheck->num_rows() !== 0)
         {
             echo "<script> alert('Email duplicated');</script>";
-            echo "<script> document.location='" . base_url() . "/index.php/staff_user_controller/org_info?id=$org_id' </script>";
+            echo "<script> document.location='" . base_url() . "/index.php/staff_user_controller/org_info?id=$org_guid' </script>";
         }
 
         else if ($namecheck->num_rows() !== 0)
         {
             echo "<script> alert('Name duplicated');</script>";
-            echo "<script> document.location='" . base_url() . "/index.php/staff_user_controller/org_info?id=$org_id' </script>";
+            echo "<script> document.location='" . base_url() . "/index.php/staff_user_controller/org_info?id=$org_guid' </script>";
         }
     }
 
@@ -1322,20 +1322,20 @@ class staff_user_controller extends CI_Controller {
     {
 
         $check = $this->input->post('tids[]');
-        $org_id = $_REQUEST['id'];
+        $org_guid = $_REQUEST['id'];
 
         foreach ($check as $value) {
 
-            $this->db->query("UPDATE osticket.ost_user_test SET user_org_id = '0', user_updated_at = NOW() WHERE user_id = '$value' ");
+            $this->db->query("UPDATE osticket.ost_user_test SET user_org_guid = '0', user_updated_at = NOW() WHERE user_guid = '$value' ");
 
         }
         echo "<script> alert('Successfully Remove');</script>";
-        echo "<script> document.location='" . base_url() . "/index.php/staff_user_controller/org_info?id=$org_id' </script>";
+        echo "<script> document.location='" . base_url() . "/index.php/staff_user_controller/org_info?id=$org_guid' </script>";
     }
 
     public function org_infoeditorg()
     {
-        $org_id = $_REQUEST['id'];
+        $org_guid = $_REQUEST['id'];
         $poster_id = $_SESSION['staffid'];
         $org_name = addslashes($this->input->post('orgname'));
         $org_address = addslashes($this->input->post('orgadd'));
@@ -1352,7 +1352,7 @@ class staff_user_controller extends CI_Controller {
             $org_ph = "$org_phone$org_ph";
         }
 
-        $orgnamecheck = $this->db->query("SELECT * FROM ost_organization_test WHERE id != '$org_id' AND name = '$org_name' ")->num_rows();
+        $orgnamecheck = $this->db->query("SELECT * FROM ost_organization_test WHERE organization_guid != '$org_guid' AND name = '$org_name' ")->num_rows();
 
         if ($orgnamecheck != '0'){
             echo "<script> alert(' Organization name duplicated');</script>";
@@ -1361,21 +1361,21 @@ class staff_user_controller extends CI_Controller {
         else{
 
             $createorg = $this->db->query("UPDATE ost_organization_test 
-                SET name = '$org_name', updated = NOW() WHERE id = '$org_id'");
+                SET name = '$org_name', updated = NOW() WHERE organization_guid = '$org_guid'");
 
             $orgdata = $this->db->query("UPDATE ost_organization__cdata_test
                 SET address = '$org_address',
                     phone = '$org_ph',
                     website = '$org_web',
                     notes = '$org_notes'
-                WHERE org_id = '$org_id'");
+                WHERE org_guid = '$org_guid'");
 
             if ($org_notes != "")
                 $this->db->query("UPDATE ost_organization__cdata_test 
-                    SET orgnote_poster = '$poster_id', orgnote_created = now() WHERE org_id = '$org_id'");
+                    SET orgnote_poster = '$poster_id', orgnote_created = now() WHERE org_guid = '$org_guid'");
             else
                 $this->db->query("UPDATE ost_organization__cdata_test 
-                    SET orgnote_poster = '0', orgnote_created = NULL WHERE org_id = '$org_id'");
+                    SET orgnote_poster = '0', orgnote_created = NULL WHERE org_guid = '$org_guid'");
 
             $manager = $this->input->post('manager');
             $autoassign = $this->input->post('autoassign');
@@ -1385,7 +1385,7 @@ class staff_user_controller extends CI_Controller {
             $domain = addslashes($this->input->post('domain'));
             $user = $this->db->query("SELECT * FROM ost_user_test");
 
-            $this->db->query("UPDATE ost_user_test SET user_primary = '0', user_updated_at = now() WHERE user_org_id = $org_id");
+            $this->db->query("UPDATE ost_user_test SET user_primary = '0', user_updated_at = now() WHERE user_org_guid = $org_guid");
 
             if ($contacts != "") {
                 foreach($contacts as $contact)
@@ -1395,7 +1395,7 @@ class staff_user_controller extends CI_Controller {
 
                 for($i=0; $i<count($contacts); $i++)
                 {
-                    $this->db->query("UPDATE ost_user_test SET user_primary = '1' WHERE user_id = $contacts[$i]");
+                    $this->db->query("UPDATE ost_user_test SET user_primary = '1' WHERE user_guid = $contacts[$i]");
                 }
             }
 
@@ -1405,28 +1405,28 @@ class staff_user_controller extends CI_Controller {
                     ticketsharing = '$sharing',
                     domain = '$domain',
                     updated = now()
-                WHERE id = '$org_id'");
+                WHERE organization_guid = '$org_guid'");
 
             if ($autoassign == '1' && $manager != '')
             {
                 if ($manager{0} == 'a')
                 {
-                    $autostaff_id = substr($manager, 1);
-                    $autoteam_id = '0';
+                    $autostaff_guid = substr($manager, 1);
+                    $autoteam_guid = '0';
                 }
                 else if ($manager{0} == 't')
                 {
-                    $autoteam_id = substr($manager, 1);
-                    $autostaff_id = '0';
+                    $autoteam_guid = substr($manager, 1);
+                    $autostaff_guid = '0';
                 }
 
                 $userid = $this->db->query("SELECT * FROM ost_user_test AS a
-                    LEFT JOIN ost_organization_test AS b ON a.user_org_id = b.id
-                    WHERE b.id = '$org_id'");
+                    LEFT JOIN ost_organization_test AS b ON a.user_org_guid = b.id
+                    WHERE b.id = '$org_guid'");
 
                 foreach ($userid->result() as $userassign)
                 {
-                    $this->db->query("UPDATE ost_ticket_test SET assigned_to = '$autostaff_id', team_id = '$autoteam_id', ticket_updated = now(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE user_id = '$userassign->user_id'");
+                    $this->db->query("UPDATE ost_ticket_test SET assigned_to = '$autostaff_guid', team_guid = '$autoteam_guid', ticket_updated = now(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE user_guid = '$userassign->user_guid'");
                 }
             }
             
@@ -1434,52 +1434,52 @@ class staff_user_controller extends CI_Controller {
                 $splitemail = explode('@', $userorg->user_email);
                 $userdomain = '@'.$splitemail[1];
                 $org = $this->db->query("SELECT * FROM ost_organization_test");
-                $user_id = $userorg->user_id;
+                $user_guid = $userorg->user_guid;
 
                 foreach ($org->result() as $orgdomain)
                 {
                     if ($domain == $userdomain)
-                        $this->db->query("UPDATE ost_user_test SET user_org_id = '$orgdomain->id' WHERE user_id = '$user_id' ");
+                        $this->db->query("UPDATE ost_user_test SET user_org_guid = '$orgdomain->organization_guid' WHERE user_guid = '$user_guid' ");
                 }
             }
 
             echo "<script> alert('Successfully edit');</script>";
         }
         
-        echo "<script> document.location='" . base_url() . "/index.php/staff_user_controller/org_info?id=$org_id' </script>";
+        echo "<script> document.location='" . base_url() . "/index.php/staff_user_controller/org_info?id=$org_guid' </script>";
     }
 
     public function org_notes()
     {
-        $org_id = $_REQUEST['id'];
+        $org_guid = $_REQUEST['id'];
         $poster_id = $_SESSION['staffid'];
         $orgnote = addslashes($this->input->post('orgnote'));
 
         $this->db->query("UPDATE ost_organization__cdata_test
-            SET notes = '$orgnote', orgnote_poster = '$poster_id', orgnote_created = now() WHERE org_id = '$org_id'");
+            SET notes = '$orgnote', orgnote_poster = '$poster_id', orgnote_created = now() WHERE org_guid = '$org_guid'");
 
-        redirect('staff_user_controller/org_info?id='.$org_id);
+        redirect('staff_user_controller/org_info?id='.$org_guid);
     }
 
     public function deleteorgnote()
     {
-        $org_id = $_REQUEST['id'];
+        $org_guid = $_REQUEST['id'];
 
-        $this->db->query("UPDATE ost_organization__cdata_test SET notes = NULL, orgnote_poster = '0', orgnote_created = NULL WHERE org_id = '$org_id'");
+        $this->db->query("UPDATE ost_organization__cdata_test SET notes = NULL, orgnote_poster = '0', orgnote_created = NULL WHERE org_guid = '$org_guid'");
 
-        redirect('staff_user_controller/org_info?id='.$org_id);
+        redirect('staff_user_controller/org_info?id='.$org_guid);
     }
 
     public function userinfo_assignorg()
     {      
         if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
         {
-            $org_id = $_REQUEST['oid'];
-            $user_id = $_REQUEST['id'];
+            $org_guid = $_REQUEST['oid'];
+            $user_guid = $_REQUEST['id'];
 
-            $this->db->query("UPDATE ost_user_test SET user_org_id = '$org_id',user_updated_at = NOW() WHERE user_id='$user_id' ");
+            $this->db->query("UPDATE ost_user_test SET user_org_guid = '$org_guid',user_updated_at = NOW() WHERE user_guid='$user_guid' ");
             echo "<script> alert('Successfully Assigned');</script>";
-            echo "<script> document.location='" . base_url() . "/index.php/staff_user_controller/user_info?id=$user_id' </script>";
+            echo "<script> document.location='" . base_url() . "/index.php/staff_user_controller/user_info?id=$user_guid' </script>";
         }
 
         else       
@@ -1492,7 +1492,7 @@ class staff_user_controller extends CI_Controller {
     //ajax search user assign org
     public function fetch_org()
     {
-        $user_id = $_REQUEST['id'];
+        $user_guid = $_REQUEST['id'];
         $output = '';
         $query = '';
         $this->load->model('ajaxsearch_model');
@@ -1519,7 +1519,7 @@ class staff_user_controller extends CI_Controller {
             {
                 $output .= '
                 <div style="border-style:groove;border-width:1px;">
-                    -- <b><a href ="userinfo_assignorg?oid='.$row->id.'&id='.$user_id.'">
+                    -- <b><a href ="userinfo_assignorg?oid='.$row->id.'&id='.$user_guid.'">
                         '.$row->name.'
                     </a></b><br>
                 </div>
@@ -1545,12 +1545,12 @@ class staff_user_controller extends CI_Controller {
     {      
         if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
         {
-            $org_id = $_REQUEST['oid'];
-            $user_id = $_REQUEST['id'];
+            $org_guid = $_REQUEST['oid'];
+            $user_guid = $_REQUEST['id'];
 
-            $this->db->query("UPDATE ost_user_test SET user_org_id = '$org_id',user_updated_at = NOW() WHERE user_id='$user_id' ");
+            $this->db->query("UPDATE ost_user_test SET user_org_guid = '$org_guid',user_updated_at = NOW() WHERE user_guid='$user_guid' ");
             echo "<script> alert('Successfully Assigned');</script>";
-            echo "<script> document.location='" . base_url() . "/index.php/staff_user_controller/org_info?id=$org_id' </script>";
+            echo "<script> document.location='" . base_url() . "/index.php/staff_user_controller/org_info?id=$org_guid' </script>";
         }
 
         else       
@@ -1563,7 +1563,7 @@ class staff_user_controller extends CI_Controller {
     //ajax search user assign org
     public function fetch_user()
     {
-        $org_id = $_REQUEST['id'];
+        $org_guid = $_REQUEST['id'];
         $output = '';
         $query = '';
         $this->load->model('ajaxsearch_model');
@@ -1590,7 +1590,7 @@ class staff_user_controller extends CI_Controller {
             {
                 $output .= '
                 <div style="border-style:groove;border-width:1px;">
-                    -- <a href ="userinfo_assignuser?id='.$row->user_id.'&oid='.$org_id.'">
+                    -- <a href ="userinfo_assignuser?id='.$row->user_guid.'&oid='.$org_guid.'">
                         <b>'.$row->user_name.' ('.$row->user_email.')</b>
                     </a>
                 <br></div>

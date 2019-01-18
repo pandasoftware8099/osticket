@@ -10,9 +10,9 @@
             <div class="faded">FAQ category the question belongs to.</div>
         </label>
         <div class="col-lg-9">
-            <select name="category_id" class="form-control">
+            <select name="category_guid" class="form-control">
                     <?php foreach ($faqcate->result() as $value1) { ?>
-                        <option value="<?php echo $value1->category_id;?>" <?php echo ($value1->category_id == $faqinfo->row('category_id') )?"selected":""; ?> ><?php echo $value1->name;?></option>
+                        <option value="<?php echo $value1->category_guid;?>" <?php echo ($value1->category_guid == $faqinfo->row('category_guid') )?"selected":""; ?> ><?php echo $value1->name;?></option>
                     <?php } ?>
                             </select>
             <div class="error"></div>

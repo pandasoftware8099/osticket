@@ -38,10 +38,10 @@
       <?php foreach ($email->result() as $value) { ?>
                 <tr>
                   <td align="center">
-                    <input id="tids" type="checkbox" class="ckb" name="tids[]" value="<?php echo $value->email_id;?>">
+                    <input id="tids" type="checkbox" class="ckb" name="tids[]" value="<?php echo $value->email_guid;?>">
                   </td>
                   <td>
-                  <a href="<?php echo site_url('admin_emails_controller/emails_emails_info');?>?id=<?php echo $value->email_id;?>"><?php echo $value->name;?> (<?php echo $value->email;?>)</a>
+                  <a href="<?php echo site_url('admin_emails_controller/emails_emails_info');?>?id=<?php echo $value->email_guid;?>"><?php echo $value->name;?> (<?php echo $value->email;?>)</a>
                   </td>
                   <td>
                   <?php echo $value->priority_desc;?>

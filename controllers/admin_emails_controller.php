@@ -22,11 +22,11 @@ class admin_emails_controller extends CI_Controller {
     public function emails_emails()
     {      
         if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
-        {   $email_id = 1;
+        {   $email_guid = 1;
 
             $data = array(
 
-                'email' => $this->db->query("SELECT a.email_id,a.name,a.email,b.priority_desc,c.name as dept_name,a.created,a.updated FROM ost_email_test AS a INNER JOIN ost_ticket_priority_test AS b ON a.priority_id = b.priority_id LEFT JOIN ost_department_test AS c ON a.dept_id = c.id"),
+                'email' => $this->db->query("SELECT a.email_guid,a.name,a.email,b.priority_desc,c.name as dept_name,a.created,a.updated FROM ost_email_test AS a INNER JOIN ost_ticket_priority_test AS b ON a.priority_guid = b.priority_guid LEFT JOIN ost_department_test AS c ON a.dept_guid = c.department_guid"),
                  'max_page_size' => $this->db->query("SELECT value FROM ost_config_test WHERE id = '21'")->row('value'),
             );
 
@@ -61,7 +61,7 @@ class admin_emails_controller extends CI_Controller {
 
         if ($status == 2) {
             foreach ($check as $value) {
-            $this->db->query("DELETE FROM ost_email_test WHERE email_id='$value' ");
+            $this->db->query("DELETE FROM ost_email_test WHERE email_guid='$value' ");
 
             //have to do delete child list item too
         }
@@ -113,9 +113,9 @@ class admin_emails_controller extends CI_Controller {
     {  // do priority id and dept id if system default have something wrong and postfetch problem
         $email = $this->input->post('email');
         $name = $this->input->post('name');
-        $dept_id = $this->input->post('dept_id');
-        $priority_id = $this->input->post('priority_id');
-        $topic_id = $this->input->post('topic_id');
+        $dept_guid = $this->input->post('dept_guid');
+        $priority_guid = $this->input->post('priority_guid');
+        $topic_guid = $this->input->post('topic_guid');
         $noautoresp = $this->input->post('noautoresp');
         $userid = $this->input->post('userid');
         $passwd = $this->input->post('passwd');
@@ -168,23 +168,23 @@ class admin_emails_controller extends CI_Controller {
             $mail_encryption = 'NONE';
         }
 
-        if($priority_id == '0'){
-            $priority_id = $default_prio;
+        if($priority_guid == '0'){
+            $priority_guid = $default_prio;
         }
 
-        if($dept_id == '0'){
-            $dept_id = $default_dept;
+        if($dept_guid == '0'){
+            $dept_guid = $default_dept;
         }
 
-        if($topic_id = '0'){
+        if($topic_guid = '0'){
             $topid_id = $default_help;
         }
 
-
+        $email_guid = $this->db->query("SELECT REPLACE(UPPER(UUID()),'-','') AS guid")->row('guid');
         $this->db->query("INSERT INTO ost_email_test 
-            (email, name, dept_id, priority_id, topic_id, noautoresp, userid, userpass, mail_active, mail_host, mail_port, mail_protocol, mail_encryption, mail_fetchfreq, mail_fetchmax, mail_delete, smtp_active, smtp_host, smtp_port, smtp_auth, smtp_spoofing, notes, created, updated) 
+            (email_guid, email, name, dept_guid, priority_guid, topic_guid, noautoresp, userid, userpass, mail_active, mail_host, mail_port, mail_protocol, mail_encryption, mail_fetchfreq, mail_fetchmax, mail_delete, smtp_active, smtp_host, smtp_port, smtp_auth, smtp_spoofing, notes, created, updated) 
             VALUES 
-            ('$email', '$name', '$dept_id', '$priority_id', '$topic_id', '$noautoresp', '$userid', '$passwd', '$mail_active', '$mail_host', '$mail_port', '$mail_protocol', '$mail_encryption', '$mail_fetchfreq', '$mail_fetchmax', '$postfetch', '$smtp_active', '$smtp_host', '$smtp_port', '$smtp_auth', '$smtp_spoofing', '$notes', NOW(), NOW() );");
+            ('$email_guid', '$email', '$name', '$dept_guid', '$priority_guid', '$topic_guid', '$noautoresp', '$userid', '$passwd', '$mail_active', '$mail_host', '$mail_port', '$mail_protocol', '$mail_encryption', '$mail_fetchfreq', '$mail_fetchmax', '$postfetch', '$smtp_active', '$smtp_host', '$smtp_port', '$smtp_auth', '$smtp_spoofing', '$notes', NOW(), NOW() );");
 
         echo "<script> alert('Email added.');</script>";
         echo "<script> document.location='" . base_url() . "/index.php/admin_emails_controller/emails_emails' </script>";
@@ -195,11 +195,11 @@ class admin_emails_controller extends CI_Controller {
     public function emails_emails_info()
     {      
         if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
-        {   $email_id = $_REQUEST['id'];
+        {   $email_guid = $_REQUEST['id'];
 
             $data = array(
 
-                'email' => $this->db->query("SELECT a.notes, a.smtp_spoofing, a.smtp_auth, a.smtp_host, a.smtp_port, a.smtp_active, a.mail_delete, a.mail_fetchmax, a.mail_fetchfreq, a.mail_encryption, a.mail_protocol, a.mail_port, a.mail_host, a.mail_active, a.userid, a.userpass, a.noautoresp, a.dept_id , a.priority_id, a.topic_id, a.email_id,a.name,a.email,b.priority_desc,c.name as dept_name,a.created,a.updated FROM ost_email_test AS a INNER JOIN ost_ticket_priority_test AS b ON a.priority_id = b.priority_id LEFT JOIN ost_department_test AS c ON a.dept_id = c.id WHERE a.email_id= '$email_id ' ")->row(),
+                'email' => $this->db->query("SELECT a.notes, a.smtp_spoofing, a.smtp_auth, a.smtp_host, a.smtp_port, a.smtp_active, a.mail_delete, a.mail_fetchmax, a.mail_fetchfreq, a.mail_encryption, a.mail_protocol, a.mail_port, a.mail_host, a.mail_active, a.userid, a.userpass, a.noautoresp, a.dept_guid , a.priority_guid, a.topic_guid, a.email_guid,a.name,a.email,b.priority_desc,c.name as dept_name,a.created,a.updated FROM ost_email_test AS a INNER JOIN ost_ticket_priority_test AS b ON a.priority_guid = b.priority_guid LEFT JOIN ost_department_test AS c ON a.dept_guid = c.department_guid WHERE a.email_guid= '$email_guid ' ")->row(),
 
                 'department' => $this->db->query("SELECT * FROM ost_department_test"),
                 'priority' => $this->db->query("SELECT * FROM ost_ticket_priority_test"),
@@ -233,13 +233,13 @@ class admin_emails_controller extends CI_Controller {
     public function emails_emails_info_process()
 
     { 
-        $email_id = $_REQUEST['id'];
+        $email_guid = $_REQUEST['id'];
      // do priority id and dept id if system default have something wrong and postfetch problem
         $email = $this->input->post('email');
         $name = $this->input->post('name');
-        $dept_id = $this->input->post('dept_id');
-        $priority_id = $this->input->post('priority_id');
-        $topic_id = $this->input->post('topic_id');
+        $dept_guid = $this->input->post('dept_guid');
+        $priority_guid = $this->input->post('priority_guid');
+        $topic_guid = $this->input->post('topic_guid');
         $noautoresp = $this->input->post('noautoresp');
         $userid = $this->input->post('userid');
         $passwd = $this->input->post('passwd');
@@ -283,9 +283,9 @@ class admin_emails_controller extends CI_Controller {
         UPDATE ost_email_test SET 
         email = '$email', 
         name = '$name',
-        dept_id = '$dept_id', 
-        priority_id = '$priority_id',
-        topic_id = '$topic_id', 
+        dept_guid = '$dept_guid', 
+        priority_guid = '$priority_guid',
+        topic_guid = '$topic_guid', 
         noautoresp = '$noautoresp',
         userid = '$userid', 
         userpass = '$passwd',
@@ -305,10 +305,10 @@ class admin_emails_controller extends CI_Controller {
         notes = '$notes',
         updated = NOW()
 
-        WHERE email_id = '$email_id'");
+        WHERE email_guid = '$email_guid'");
 
         echo "<script> alert('Email edited.');</script>";
-        echo "<script> document.location='" . base_url() . "/index.php/admin_emails_controller/emails_emails_info?id=$email_id' </script>";
+        echo "<script> document.location='" . base_url() . "/index.php/admin_emails_controller/emails_emails_info?id=$email_guid' </script>";
 
 
     }
@@ -330,7 +330,7 @@ class admin_emails_controller extends CI_Controller {
                 'email_priority' => $this->db->query("SELECT value FROM ost_config_test WHERE id='25'")->row('value'),
                 'accept_unregistered' => $this->db->query("SELECT value FROM ost_config_test WHERE id='117'")->row('value'),
                 'email_attach' => $this->db->query("SELECT value FROM ost_config_test WHERE id='69'")->row('value'),
-                'default_MTA' => $this->db->query("SELECT b.name,b.email FROM ost_config_test a INNER JOIN ost_email_test b ON a.value=b.email_id WHERE a.id='24';"),
+                'default_MTA' => $this->db->query("SELECT b.name,b.email FROM ost_config_test a INNER JOIN ost_email_test b ON a.value=b.email_guid WHERE a.id='24';"),
 
             );
         $browser_id = $_SERVER["HTTP_USER_AGENT"];
@@ -358,8 +358,8 @@ class admin_emails_controller extends CI_Controller {
     public function emails_settings_process()
     {  
         $default_template_id = $this->input->post('default_template_id');
-        $default_email_id = $this->input->post('default_email_id');
-        $alert_email_id = $this->input->post('alert_email_id');
+        $default_email_guid = $this->input->post('default_email_guid');
+        $alert_email_guid = $this->input->post('alert_email_guid');
         $admin_email = $this->input->post('admin_email');
         $verify_email_addrs = $this->input->post('verify_email_addrs');
         $strip_quoted_reply = $this->input->post('strip_quoted_reply');
@@ -370,8 +370,8 @@ class admin_emails_controller extends CI_Controller {
         $email_attachments = $this->input->post('email_attachments');
 
        $this->db->query("UPDATE ost_config_test SET value = '$default_template_id', updated = NOW() WHERE id='87' ");
-        $this->db->query("UPDATE ost_config_test SET value = '$default_email_id', updated = NOW() WHERE id='83' ");
-        $this->db->query("UPDATE ost_config_test SET value = '$alert_email_id', updated = NOW() WHERE id='84' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$default_email_guid', updated = NOW() WHERE id='83' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$alert_email_guid', updated = NOW() WHERE id='84' ");
         $this->db->query("UPDATE ost_config_test SET value = '$admin_email', updated = NOW() WHERE id='1' ");
         $this->db->query("UPDATE ost_config_test SET value = '$verify_email_addrs', updated = NOW() WHERE id='116' ");
         $this->db->query("UPDATE ost_config_test SET value = '$strip_quoted_reply', updated = NOW() WHERE id='35' ");
@@ -435,7 +435,7 @@ class admin_emails_controller extends CI_Controller {
 
             $this->db->query("UPDATE ost_filter_rule_test
                             SET isactive = '$status'
-                            WHERE id = '$value'");
+                            WHERE rule_guid = '$value'");
         }
 
             echo "<script> alert('Status of banned email changed');</script>";
@@ -445,7 +445,7 @@ class admin_emails_controller extends CI_Controller {
         elseif ($status == 2) {
             foreach ($check as $value) {
 
-            $this->db->query("DELETE FROM ost_filter_rule_test WHERE id='$value' ");
+            $this->db->query("DELETE FROM ost_filter_rule_test WHERE rule_guid='$value' ");
 
             
         }
@@ -511,7 +511,7 @@ class admin_emails_controller extends CI_Controller {
 
             $data = array(
                 
-                'baninfo' => $this->db->query("SELECT * FROM ost_filter_rule_test WHERE what = 'email' AND id= '$banid' ")->row(),
+                'baninfo' => $this->db->query("SELECT * FROM ost_filter_rule_test WHERE what = 'email' AND rule_guid= '$banid' ")->row(),
 
             );
         $browser_id = $_SERVER["HTTP_USER_AGENT"];
@@ -548,7 +548,7 @@ class admin_emails_controller extends CI_Controller {
             val = '$val',
             notes = '$notes', 
             updated = NOW()
-            WHERE id = '$banid'");
+            WHERE rule_guid = '$banid'");
 
         echo "<script> alert('Ban email edited.');</script>";
         echo "<script> document.location='" . base_url() . "/index.php/admin_emails_controller/emails_banlist_info?id=$banid' </script>";
@@ -596,15 +596,15 @@ class admin_emails_controller extends CI_Controller {
         {
             if ($status == 1)
             {
-                $this->db->query("UPDATE ost_email_template_group_test SET isactive = 1 WHERE tpl_id = '$check'");
+                $this->db->query("UPDATE ost_email_template_group_test SET isactive = 1 WHERE tpl_guid = '$check'");
             }
             else if ($status == 0)
             {
-                $this->db->query("UPDATE ost_email_template_group_test SET isactive = 0 WHERE tpl_id = '$check'");
+                $this->db->query("UPDATE ost_email_template_group_test SET isactive = 0 WHERE tpl_guid = '$check'");
             }
             else if ($status == 2)
             {
-                $this->db->query("DELETE FROM ost_email_template_group_test WHERE tpl_id = '$check'");
+                $this->db->query("DELETE FROM ost_email_template_group_test WHERE tpl_guid = '$check'");
             }
         }
 
@@ -645,20 +645,19 @@ class admin_emails_controller extends CI_Controller {
     {  
         $template_name = addslashes($this->input->post('name'));
         $template_status = $this->input->post('isactive');
-        $template_clone = $this->input->post('tpl_id');
+        $template_clone = $this->input->post('tpl_guid');
         $template_notes = addslashes($this->input->post('notes'));
 
         $check_template_name = $this->db->query("SELECT * FROM ost_email_template_group_test WHERE name = '$template_name'");
 
         if (empty($check_template_name->num_rows()))
         {
-            $this->db->query("INSERT INTO ost_email_template_group_test (isactive, name, lang, notes, created, updated) VALUES ('$template_status', '$template_name', 'en_US', '$template_notes', now(), now())");
-
-            $tpl_id = $this->db->query("SELECT * FROM ost_email_template_group_test WHERE name = '$template_name'")->row('tpl_id');
+            $tpl_guid = $this->db->query("SELECT REPLACE(UPPER(UUID()),'-','') AS guid")->row(guid);
+            $this->db->query("INSERT INTO ost_email_template_group_test (tpl_guid, isactive, name, lang, notes, created, updated) VALUES ('$tpl_guid', '$template_status', '$template_name', 'en_US', '$template_notes', now(), now())");
 
             if (!empty($template_clone))
             {
-                $this->db->query("INSERT INTO ost_email_template_test (tpl_id, code_name, subject, body, notes, created, updated) SELECT '$tpl_id', code_name, subject, body, notes, now(), now() FROM ost_email_template_test WHERE tpl_id = '$template_clone'");
+                $this->db->query("INSERT INTO ost_email_template_test (email_tpl_guid, tpl_guid, code_name, subject, body, notes, created, updated) SELECT REPLACE(UPPER(UUID()),'-',''), '$tpl_guid', code_name, subject, body, notes, now(), now() FROM ost_email_template_test WHERE tpl_guid = '$template_clone'");
             }
         }
         else
@@ -678,10 +677,10 @@ class admin_emails_controller extends CI_Controller {
 
             $data = array(
                 
-                'emails_templates_group_info' => $this->db->query("SELECT * FROM ost_email_template_group_test WHERE tpl_id = '$template_group_id'"),
-                'ticket_end_user_templates' => $this->db->query("SELECT * FROM ost_email_template_test WHERE tpl_id = '$template_group_id' AND type = 'ticket_end_user'"),
-                'ticket_agent_templates' => $this->db->query("SELECT * FROM ost_email_template_test WHERE tpl_id = '$template_group_id' AND type = 'ticket_agent'"),
-                'task_templates' => $this->db->query("SELECT * FROM ost_email_template_test WHERE tpl_id = '$template_group_id' AND type = 'task'"),
+                'emails_templates_group_info' => $this->db->query("SELECT * FROM ost_email_template_group_test WHERE tpl_guid = '$template_group_id'"),
+                'ticket_end_user_templates' => $this->db->query("SELECT * FROM ost_email_template_test WHERE tpl_guid = '$template_group_id' AND type = 'ticket_end_user'"),
+                'ticket_agent_templates' => $this->db->query("SELECT * FROM ost_email_template_test WHERE tpl_guid = '$template_group_id' AND type = 'ticket_agent'"),
+                'task_templates' => $this->db->query("SELECT * FROM ost_email_template_test WHERE tpl_guid = '$template_group_id' AND type = 'task'"),
                 'default_template_id' => $this->db->query("SELECT * FROM ost_config_test WHERE id = '87'"),
 
             );
@@ -717,9 +716,9 @@ class admin_emails_controller extends CI_Controller {
 
         $check_template_name = $this->db->query("SELECT * FROM ost_email_template_group_test WHERE name = '$template_name'");
 
-        if (empty($check_template_name->num_rows()) || $template_id == $check_template_name->row('tpl_id'))
+        if (empty($check_template_name->num_rows()) || $template_id == $check_template_name->row('tpl_guid'))
         {
-            $this->db->query("UPDATE ost_email_template_group_test SET isactive = '$template_status', name = '$template_name', notes = '$template_notes', updated = now() WHERE tpl_id = '$template_id'");
+            $this->db->query("UPDATE ost_email_template_group_test SET isactive = '$template_status', name = '$template_name', notes = '$template_notes', updated = now() WHERE tpl_guid = '$template_id'");
         }
         else
         {
@@ -738,10 +737,10 @@ class admin_emails_controller extends CI_Controller {
             $default_template_id = $this->db->query("SELECT * FROM ost_config_test WHERE id = '87'")->row('value');
 
             $data = array(
-                'ticket_end_user_templates' => $this->db->query("SELECT * FROM ost_email_template_test WHERE tpl_id = '$default_template_id' AND type = 'ticket_end_user'"),
-                'ticket_agent_templates' => $this->db->query("SELECT * FROM ost_email_template_test WHERE tpl_id = '$default_template_id' AND type = 'ticket_agent'"),
-                'task_templates' => $this->db->query("SELECT * FROM ost_email_template_test WHERE tpl_id = '$default_template_id' AND type = 'task'"),
-                'email_template_info' => $this->db->query("SELECT * FROM ost_email_template_test WHERE id = '$template_id'"),
+                'ticket_end_user_templates' => $this->db->query("SELECT * FROM ost_email_template_test WHERE tpl_guid = '$default_template_id' AND type = 'ticket_end_user'"),
+                'ticket_agent_templates' => $this->db->query("SELECT * FROM ost_email_template_test WHERE tpl_guid = '$default_template_id' AND type = 'ticket_agent'"),
+                'task_templates' => $this->db->query("SELECT * FROM ost_email_template_test WHERE tpl_guid = '$default_template_id' AND type = 'task'"),
+                'email_template_info' => $this->db->query("SELECT * FROM ost_email_template_test WHERE email_tpl_guid = '$template_id'"),
                 'company' => $this->db->query("SELECT * FROM ost_company_test"),
             );
 
@@ -773,7 +772,7 @@ class admin_emails_controller extends CI_Controller {
         $email_subject = addslashes($this->input->post('subject'));
         $email_body = addslashes($this->input->post('body'));
 
-        $this->db->query("UPDATE ost_email_template_test SET subject = '$email_subject', body = '$email_body', updated = now() WHERE id = '$template_id'");
+        $this->db->query("UPDATE ost_email_template_test SET subject = '$email_subject', body = '$email_body', updated = now() WHERE email_tpl_guid = '$template_id'");
 
         echo "<script> alert('Successfully updated this message template.');</script>";
         echo "<script> document.location='" . base_url() . "/index.php/admin_emails_controller/emails_templates_edit?id=$template_id' </script>";
@@ -812,11 +811,11 @@ class admin_emails_controller extends CI_Controller {
 
     public function emails_diagnostic_process()
     {  
-        $email_id = $this->input->post('email_id');
+        $email_guid = $this->input->post('email_guid');
         $email = $this->input->post('email');
         $subject = $this->input->post('subj');
         $message = $this->input->post('message');
-        $sender_email = $this->db->query("SELECT * FROM ost_email_test WHERE email_id='$email_id'")->row();
+        $sender_email = $this->db->query("SELECT * FROM ost_email_test WHERE email_guid='$email_guid'")->row();
         $this->load->library('email');
 
         $config = array(

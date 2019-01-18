@@ -14,7 +14,7 @@
     <div id="action-dropdown-more" class="action-dropdown anchor-right" style="display: none;">
         <ul>
             <?php foreach ($faqcate->result() as $value) { ?>  
-            <li><a class="user-action" href="<?php echo site_url('staff_faqs_controller/faqeditcate');?>?id=<?php echo $value->category_id;?>">
+            <li><a class="user-action" href="<?php echo site_url('staff_faqs_controller/faqeditcate');?>?id=<?php echo $value->category_guid;?>">
                 <i class="icon-pencil icon-fixed-width"></i>Edit Category</a>
             </li>
             <li class="danger">
@@ -63,7 +63,7 @@
             <ol>
 
             <?php foreach ($faqinfo->result() as $value1) { ?>
-            <li><strong><a href="<?php echo site_url('staff_faqs_controller/faqinfo');?>?id=<?php echo $value1->faq_id;?>" class="previewfaq"><?php echo $value1->question;?><span>- 
+            <li><strong><a href="<?php echo site_url('staff_faqs_controller/faqinfo');?>?id=<?php echo $value1->faq_guid;?>" class="previewfaq"><?php echo $value1->question;?><span>- 
 
                 <?php if($value1->ispublished == '1') { ?>
 

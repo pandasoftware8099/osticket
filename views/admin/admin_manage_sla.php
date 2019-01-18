@@ -55,10 +55,10 @@
       <?php foreach ($sla->result() as $value) { ?>
                 <tr>
                   <td align="center">
-                    <input type="checkbox" class="ckb" name="tids[]" value="<?php echo $value->id;?>">
+                    <input type="checkbox" class="ckb" name="tids[]" value="<?php echo $value->sla_guid;?>">
                   </td>
                   <td>
-                  <a href="<?php echo site_url('admin_manage_controller/manage_sla_info');?>?id=<?php echo $value->id;?>"><?php echo $value->sla_name;?></a>&nbsp;
+                  <a href="<?php echo site_url('admin_manage_controller/manage_sla_info');?>?id=<?php echo $value->sla_guid;?>"><?php echo $value->sla_name;?></a>&nbsp;
                   </td>
                   <td><?php if ($value->isactive == 1){ ?>
 

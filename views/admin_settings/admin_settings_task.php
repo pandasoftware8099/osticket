@@ -30,13 +30,13 @@
     <div class="form-group" style="overflow:auto;">
         <label class="col-lg-4 control-label"> Default Task Number Sequence :</label>
         <div class="col-lg-6">
-            <select name="ticket_sequence_id" class="form-control" id="ticket_sequence_id">
+            <select name="ticket_sequence_guid" class="form-control" id="ticket_sequence_guid">
                 <option value="0" <?php if($ticket_seq=='0'){echo 'selected';}?>>— Random —</option>
                 <?php foreach($ticket_seq_list->result() as $value){
-                    if($ticket_seq==$value->id){
-                        echo '<option value="'.$value->id.'" selected>'.$value->name.'</option>';
+                    if($ticket_seq==$value->sequence_guid){
+                        echo '<option value="'.$value->sequence_guid.'" selected>'.$value->name.'</option>';
                     }else{
-                    echo '<option value="'.$value->id.'">'.$value->name.'</option>';
+                    echo '<option value="'.$value->sequence_guid.'">'.$value->name.'</option>';
                                }}?>
                             </select>
         </div>
@@ -196,7 +196,7 @@ function random_number(digit)
         padding = padding.toString(); 
         return str.length < max ? pad(padding + str, max, padding) : str; 
     }   
-        var ticket_no_seq = document.getElementById("ticket_sequence_id").options[document.getElementById("ticket_sequence_id").selectedIndex].value;
+        var ticket_no_seq = document.getElementById("ticket_sequence_guid").options[document.getElementById("ticket_sequence_guid").selectedIndex].value;
 
     var random_number_digit = document.getElementById("ticket_number_format");
     if (ticket_no_seq == '0'){  
@@ -258,7 +258,7 @@ function random_number(digit)
                 }); 
         }   
         
-    $("#ticket_sequence_id").change(function () {   
+    $("#ticket_sequence_guid").change(function () {   
                 var val = $(this).val();    
                 if (val == '0'){    
             document.getElementById("ticket_number_example").innerHTML = 'YYMMDD' + random_number(random_number_digit); 
@@ -351,7 +351,7 @@ used to generate sequences for different purposes.<br>
         <div style="display:inline-block" class="name">
             <input type="text" value="<?php echo $value->name?>" name="name[]"></input>
         </div>
-        <input type="hidden" value="<?php echo $value->id?>" name="id[]">
+        <input type="hidden" value="<?php echo $value->sequence_guid?>" name="id[]">
     </div>
         <div class="manage-buttons col-lg-2">
             <span class="faded">next</span>

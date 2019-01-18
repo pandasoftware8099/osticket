@@ -56,9 +56,9 @@
     <tbody>     <?php foreach ($department->result() as $value) { ?>
                 <tr>
                 <td align="center">
-                  <input id="tids" type="checkbox" class="ckb" name="tids[]" value="<?php echo $value->id?>"> </td>
+                  <input id="tids" type="checkbox" class="ckb" name="tids[]" value="<?php echo $value->department_guid?>"> </td>
                 <?php foreach ($depart_name as $name) { ?>
-                <?php if ($value->id == $name['depart_id']) { ?>
+                <?php if ($value->department_guid == $name['depart_id']) { ?>
                 <td><a href="<?php echo site_url('admin_agents_controller/agents_departments_info')?>?id=<?php echo $name['depart_id']?>"><?php echo $name['depart_name']?></a> &nbsp;</td>
                 <?php } ?>
                 <?php } ?>
@@ -74,14 +74,14 @@
                 
                 <td>&nbsp;&nbsp;
                     <b>
-                    <a href="staff.php?did=2"><?php echo $this->db->query("SELECT COUNT(*) as total FROM ost_staff_test WHERE dept_id = '".$value->id."'")->row('total');?></a>
+                    <a href="staff.php?did=2"><?php echo $this->db->query("SELECT COUNT(*) as total FROM ost_staff_test WHERE dept_guid = '".$value->department_guid."'")->row('total');?></a>
                     </b>
                 </td>
                 <td>
                   <span class="ltr">
-                  <a href="emails.php?id=<?php echo $value->email_id?>"><?php echo $value->emailname?> <br> <?php echo $value->email?></a></span>
+                  <a href="emails.php?id=<?php echo $value->email_guid?>"><?php echo $value->emailname?> <br> <?php echo $value->email?></a></span>
                 </td>
-                <td><a href="<?php echo site_url('admin_agents_controller/agents_agents_info');?>?id=<?php echo $value->staff_id?>"><?php echo $value->firstname?>&nbsp;<?php echo $value->lastname?></a></td>
+                <td><a href="<?php echo site_url('admin_agents_controller/agents_agents_info');?>?id=<?php echo $value->staff_guid?>"><?php echo $value->firstname?>&nbsp;<?php echo $value->lastname?></a></td>
                 </tr>
                 <?php } ?>
                         

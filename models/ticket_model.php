@@ -14,8 +14,8 @@ class ticket_model extends CI_Model
 		$ipINT = ip2long($ipaddress);
 
         $description = addslashes($description);
-		$sql = "INSERT INTO osticket.ost_ticket_test ( number, topic_id, description , created_at, ticket_updated, user_id, department, status_id, ipadd )
-		VALUES ( '$todaydate2$NowisTime', '$subject', '$description', now(), now(), '$userid', '$userdepname', '1', '$ipaddress' )";
+		$sql = "INSERT INTO osticket.ost_ticket_test (ticket_guid, number, topic_guid, description , created_at, ticket_updated, user_guid, department, status_guid, ipadd )
+		VALUES (REPLACE(UPPER(UUID()),'-',''), '$todaydate2$NowisTime', '$subject', '$description', now(), now(), '$userid', '$userdepname', '1', '$ipaddress' )";
 		$query = $this->db->query($sql);
         return $query;
 	}

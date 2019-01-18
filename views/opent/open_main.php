@@ -26,7 +26,7 @@
             <select required="true" id="type" name="topicId" class="form-control">
               <option>— Select Help Topic —</option>
               <?php foreach ($topic->result() as $reason) { ?>   
-              <option value="<?php echo $reason->topic_id?>" <?php echo $reason->topic_id == $default_help_topic->row('value')?"selected":"";?>><?php echo $reason->topic?></option>
+              <option value="<?php echo $reason->topic_guid?>" <?php echo $reason->topic_guid == $default_help_topic->row('value')?"selected":"";?>><?php echo $reason->topic?></option>
               <?php }?>
             </select>
           </label>
@@ -46,7 +46,7 @@
               <select id="size" name="subtopic" class="form-control" data-placeholder="Select" required="true">
               <?php if ($default_help_topic->row('value') != '0') { ?>
               <?php foreach ($current_sub->result() as $sub) { ?>
-                <option value="<?php echo $sub->id;?>"><?php echo $sub->value;?></option>
+                <option value="<?php echo $sub->list_item_guid;?>"><?php echo $sub->value;?></option>
               <?php } ?>
               <?php } ?>
               </select>

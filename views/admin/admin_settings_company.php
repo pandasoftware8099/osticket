@@ -66,7 +66,7 @@
         <label class="col-lg-3 control-label"><i class="help-tip icon-question-sign" href="#landing_page"></i> Landing Page&nbsp;<font class="error">*</font> :</label>
         <div class="col-lg-9">
             <span>
-                <select name="landing_page_id" class="form-control">
+                <select name="landing_page_guid" class="form-control">
                     <option value="">— Select Landing Page —</option>
                     <option value="1" selected="selected">Landing</option>                </select>&nbsp;<font class="error"></font>
             </span>
@@ -76,7 +76,7 @@
         <label class="col-lg-3 control-label"><i class="help-tip icon-question-sign" href="#offline_page"></i> Offline Page&nbsp;<font class="error">*</font> :</label>
         <div class="col-lg-9">
             <span>
-                <select name="offline_page_id" class="form-control">
+                <select name="offline_page_guid" class="form-control">
                     <option value="">— Select Offline Page —</option>
                     <option value="3" selected="selected">Offline</option>                </select>&nbsp;<font class="error"></font>
             </span>
@@ -86,7 +86,7 @@
         <label class="col-lg-3 control-label"><i class="help-tip icon-question-sign" href="#default_thank_you_page"></i> Default Thank-You Page&nbsp;<font class="error">*</font> :</label>
         <div class="col-lg-9">
             <span>
-                <select name="thank-you_page_id" class="form-control">
+                <select name="thank-you_page_guid" class="form-control">
                     <option value="">— Select Thank-You Page —</option>
                     <option value="2" selected="selected">Thank You</option>                </select>&nbsp;<font class="error"></font>
             </span>

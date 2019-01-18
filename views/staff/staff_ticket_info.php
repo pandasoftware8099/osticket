@@ -30,9 +30,9 @@
             </div>
             
             <?php foreach ($result->result() as $value) { ?>         
-            <span class="action-button pull-right" title="Edit"><a data-placement="bottom" data-toggle="tooltip" href="<?php echo site_url('staff_ticket_controller/ticketinfoedit');?>?id=<?php echo $value->ticket_id;?>&uid=" ><i class="icon-edit"></i></a></span>
+            <span class="action-button pull-right" title="Edit"><a data-placement="bottom" data-toggle="tooltip" href="<?php echo site_url('staff_ticket_controller/ticketinfoedit');?>?id=<?php echo $value->ticket_guid;?>&uid=" ><i class="icon-edit"></i></a></span>
            
-            <a class="action-button pull-right" href="<?php echo site_url('staff_ticket_controller/printpreviewstaff');?>?id=<?php echo $value->ticket_id;?>" id="ticket-print" href="tickets.php?id=13&amp;a=print" title="Print"><i class="icon-print"></i></a>
+            <a class="action-button pull-right" href="<?php echo site_url('staff_ticket_controller/printpreviewstaff');?>?id=<?php echo $value->ticket_guid;?>" id="ticket-print" href="tickets.php?id=13&amp;a=print" title="Print"><i class="icon-print"></i></a>
     <?php } ?>
 
                         
@@ -124,7 +124,7 @@ function myFunction() {
          <tr>
             <th>Organization</th>
             <td>
-                : <?php if ($user->row('user_org_id') != "") {?><i class="icon-building"></i><span id="user-3-email"> <?php echo $value1->name;?></span><?php }?>
+                : <?php if ($user->row('user_org_guid') != "") {?><i class="icon-building"></i><span id="user-3-email"> <?php echo $value1->name;?></span><?php }?>
             </td>
         </tr>
         <?php }?>
@@ -144,17 +144,17 @@ function myFunction() {
             <tr>
                 <th width="147">Assigned To</th>
                 <td>: 
-                    <?php if (empty($value->ticket_team_id) && !empty($value->assigned_to)) { ?>
+                    <?php if (empty($value->ticket_team_guid) && !empty($value->assigned_to)) { ?>
                         <?php echo $this->db->query("SELECT firstname FROM ost_staff_test AS a
-                            INNER JOIN ost_ticket_test AS b ON b.assigned_to = a.staff_id
-                            WHERE b.ticket_id = '".$value->ticket_id."'")->row('firstname');?> 
+                            INNER JOIN ost_ticket_test AS b ON b.assigned_to = a.staff_guid
+                            WHERE b.ticket_guid = '".$value->ticket_guid."'")->row('firstname');?> 
                         <?php echo $this->db->query("SELECT lastname FROM ost_staff_test AS a
-                            INNER JOIN ost_ticket_test AS b ON b.assigned_to = a.staff_id
-                            WHERE b.ticket_id = '".$value->ticket_id."'")->row('lastname');?>
-                    <?php } else if (empty($value->assigned_to) && !empty($value->ticket_team_id)) { ?>
+                            INNER JOIN ost_ticket_test AS b ON b.assigned_to = a.staff_guid
+                            WHERE b.ticket_guid = '".$value->ticket_guid."'")->row('lastname');?>
+                    <?php } else if (empty($value->assigned_to) && !empty($value->ticket_team_guid)) { ?>
                         <?php echo $this->db->query("SELECT name FROM ost_team_test AS a
-                            INNER JOIN ost_ticket_test AS b ON b.team_id = a.team_id
-                            WHERE b.ticket_id = '".$value->ticket_id."'")->row('name');?>
+                            INNER JOIN ost_ticket_test AS b ON b.team_guid = a.team_guid
+                            WHERE b.ticket_guid = '".$value->ticket_guid."'")->row('name');?>
                     <?php } else { ?>
                         <?php echo '-unassigned-' ?>
                     <?php } ?>
@@ -163,8 +163,8 @@ function myFunction() {
             <tr>
                 <th>SLA Plan</th>
                 <td>: <?php echo $this->db->query("SELECT sla_name FROM ost_sla_test AS a
-                    INNER JOIN ost_ticket_test AS b ON b.sla_id = a.id
-                    WHERE b.ticket_id = '".$value->ticket_id."'")->row('sla_name');?></td>
+                    INNER JOIN ost_ticket_test AS b ON b.sla_guid = a.sla_guid
+                    WHERE b.ticket_guid = '".$value->ticket_guid."'")->row('sla_name');?></td>
             </tr>
             <tr>
                 <th>Due Date</th>
@@ -255,9 +255,9 @@ function myFunction() {
                                 </span>
                             </div>
 
-                            <?php if ($value1->staff_id == '0') { ?>
+                            <?php if ($value1->staff_guid == '0') { ?>
                                 <b><?php echo $value1->poster;?></b>
-                            <?php } else if ($value1->user_id == '0') { ?>
+                            <?php } else if ($value1->user_guid == '0') { ?>
                                 <?php if ($threadname->defaultname == 'mine') { ?>
                                     <b><?php echo $value1->poster;?></b> 
                                 <?php } else if ($threadname->defaultname == 'email') { ?>
@@ -276,8 +276,8 @@ function myFunction() {
                             <?php 
                                 $file = $this->db->query("SELECT * FROM ost_file_test AS b
                                     INNER JOIN ost_thread_entry_test AS a
-                                    ON a.id = b.thread_entry_id
-                                    WHERE b.thread_entry_id = '".$value1->id."'");
+                                    ON a.thread_entry_guid = b.thread_entry_guid
+                                    WHERE b.thread_entry_guid = '".$value1->thread_entry_guid."'");
                             ?>
 
                             <?php
@@ -313,7 +313,7 @@ function myFunction() {
         </script>
         <div class="clear"></div>
 
-        <?php if($openclose->status_id != '3' ) { ?>
+        <?php if($openclose->status_guid != '3' ) { ?>
             <?php if ($replyallow != 0 ) { ?>
                 <!-- sticky bar stop actions -->
                 <div class="sticky bar stop actions" id="response_options">
@@ -468,10 +468,10 @@ function myFunction() {
                                 Ticket Status</label>
                             <div class="col-sm-10">
                                 <div class="faded"></div>
-                                <select name="note_status_id" class="form-control" required>
+                                <select name="note_status_guid" class="form-control" required>
                                     <option value="">— Select —</option>
                                     <?php foreach ($ticketstatus->result() as $status) { ?>
-                                    <option value="<?php echo $status->id;?>"><?php echo $status->name;?></option>
+                                    <option value="<?php echo $status->status_guid;?>"><?php echo $status->name;?></option>
                                     <?php }?>
                                 </select>
                                 <span class="error"></span>
@@ -488,7 +488,7 @@ function myFunction() {
             <!-- sticky bar stop actions -->
             <?php } ?>
 
-            <?php } else if ($openclose->status_id == '3') {?>
+            <?php } else if ($openclose->status_guid == '3') {?>
                 <div id="msg_warning">Current ticket status (Closed) does not allow the end user to reply.</div>
             <?php } ?>
     </div>
@@ -528,19 +528,19 @@ function myFunction() {
                 <?php foreach ($task->result() as $task) { ?>
                     <tr id="3">
                         <td align="center" class="nohover">
-                            <input class="ckb" type="checkbox" name="tids[]" value="<?php echo $task->task_id;?>"></td>
+                            <input class="ckb" type="checkbox" name="tids[]" value="<?php echo $task->task_guid;?>"></td>
                         <td nowrap="">
-                            <a class="preview" href="<?php echo site_url('staff_task_controller/taskinfo');?>?id=<?php echo $task->task_id;?>">
-                                <b><?php echo $task->task_id;?></b></a></td>
+                            <a class="preview" href="<?php echo site_url('staff_task_controller/taskinfo');?>?id=<?php echo $task->task_guid;?>">
+                                <b><?php echo $task->task_guid;?></b></a></td>
                         <td nowrap=""><?php echo $task->task_created;?></td>
                         <td>
-                            <a href="<?php echo site_url('staff_task_controller/taskinfo');?>?id=<?php echo $task->task_id;?>"><?php echo $task->title;?></a>
+                            <a href="<?php echo site_url('staff_task_controller/taskinfo');?>?id=<?php echo $task->task_guid;?>"><?php echo $task->title;?></a>
                             <?php 
-                            if ($this->db->query("SELECT COUNT(*) as threadcount FROM ost_thread_entry_test WHERE task_id = '".$task->task_id."'")->row('threadcount') != '0' && $this->db->query("SELECT COUNT(*) as threadcount FROM ost_thread_entry_test WHERE task_id = '".$task->task_id."'")->row('threadcount') != '1')
+                            if ($this->db->query("SELECT COUNT(*) as threadcount FROM ost_thread_entry_test WHERE task_guid = '".$task->task_guid."'")->row('threadcount') != '0' && $this->db->query("SELECT COUNT(*) as threadcount FROM ost_thread_entry_test WHERE task_guid = '".$task->task_guid."'")->row('threadcount') != '1')
                             { ?>
                                 <span class="pull-right faded-more">
                                     <i class="icon-comments-alt"></i>
-                                    <small><?php echo $this->db->query("SELECT COUNT(*) as threadcount FROM ost_thread_entry_test WHERE task_id = '".$task->task_id."'")->row('threadcount');?></small>
+                                    <small><?php echo $this->db->query("SELECT COUNT(*) as threadcount FROM ost_thread_entry_test WHERE task_guid = '".$task->task_guid."'")->row('threadcount');?></small>
                                 </span>
                             <?php } ?></td>
                         <td nowrap=""><?php echo $task->deptname;?></td>
@@ -577,7 +577,7 @@ function myFunction() {
 
                 <table width="100%">
                 <tbody>
-                  <input type="hidden" name="status_id" id="sta" value="0">
+                  <input type="hidden" name="status_guid" id="sta" value="0">
                 </tbody>
                 <tbody>
                   <tr>
@@ -633,13 +633,13 @@ function myFunction() {
                                           <option value="">— Select an Agent —</option>
                               <optgroup label="Agents (<?php echo $staff->num_rows();?>)">
                               <?php foreach ($staff->result() as $taskstaff) { ?>
-                                <option value="a<?php echo $taskstaff->staff_id;?>"><?php echo $taskstaff->firstname;?> <?php echo $taskstaff->lastname;?></option>
+                                <option value="a<?php echo $taskstaff->staff_guid;?>"><?php echo $taskstaff->firstname;?> <?php echo $taskstaff->lastname;?></option>
                               <?php } ?> 
                               </optgroup>
 
                               <optgroup label="Team (<?php echo $team->num_rows();?>)">         
                               <?php foreach ($team->result() as $taskteam) { ?>
-                                <option value="t<?php echo $taskteam->team_id;?>"><?php echo $taskteam->name;?></option>
+                                <option value="t<?php echo $taskteam->team_guid;?>"><?php echo $taskteam->name;?></option>
                               <?php } ?> 
                               </optgroup>  
 
@@ -724,7 +724,7 @@ function myFunction() {
                   <select class="form-control" name="departmentid" id="dep" data-placeholder="Select">
                     <option value="">— Select —</option>
                     <?php foreach ($department->result() as $taskdept) { ?>
-                      <option value="<?php echo $taskdept->id;?>"><?php echo $taskdept->name;?></option>
+                      <option value="<?php echo $taskdept->department_guid;?>"><?php echo $taskdept->name;?></option>
                     <?php } ?>
                   </select>
                   </div>
@@ -850,7 +850,7 @@ $(function() {
                     && $('.dialog#confirm-action #changeuser-confirm').length) {
                 $('#newuser').html(user.name +' &lt;'+user.email+'&gt;');
                 $('.dialog#confirm-action #action').val('changeuser');
-                $('#confirm-form').append('<input type=hidden name=user_id value='+user.id+' />');
+                $('#confirm-form').append('<input type=hidden name=user_guid value='+user.id+' />');
                 $('#overlay').show();
                 $('.dialog#confirm-action .confirm-action').hide();
                 $('.dialog#confirm-action p#changeuser-confirm')
@@ -990,7 +990,7 @@ $(function() {
                       <select class="form-control" name="departmentid" id="_3b16f40dc83394b4" data-placeholder="Select" required="true">
                         <option value="">— Select —</option>
                         <?php foreach ($department->result() as $departmentt) { ?>
-                          <option value="<?php echo $departmentt->id;?>"><?php echo $departmentt->name;?></option>
+                          <option value="<?php echo $departmentt->department_guid;?>"><?php echo $departmentt->name;?></option>
                         <?php } ?>
                       </select>
                     </fieldset></td>
@@ -1005,13 +1005,13 @@ $(function() {
                         <option value="">— Select —</option>
                         <optgroup label="Agents (<?php echo $staff->num_rows();?>)">
                           <?php foreach ($staff->result() as $stafff) { ?>
-                          <option value="a<?php echo $stafff->staff_id;?>"><?php echo $stafff->firstname;?> <?php echo $stafff->lastname;?></option>
+                          <option value="a<?php echo $stafff->staff_guid;?>"><?php echo $stafff->firstname;?> <?php echo $stafff->lastname;?></option>
                           <?php } ?> 
                         </optgroup>    
                             
                         <optgroup label="Team (<?php echo $team->num_rows();?>)">         
                           <?php foreach ($team->result() as $teamm) { ?>
-                          <option value="t<?php echo $teamm->team_id;?>"><?php echo $teamm->name;?></option>
+                          <option value="t<?php echo $teamm->team_guid;?>"><?php echo $teamm->name;?></option>
                           <?php } ?> 
                         </optgroup>
                       </select>
@@ -1085,10 +1085,10 @@ $(function() {
                     <td colspan="2">
                         <span>
                             <strong>Status:&nbsp;<font class="error">*</font></strong>
-                            <select name="status_id" id="status_id">
+                            <select name="status_guid" id="status_guid">
                                 <option value="">— Select —</option>
                                 <?php foreach ($ticketstatus->result() as $status) {?>
-                                    <option value="<?php echo $status->id;?>" <?php echo $status->id == $openclose->status_id?"selected":"";?>><?php echo $status->name;?></option>
+                                    <option value="<?php echo $status->status_guid;?>" <?php echo $status->id == $openclose->status_guid?"selected":"";?>><?php echo $status->name;?></option>
                                 <?php } ?>                
                             </select>
                         </span>
@@ -1159,13 +1159,13 @@ $(function() {
                                             <option value="">— Select an Agent —</option>
                                             <optgroup label="Agents (<?php echo $staff->num_rows();?>)">
                                                 <?php foreach ($staff->result() as $ticketstaff) { ?>
-                                                    <option value="a<?php echo $ticketstaff->staff_id;?>" <?php echo $ticketstaff->staff_id == $openclose->assigned_to?"selected":"";?>><?php echo $ticketstaff->firstname;?> <?php echo $ticketstaff->lastname;?></option>
+                                                    <option value="a<?php echo $ticketstaff->staff_guid;?>" <?php echo $ticketstaff->staff_guid == $openclose->assigned_to?"selected":"";?>><?php echo $ticketstaff->firstname;?> <?php echo $ticketstaff->lastname;?></option>
                                                 <?php } ?> 
                                             </optgroup>
 
                                             <optgroup label="Team (<?php echo $team->num_rows();?>)">
                                                 <?php foreach ($team->result() as $ticketteam) { ?>
-                                                    <option value="t<?php echo $ticketteam->team_id;?>" <?php echo $ticketteam->team_id == $openclose->team_id?"selected":"";?>><?php echo $ticketteam->name;?></option>
+                                                    <option value="t<?php echo $ticketteam->team_guid;?>" <?php echo $ticketteam->team_guid == $openclose->team_guid?"selected":"";?>><?php echo $ticketteam->name;?></option>
                                                 <?php } ?> 
                                             </optgroup>
                                         </select>
@@ -1408,7 +1408,7 @@ $(function() {
                         <div class="tab_content_2" id="info-tab">
                             <div class="floating-options">
                                 <a onclick="updateuser()" id="edituser" class="action" title="Edit"><i class="icon-edit"></i></a>
-                                <a href="<?php echo site_url('staff_user_controller/user_info?id=').$openclose->user_id?>" title="Manage User" class="action"><i class="icon-share"></i></a>
+                                <a href="<?php echo site_url('staff_user_controller/user_info?id=').$openclose->user_guid?>" title="Manage User" class="action"><i class="icon-share"></i></a>
                             </div>
                         
                             <table class="custom-info" width="100%">
@@ -1431,10 +1431,10 @@ $(function() {
                         </div>
 
                         <div class="hiddens tab_content_2" id="org-tab">
-                            <?php if ($user->row('user_org_id') != "")
+                            <?php if ($user->row('user_org_guid') != "")
                             {?>
                                 <div class="floating-options">
-                                    <a href="<?php echo site_url('staff_user_controller/org_info?id=').$user->row('user_org_id')?>" title="Manage Organization" class="action"><i class="icon-share"></i></a>
+                                    <a href="<?php echo site_url('staff_user_controller/org_info?id=').$user->row('user_org_guid')?>" title="Manage Organization" class="action"><i class="icon-share"></i></a>
                                 </div>
                             <?php }?>
 
@@ -1777,11 +1777,11 @@ $(function() {
     $(document).ready(function () {
         $('#checkBtn').click(function() {
 
-          $("#status_id").attr('required', true);
+          $("#status_guid").attr('required', true);
           $("#departmentid").attr('required', false);
           $("#assignto").attr('required', false);
           $("#deleteticket").attr('required', false);
-          $("#status_id").attr('name', 'status_id');
+          $("#status_guid").attr('name', 'status_guid');
           $("#departmentid").attr('name', true);
           $("#assignto").attr('name', true);
           $("#deleteticket").attr('name', true);
@@ -1790,10 +1790,10 @@ $(function() {
 
         $('#assign').click(function() {
 
-          $("#status_id").attr('required', false);
+          $("#status_guid").attr('required', false);
           $("#departmentid").attr('required', false);
           $("#departmentid").attr('name', true);
-          $("#status_id").attr('name', true);
+          $("#status_guid").attr('name', true);
           $("#assignto").attr('required', true);
           $("#assignto").attr('name', 'assignto');
           $("#deleteticket").attr('required', false);
@@ -1804,11 +1804,11 @@ $(function() {
 
         $('#tickets-transfer').click(function() {
 
-          $("#status_id").attr('required', false);
+          $("#status_guid").attr('required', false);
           $("#assignto").attr('required', false);
           $("#departmentid").attr('required', true);
           $("#deleteticket").attr('required', false);
-          $("#status_id").attr('name', true);
+          $("#status_guid").attr('name', true);
           $("#departmentid").attr('name', 'departmentid');
           $("#assignto").attr('name', true);
           $("#deleteticket").attr('name', true);
@@ -1817,11 +1817,11 @@ $(function() {
 
         $('#tickets-delete').click(function() {
 
-          $("#status_id").attr('required', false);
+          $("#status_guid").attr('required', false);
           $("#assignto").attr('required', false);
           $("#departmentid").attr('required', false);
           $("#deleteticket").attr('required', true);
-          $("#status_id").attr('name', true);
+          $("#status_guid").attr('name', true);
           $("#departmentid").attr('name', true);
           $("#assignto").attr('name', true);
           $("#deleteticket").attr('name', 'deleteticket');
@@ -1845,7 +1845,7 @@ $(function() {
           $("#dep").attr('required', false);
           $("#ass").attr('required', false);
           $("#del").attr('required', false);
-          $("#sta").attr('name', 'status_id');
+          $("#sta").attr('name', 'status_guid');
           $("#dep").attr('name', true);
           $("#ass").attr('name', true);
           $("#del").attr('name', true);

@@ -34,10 +34,10 @@
   <div class="form-group">
     <label class="col-lg-2 control-label"><i class="help-tip icon-question-sign" href="#lead"></i> Team Lead :</label>
     <div class="col-lg-10">
-      <select id="team-lead-select" class="form-control" name="lead_id" data-quick-add="staff">
+      <select id="team-lead-select" class="form-control" name="lead_guid" data-quick-add="staff">
         <option value="0">— None —</option>
                           <?php foreach ($staff->result() as $value) { ?>
-                            <option value="<?php echo $value->staff_id;?>"><?php echo $value->firstname;?> <?php echo $value->lastname;?></option>
+                            <option value="<?php echo $value->staff_guid;?>"><?php echo $value->firstname;?> <?php echo $value->lastname;?></option>
                           <?php } ?>
        </select>
        &nbsp;<span class="error"></span>
@@ -91,7 +91,7 @@
           <select id="add_access" data-quick-add="staff">
             <option value="0">— Select Agent —</option>
             <?php foreach ($staff->result() as $value) { ?>
-                            <option value="<?php echo $value->staff_id;?>"><?php echo $value->firstname;?> <?php echo $value->lastname;?></option>
+                            <option value="<?php echo $value->staff_guid;?>"><?php echo $value->firstname;?> <?php echo $value->lastname;?></option>
                           <?php } ?>
           </select>
           <button type="button" class="action-button">

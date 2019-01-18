@@ -7,7 +7,7 @@
     <ol>
 
         <?php foreach ($search->result() as $value) { ?>
-        <li><a href="<?php echo site_url('staff_faqs_controller/faqinfo');?>?id=<?php echo $value->faq_id;?>" class="previewfaq"><?php echo $value->question;?></a></li>
+        <li><a href="<?php echo site_url('staff_faqs_controller/faqinfo');?>?id=<?php echo $value->faq_guid;?>" class="previewfaq"><?php echo $value->question;?></a></li>
         <?php } ?>
 
     </ol>
