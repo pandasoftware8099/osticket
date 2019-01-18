@@ -33,20 +33,17 @@
     <script type="text/javascript" src="/helpdesk/js/fabric.min.js?9ae093d"></script>
     <script type="text/javascript" src="/helpdesk/assets/bootstrap/dist/js/bootstrap.min.js"></script>
 
-    <!-- texteditor -->
-  <link rel="stylesheet" href="http://localhost/adminlte/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css">
-<script src="http://localhost/adminlte/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js"></script>
+<!-- include summernote css/js -->
+<link href="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.11/summernote.css" rel="stylesheet">
+<script src="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.11/summernote.js"></script>
 
 <script type="text/javascript">
     
-      $(function () {
+$(document).ready(function() {
+  $('.textarea').summernote();
+});
 
-    //bootstrap WYSIHTML5 - text editor
-    $('.textarea').wysihtml5()
-  })
 </script>
-    
-    <meta name="csrf_token" content="12c2cebeb988fe44d2dcd7b6e47f5400f54c6921">
 
 <style type="text/css">
     
