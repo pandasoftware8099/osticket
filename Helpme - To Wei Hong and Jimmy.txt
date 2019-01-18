@@ -18,11 +18,11 @@ twh1) Agent Dashboard: Graph unprepared, double confirm statistics accuracy
 jim2) search box (in everywhere, eg. agent create new ticket) have awful view, try to make it looks good
 jim3) Admin Manage Knowledgebase
 (a) remove Agent Knowledgebase - Canned Responses
-(b) Knowledgebase Category Type - Featured: show on front-page, Public: readable by public, Private: only accessible by admins & agents
+//(b) Knowledgebase Category Type - Featured: show on front-page, Public: readable by public, Private: only accessible by admins & agents
 twh4) Admin Settings Ticket + Task, Alerts and Notices not done yet (emails) (make sure the variable must modified and follow my format in database, unless you found a better way)
-jim5) Remove Admin Manage Ticket Filters, Forms and Plugins; unless you want to keep these functions in agent page
+//jim5) Remove Admin Manage Ticket Filters, Forms and Plugins; unless you want to keep these functions in agent page
 twh6) Admin Emails - Emails info, Settings, Banlist; add logic/function to workable fields, give up/hide/delete/buang those unworkable fields
 //7) Add a redirect button to user page in headerstaff and headeradmin, which is similar to agent login page one
-jim8) Some buttons in user welcome page not functional yet, eg. search button (delete) & featured questions, search box in user knowledgebase
+//jim8) Some buttons in user welcome page not functional yet, eg. search button (delete) & featured questions, search box in user knowledgebase
 
 Good luck and all the best :)
