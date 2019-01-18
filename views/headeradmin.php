@@ -52,16 +52,15 @@
 <link type="text/css" rel="stylesheet" href="https://cdn.datatables.net/buttons/1.5.2/css/buttons.dataTables.min.css">
 
 <!-- texteditor -->
-  <link rel="stylesheet" href="http://localhost/adminlte/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css">
-<script src="http://localhost/adminlte/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js"></script>
+ <link href="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.11/summernote.css" rel="stylesheet">
+<script src="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.11/summernote.js"></script>
 
 <script type="text/javascript">
     
-      $(function () {
+$(document).ready(function() {
+  $('.textarea').summernote();
+});
 
-    //bootstrap WYSIHTML5 - text editor
-    $('.textarea').wysihtml5()
-  })
 </script>
 
 <style type="text/css">

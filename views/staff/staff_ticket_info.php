@@ -222,38 +222,108 @@ function myFunction() {
                         <?php } ?>
                         <div class="header">
                             <div class="pull-right">
-                                <span class="muted-button pull-right" data-dropdown="#entry-action-more-38">
+                                <span class="muted-button pull-right" data-dropdown="#entry-action-more-<?php echo $value1->thread_entry_guid?>">
                                     <i class="icon-caret-down"></i>
                                 </span>
-                                <div id="entry-action-more-38" class="action-dropdown anchor-right" style="left: 683.25px; top: 32px; display: none;">
+                                <div id="entry-action-more-<?php echo $value1->thread_entry_guid?>" class="action-dropdown anchor-right" style="left: 683.25px; top: 32px; display: none;">
                                     <ul class="title">
                                         <li>
-                                            <a class="no-pjax" href="#" onclick="javascript: var url = 'ajax.php/tickets/11/thread/38/edit';
-                                                $.dialog(url, [201], function(xhr, resp) {
-                                                  var json = JSON.parse(resp);
-                                                  if (!json || !json.thread_id)
-                                                    return;
-                                                  $('#thread-entry-'+json.thread_id)
-                                                    .attr('id', 'thread-entry-' + json.new_id)
-                                                    .html(json.entry)
-                                                    .find('.thread-body')
-                                                    .delay(500)
-                                                    .effect('highlight');
-                                                }, {size:'large'});; return false;">
-                                                <i class="icon-pencil"></i> Edit
-                                            </a>
+                                            <a id="edit" class="open-edit confirm" data-guid="<?php echo $value1->thread_entry_guid?>" data-body1="<?php echo $value1->body?>" data-toggle="modal" data-target="#more-modal" href="#"><i class="icon-pencil"></i> Edit</a>
                                         </li>
+                                        <?php if($value1->editor != ''){ ?>
                                         <li>
-                                            <a class="no-pjax" href="#" onclick="javascript:
-                                            $.dialog('ajax.php/tickets/11/thread/38/previous');; return false;">
-                                            <i class="icon-copy"></i> View History</a>
+                                            <a id="viewh" class="confirm" data-toggle="modal" data-target="#viewh" href="#"><i class="icon-copy"></i> View History</a>
                                         </li>
+                                    <?php } ?>
                                     </ul>
                                 </div>
                                 <span class="textra light">
                                     <span class="label label-bare" title="Edited by Hugh Panda">Edited</span>
                                 </span>
                             </div>
+
+        <script type="text/javascript">
+            $(document).on("click", ".open-edit", function () {
+                 $(".modal-body #threadguid").val($(this).data('guid'));
+                 $("#threadbody").summernote("code", $(this).data('body1'));
+            });
+
+             
+        </script>
+
+        <div class="modal fade" id="more-modal" style="display: none;">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">×</span></button>
+                <h3>Edit Thread Entry </h3>
+              </div>
+              <div class="modal-body">
+                <form method="post" action="<?php echo site_url('staff_ticket_controller/editorupdate')?>">
+               <div class="box">
+                            <div class="box-header">
+                                <!-- tools box -->
+                                <div class="pull-right box-tools"></div>
+                            <!-- /. tools -->
+                            </div>
+                            <!-- /.box-header -->
+                            <div class="box-body pad">
+                                <input  type="hidden" value="" id="threadguid" name="threadguid">
+                                <textarea name="edit" class="textarea" id="threadbody" name="threadbody" style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"></textarea>
+                            </div>
+                        </div>
+              </div>
+              </form>
+              <div class="modal-footer">
+              <p class="full-width">
+                <span class="buttons pull-right">
+                    <input type="submit" value="Save" class="confirm">
+                </span>
+              </p>
+
+              </div>
+            </div>
+            <!-- /.modal-content -->
+          </div>
+          <!-- /.modal-dialog -->
+        </div>
+
+        <div class="modal fade" id="viewh" style="display: none;">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">×</span></button>
+                <h3>Original Thread Entry</h3>
+              </div>
+              <div class="modal-body">
+                <div class="accordian">
+                    <dt class="active">
+                    <i class ="icon=copy"></i>
+                    <?php $editor = $this->db->query("SELECT CONCAT(firstname,' ', lastname) as editor FROM ost_staff WHERE staff_id = '".$value1->editor."'")->row('editor');?>
+                    <em>Edited by $editor</em>
+                    </dt>
+                    <dd style="background-color: transparent;">
+                        <div style="background-color: transparent;"><?php echo $value->last_body?></div>
+                    </dd>
+                </div>
+              </div>
+              <div class="modal-footer">
+              <p class="full-width">
+                <span class="buttons pull-left">
+                    <input type="button" value="No, Cancel" class="close">
+                </span>
+                <span class="buttons pull-right">
+                    <input type="submit" value="Yes, Do it!" class="confirm">
+                </span>
+              </p>
+              </div>
+            </div>
+            <!-- /.modal-content -->
+          </div>
+          <!-- /.modal-dialog -->
+        </div>
 
                             <?php if ($value1->staff_guid == '0') { ?>
                                 <b><?php echo $value1->poster;?></b>

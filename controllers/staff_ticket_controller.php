@@ -702,7 +702,6 @@ class staff_ticket_controller extends CI_Controller {
             {
                 $department = $this->db->query("SELECT dept_guid, a.role_guid, b.permissions ,c.`name`,c.`department_guid` FROM (SELECT dept_guid , role_guid FROM ost_staff_test WHERE staff_guid = '$staff_guid' UNION SELECT dept_guid , role_guid FROM ost_staff_dept_access_test WHERE staff_guid = '$staff_guid' ) a INNER JOIN ost_role_test b ON a.role_guid=b.role_guid INNER JOIN ost_department_test c ON a.dept_guid = c.department_guid WHERE permissions LIKE '%ticket.transfer%' AND c.name != '".$default_depart->row('name')."'");
             }            
-
             $data = array(
                 'result' => $this->db->query("SELECT a.*, b.*, c.*, d.*, e.*, a.team_guid as ticket_team_guid FROM ost_ticket_test AS a
                     INNER JOIN ost_help_topic_test AS b ON b.topic_guid = a.topic_guid 
@@ -1025,6 +1024,27 @@ class staff_ticket_controller extends CI_Controller {
            redirect('user_controller/superlogin');
         }
     }
+
+    public function editorupdate()
+    {      
+        if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
+        {
+            $threadid = $this->input->post('threadguid');
+            $body = $this->input->post('threadbody');
+            $lastbody = $this->db->query("SELECT body FROM ost_thread_entry_test WHERE thread_entry_guid = '$threadid'")->row('body');
+
+            $this->db->query("UPDATE ost_thread_entry_test SET body = '$body', last_body = '$lastbody', updated = NOW() WHERE thread_entry_guid = '$threadid'");
+
+            $ticketid = $this->db->query("SELECT ticket_guid FROM ost_thread_entry_test WHERE thread_entry_guid = $threadid")->row('ticket_guid');
+
+             echo "<script> document.location='" . base_url() . "/index.php/staff_ticket_controller/ticketinfo?id=$ticketid' </script>";
+        }
+         else       
+        {
+           redirect('user_controller/superlogin');
+        }
+    }
+
 
     public function ticketinfoedit()
     {      
