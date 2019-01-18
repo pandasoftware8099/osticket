@@ -84,7 +84,7 @@ function myFunction() {
 
             <tr>
             <th width="147">Status</th>
-            <td>: <?php echo $value->name;?></td>
+            <td>:<b> <?php echo $value->name;?></b></td>
         </tr>
         <tr>
             <th>Priority</th>
@@ -95,9 +95,37 @@ function myFunction() {
             <td>: <?php echo $value->department;?></td>
         </tr>
         <tr>
-            <th>Create Date</th>
-            <td>: <?php echo $value->created_at;?></td>
-        </tr>
+                <th width="147">Assigned To</th>
+                <td>: 
+                    <?php if (empty($value->ticket_team_guid) && !empty($value->assigned_to)) { ?>
+                        <?php echo $this->db->query("SELECT firstname FROM ost_staff_test AS a
+                            INNER JOIN ost_ticket_test AS b ON b.assigned_to = a.staff_guid
+                            WHERE b.ticket_guid = '".$value->ticket_guid."'")->row('firstname');?> 
+                        <?php echo $this->db->query("SELECT lastname FROM ost_staff_test AS a
+                            INNER JOIN ost_ticket_test AS b ON b.assigned_to = a.staff_guid
+                            WHERE b.ticket_guid = '".$value->ticket_guid."'")->row('lastname');?>
+                    <?php } else if (empty($value->assigned_to) && !empty($value->ticket_team_guid)) { ?>
+                        <?php echo $this->db->query("SELECT name FROM ost_team_test AS a
+                            INNER JOIN ost_ticket_test AS b ON b.team_guid = a.team_guid
+                            WHERE b.ticket_guid = '".$value->ticket_guid."'")->row('name');?>
+                    <?php } else { ?>
+                        <?php echo '-unassigned-' ?>
+                    <?php } ?>
+                </td>
+            </tr>
+
+            <tr>
+                <th width="147">Help Topic</th>
+                <td>: <?php foreach ($result->result() as $value) { ?><?php echo $value->topic;?><?php } ?> </td>
+            </tr>
+            
+            <tr>
+                <th>SLA Plan</th>
+                <td>: <?php echo $this->db->query("SELECT sla_name FROM ost_sla_test AS a
+                    INNER JOIN ost_ticket_test AS b ON b.sla_guid = a.sla_guid
+                    WHERE b.ticket_guid = '".$value->ticket_guid."'")->row('sla_name');?></td>
+            </tr>
+            
 <?php } ?>
     </tbody>
 </table>
@@ -130,6 +158,14 @@ function myFunction() {
         <?php }?>
         <?php foreach ($result->result() as $value2) { ?>
         <tr>
+            <th>Contact Name</th>
+            <td>: <span ><?php echo $value2->contact;?></span>            </td>
+        </tr>
+        <tr>
+            <th>Contact Phone No.</th>
+            <td>: <span ><?php echo $value2->phone_no;?></span>            </td>
+        </tr>
+        <tr>
             <th>Source</th>
             <td>: <?php echo $value2->source;?>&nbsp;&nbsp; <span class="faded">(<?php echo $value2->ipadd;?>)</span>            </td>
         </tr>
@@ -138,54 +174,24 @@ function myFunction() {
 </div>
 <div class="col-lg-12" style="padding:10px;"></div>
 <?php foreach ($result->result() as $value) { ?>
-<div class="col-lg-6" style="padding:0px;">
-    <table class="ticket_info" width="100%">
-        <tbody>
-            <tr>
-                <th width="147">Assigned To</th>
-                <td>: 
-                    <?php if (empty($value->ticket_team_guid) && !empty($value->assigned_to)) { ?>
-                        <?php echo $this->db->query("SELECT firstname FROM ost_staff_test AS a
-                            INNER JOIN ost_ticket_test AS b ON b.assigned_to = a.staff_guid
-                            WHERE b.ticket_guid = '".$value->ticket_guid."'")->row('firstname');?> 
-                        <?php echo $this->db->query("SELECT lastname FROM ost_staff_test AS a
-                            INNER JOIN ost_ticket_test AS b ON b.assigned_to = a.staff_guid
-                            WHERE b.ticket_guid = '".$value->ticket_guid."'")->row('lastname');?>
-                    <?php } else if (empty($value->assigned_to) && !empty($value->ticket_team_guid)) { ?>
-                        <?php echo $this->db->query("SELECT name FROM ost_team_test AS a
-                            INNER JOIN ost_ticket_test AS b ON b.team_guid = a.team_guid
-                            WHERE b.ticket_guid = '".$value->ticket_guid."'")->row('name');?>
-                    <?php } else { ?>
-                        <?php echo '-unassigned-' ?>
-                    <?php } ?>
-                </td>
-            </tr>
-            <tr>
-                <th>SLA Plan</th>
-                <td>: <?php echo $this->db->query("SELECT sla_name FROM ost_sla_test AS a
-                    INNER JOIN ost_ticket_test AS b ON b.sla_guid = a.sla_guid
-                    WHERE b.ticket_guid = '".$value->ticket_guid."'")->row('sla_name');?></td>
-            </tr>
-            <tr>
-                <th>Due Date</th>
-                <td>: <?php if ($value->duedate != '') {
-                    echo $value->duedate;
-                }  else { echo 'Not Mention'; }?></td>
-            </tr>
-                </tbody>
 
-            </table>
-</div>
 <div class="col-lg-6" style="padding:0px">
     <table class="ticket_info" width="100%">
-        <tbody><tr>
-            <th width="147">Help Topic</th>
-            <td>: <?php foreach ($result->result() as $value) { ?><?php echo $value->topic;?><?php } ?> </td>
+        <tbody>
+        <tr>
+            <th>Create Date</th>
+            <td>: <?php echo $value->created_at;?></td>
         </tr>
         <tr>
             <th nowrap="">Last Updated</th>
             <td>: <?php echo $value->ticket_updated;?></td>
         </tr>
+        <tr>
+                <th>Due Date</th>
+                <td>: <?php if ($value->duedate != '') {
+                    echo $value->duedate;
+                }  else { echo 'Not Mention'; }?></td>
+            </tr>
     </tbody></table>
 </div>
 <?php } ?>
@@ -1088,7 +1094,7 @@ $(function() {
                             <select name="status_guid" id="status_guid">
                                 <option value="">— Select —</option>
                                 <?php foreach ($ticketstatus->result() as $status) {?>
-                                    <option value="<?php echo $status->status_guid;?>" <?php echo $status->id == $openclose->status_guid?"selected":"";?>><?php echo $status->name;?></option>
+                                    <option value="<?php echo $status->status_guid;?>" <?php echo $status->status_guid == $openclose->status_guid?"selected":"";?>><?php echo $status->name;?></option>
                                 <?php } ?>                
                             </select>
                         </span>
