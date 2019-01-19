@@ -77,7 +77,7 @@
               <td>
                 <?php
 
-                $count = $this->db->query("SELECT COUNT(*) AS count FROM ost_faq_test WHERE category_guid = $value->category_guid")->row('count');
+                $count = $this->db->query("SELECT COUNT(*) AS count FROM ost_faq_test WHERE category_guid = '$value->category_guid'")->row('count');
                 echo $count;
                 ?>
 
