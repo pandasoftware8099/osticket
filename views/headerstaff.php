@@ -76,7 +76,11 @@
 <script type="text/javascript">
     
 $(document).ready(function() {
-  $('.textarea').summernote();
+  $('.textarea').summernote({
+
+    minHeight: 200
+
+  });
 });
 
 </script>
@@ -300,7 +304,7 @@ if ($show_answered_tickets->row('value') == '1') { ?>
 <li class="inactive  dropdown"><a href="#" helpdesk="" scp="" kb.php="" class="dropdown-toggle" data-toggle="dropdown">Knowledgebase <span class="caret"></span></a><ul class="dropdown-menu">
 <li><a class="kb" href="<?php echo site_url('staff_faqs_controller/main')?>" title="" id="nav0">FAQs</a></li>
 
-<?php $faqallow = $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = ' $staffid' AND permissions LIKE '%faq.manage%'")->num_rows();
+<?php $faqallow = $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = '$staffid' AND permissions LIKE '%faq.manage%'")->num_rows();
 
     if ($faqallow != 0 ) {
 ?>
@@ -309,7 +313,7 @@ if ($show_answered_tickets->row('value') == '1') { ?>
 
 <?php } ?>
 
-<li><a class="canned" href="/helpdesk/scp/canned.php" title="" id="nav2">Canned Responses</a></li>
+<li><a class="canned" href="<?php echo site_url('staff_faqs_controller/canned_response')?>" title="" id="nav2">Canned Responses</a></li>
 </ul>
 
 </li>
