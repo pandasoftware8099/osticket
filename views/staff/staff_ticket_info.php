@@ -417,14 +417,19 @@ function myFunction() {
                         <div class="form-group">
                             <label class="col-sm-2 control-label">Response</label>
                             <div class="col-sm-10">
+
+                                <?php if($enable_premade == '1') { ?>
+
                                 <select id="cannedResp" name="cannedResp" class="form-control">
-                                    <option value="0" selected="selected">Select a canned response</option>
-                                    <option value="original">Original Message</option>
-                                    <option value="lastmessage">Last Message</option>
-                                    <option value="0" disabled="disabled">------------- Premade Replies ------------- </option>
-                                    <option value="2">Sample (with variables)</option>
-                                    <option value="1">What is osTicket (sample)?</option>
+                                    <option value="" selected="selected">Select a canned response</option>
+                                    <?php foreach ($canned_response->result() as $value) { ?>
+                                        <option value="<?php echo $value->response ?>"><?php echo $value->title ?></option>
+                                    <?php } ?>     
                                 </select>
+                                
+                                <?php } ?>
+
+
                                 <div class="box">
                                     <div class="box-header">
                                         <!-- tools box -->
@@ -433,7 +438,7 @@ function myFunction() {
                                     </div>
                                     <!-- /.box-header -->
                                     <div class="box-body pad">
-                                        <textarea required="true" name="response" id="task-response" class="textarea" placeholder="Start writing your message here" style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"></textarea>
+                                        <textarea required="true" name="response" id="ticket-response" class="textarea" placeholder="Start writing your message here" style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"></textarea>
                                         <?php if($_SESSION['default_signature_type']== 'none'){ ?>
                                         <?php } else if ($_SESSION['default_signature_type']== 'mine'){ ?>
                                             <div id="sign" class="selected-signature" style="height: auto; box-shadow: none; display: none;">
@@ -526,7 +531,7 @@ function myFunction() {
                                 </div>
                                 <!-- /.box-header -->
                                 <div class="box-body pad">
-                                    <textarea required="true" name="note" id="task-response" class="textarea" placeholder="Note details" style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"></textarea>
+                                    <textarea required="true" name="note" id="note-response" class="textarea" placeholder="Note details" style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"></textarea>
                                 </div>
                             </div>
                             <div class="attachments">
@@ -2080,6 +2085,16 @@ $(document).on('change', '.file', function(){
     }
 });
 </script>
+
+<script type="text/javascript">
+    
+$("#cannedResp").on("change", function() {
+    var $select = $(this).children("option:selected").val();
+    $("#ticket-response").summernote("pasteHTML", $select)
+});
+
+</script>
+
 
 <script type="text/javascript" src="/helpdesk/js/jquery.pjax.js?9ae093d"></script>
 <script type="text/javascript" src="/helpdesk/scp/js/bootstrap-typeahead.js?9ae093d"></script>
