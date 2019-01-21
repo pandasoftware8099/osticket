@@ -157,6 +157,12 @@ class staff_user_controller extends CI_Controller {
     {   
         $direct = $_REQUEST['direct'];
 
+         if ($_SESSION['staffdept'] == '1' ) {
+            $staff_dept = addslashes($this->input->post('dept'));
+        } else {
+            $staff_dept = $_SESSION['staffdept'];
+        }
+
         // user page import
         if ($direct == 'user') {
 
@@ -191,7 +197,7 @@ class staff_user_controller extends CI_Controller {
                 
                 if ($usercheck->num_rows() == 0)
                 {
-                    $this->db->query("INSERT INTO ost_user_test (user_guid, user_org_guid , user_name, user_email, user_phone, user_created_at, user_updated_at, status, active ) VALUES (REPLACE(UPPER(UUID()),'-',''), '0', '$username', '$useremail', '$userphone', now(), now(), '4', '0' )");
+                    $this->db->query("INSERT INTO ost_user_test (user_guid, user_org_guid , user_name, user_email, user_phone, user_depart, user_created_at, user_updated_at, status, active ) VALUES (REPLACE(UPPER(UUID()),'-',''), '0', '$username', '$useremail', '$userphone','$staff_dept' , now(), now(), '4', '0' )");
 
                     $splitemail = explode('@', $useremail);
                     $domain = '@'.$splitemail[1];
@@ -300,6 +306,13 @@ class staff_user_controller extends CI_Controller {
     public function importcsv()
     {
         $direct = $_REQUEST['direct'];
+
+         if ($_SESSION['staffdept'] == '1' ) {
+            $staff_dept = addslashes($this->input->post('dept'));
+        } else {
+            $staff_dept = $_SESSION['staffdept'];
+        }
+
         // user page import
         if ($direct == 'user')
         {
@@ -320,7 +333,7 @@ class staff_user_controller extends CI_Controller {
 
                     if ($usercheck->num_rows() == 0)
                     {
-                        $this->db->query("INSERT INTO ost_user_test (user_guid, user_org_guid , user_name, user_email, user_phone, user_created_at, user_updated_at, status, active) VALUES (REPLACE(UPPER(UUID()),'-',''), '0', '$username','$email','$phone', now(), now(), '4', '0')");
+                        $this->db->query("INSERT INTO ost_user_test (user_guid, user_org_guid , user_name, user_email, user_depart, user_phone, user_created_at, user_updated_at, status, active) VALUES (REPLACE(UPPER(UUID()),'-',''), '0', '$username','$email', '$staff_dept' ,'$phone', now(), now(), '4', '0')");
 
                         $splitemail = explode('@', $email);
                         $domain = '@'.$splitemail[1];
