@@ -1,6 +1,6 @@
 <div id="content">
     <h2>Task Settings and Options</h2>
-<form class="form-horizontal" action="settings.php?t=tasks" method="post">
+<form class="form-horizontal" action="<?php echo site_url('admin_settings_controller/task_update')?>" method="post">
 <input type="hidden" name="__CSRFToken__" value="90f6d24e10ae504160eb2be50461de3ff8cd5892"><input type="hidden" name="t" value="tasks">
 
 <div class="tab">
@@ -45,132 +45,125 @@
         </div>
     </div>
    </div>
-   <div id="alerts" class="tab_content" style="display:none;">
+<div class="hiddens tab_content" id="alerts" data-tip-namespace="settings.alerts" style="display: none;">
     <table class="form_table settings_table" width="100%" border="0" cellspacing="0" cellpadding="2">
-        <tbody>
-            <tr><th><em><b><i class="help-tip icon-question-sign" href="#task_alert"></i> New Task Alert</b> :
-                </em></th></tr>
-            <tr>
-                <td><em><b>Status:</b></em> &nbsp;
-                    <input type="radio" name="task_alert_active" value="1"> Enable                    <input type="radio" name="task_alert_active" value="0" checked="checked">
-                    Disable                    &nbsp;&nbsp;<font class="error">&nbsp;</font>
-                 </td>
-            </tr>
-            <tr>
-                <td>
-                    <input type="checkbox" name="task_alert_admin">
-                    Admin Email <em>(kelwin@pandasoftware.my)</em>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <input type="checkbox" name="task_alert_dept_manager">
-                    Department Manager                </td>
-            </tr>
-            <tr>
-                <td>
-                    <input type="checkbox" name="task_alert_dept_members">
-                    Department Members                </td>
-            </tr>
-            <tr><th><em><i class="help-tip icon-question-sign" href="#activity_alert"></i> <b>New Activity Alert</b> :
-                </em></th></tr>
-            <tr>
-                <td><em><b>Status:</b></em> &nbsp;
-                  <input type="radio" name="task_activity_alert_active" value="1">
-                    Enable                  &nbsp;&nbsp;
-                  <input type="radio" name="task_activity_alert_active" value="0" checked="checked">
-                    Disable                  &nbsp;&nbsp;&nbsp;<font class="error">&nbsp;</font>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                  <input type="checkbox" name="task_activity_alert_laststaff">
-                  Last Respondent                </td>
-            </tr>
-            <tr>
-                <td>
-                  <input type="checkbox" name="task_activity_alert_assigned">
-                  Assigned Agent / Team                </td>
-            </tr>
-            <tr>
-                <td>
-                  <input type="checkbox" name="task_activity_alert_dept_manager">
-                    Department Manager                </td>
-            </tr>
-            <tr><th><em><i class="help-tip icon-question-sign" href="#assignment_alert"></i> <b>Task Assignment Alert</b> :
-                </em></th></tr>
-            <tr>
-                <td><em><b>Status: </b></em> &nbsp;
-                  <input name="task_assignment_alert_active" value="1" type="radio">
-                    Enable                    &nbsp;&nbsp;
-                  <input name="task_assignment_alert_active" value="0" type="radio" checked="checked">
-                    Disable                   &nbsp;&nbsp;&nbsp;<font class="error">&nbsp;</font>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                  <input type="checkbox" name="task_assignment_alert_staff">
-                  Assigned Agent / Team                </td>
-            </tr>
-            <tr>
-                <td>
-                  <input type="checkbox" name="task_assignment_alert_team_lead">
-                  Team Lead                </td>
-            </tr>
-            <tr>
-                <td>
-                  <input type="checkbox" name="task_assignment_alert_team_members">
-                    Team Members                </td>
-            </tr>
-            <tr><th><em><i class="help-tip icon-question-sign" href="#transfer_alert"></i> <b>Task Transfer Alert</b> :
-                </em></th></tr>
-            <tr>
-                <td><em><b>Status:</b></em> &nbsp;
-                <input type="radio" name="task_transfer_alert_active" value="1">
-                    Enable                <input type="radio" name="task_transfer_alert_active" value="0" checked="checked">
-                    Disable                  &nbsp;&nbsp;&nbsp;<font class="error">&nbsp;</font>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                  <input type="checkbox" name="task_transfer_alert_assigned">
-                    Assigned Agent / Team                </td>
-            </tr>
-            <tr>
-                <td>
-                  <input type="checkbox" name="task_transfer_alert_dept_manager">
-                    Department Manager                </td>
-            </tr>
-            <tr>
-                <td>
-                  <input type="checkbox" name="task_transfer_alert_dept_members">
-                    Department Members                </td>
-            </tr>
-            <tr><th><em><i class="help-tip icon-question-sign" href="#overdue_alert"></i> <b>Overdue Task Alert</b> :
-                </em></th></tr>
-            <tr>
-                <td><em><b>Status:</b></em> &nbsp;
-                  <input type="radio" name="task_overdue_alert_active" value="1"> Enable                  <input type="radio" name="task_overdue_alert_active" value="0" checked="checked"> Disable                  &nbsp;&nbsp;<font class="error">&nbsp;</font>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                  <input type="checkbox" name="task_overdue_alert_assigned">
-                    Assigned Agent / Team                </td>
-            </tr>
-            <tr>
-                <td>
-                  <input type="checkbox" name="task_overdue_alert_dept_manager">
-                    Department Manager                </td>
-            </tr>
-            <tr>
-                <td>
-                  <input type="checkbox" name="task_overdue_alert_dept_members">
-                    Department Members                </td>
-            </tr>
-        </tbody>
-    </table>
-   </div>
+    <tbody>
+        <tr><th><em></i> <b>New Task Alert</b> :
+            </em></th></tr>
+        <tr>
+            <td><em><b>Status:</b></em> &nbsp;
+                <input type="radio" name="task_alert_active" value="1" <?php echo $task_alert_active == 1?"checked":"";?>> Enable
+                <input type="radio" name="task_alert_active" value="0" <?php echo $task_alert_active == 0?"checked":"";?>>
+                 Disable                &nbsp;&nbsp;<font class="error">&nbsp;</font>
+             </td>
+        </tr>
+        <tr>
+            <td>
+                <input type="checkbox" name="task_alert_admin" <?php echo $task_alert_admin == 1?"checked":"";?> value="1">
+                Admin Email <em>(<?php echo $admin_email;?>)</em>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input type="checkbox" name="task_alert_dept_manager" <?php echo $task_alert_dept_manager == 1?"checked":"";?> value="1">
+                Department Manager            </td>
+        </tr>
+        <tr>
+            <td>
+                <input type="checkbox" name="task_alert_dept_members" <?php echo $task_alert_dept_members == 1?"checked":"";?> value="1">
+                Department Members            </td>
+        </tr>
+        <tr><th><em><b>New Activity Alert</b> :
+            </em></th></tr>
+        <tr>
+            <td><em><b>Status:</b></em> &nbsp;
+              <input type="radio" name="task_activity_alert_active" value="1" <?php echo $task_activity_alert_active == 1?"checked":"";?>> Enable              &nbsp;&nbsp;
+              <input type="radio" name="task_activity_alert_active" value="0" <?php echo $task_activity_alert_active == 0?"checked":"";?>>
+              Disable            </td>
+        </tr>
+        <tr>
+            <td>
+              <input type="checkbox" name="task_activity_alert_laststaff" <?php echo $task_activity_alert_laststaff == 1?"checked":"";?> value="1">
+                Last Respondent            </td>
+        </tr>
+        <tr>
+            <td>
+              <input type="checkbox" name="task_activity_alert_assigned" <?php echo $task_activity_alert_assigned == 1?"checked":"";?> value="1">
+              Assigned Agent / Team            </td>
+        </tr>
+        <tr>
+            <td>
+              <input type="checkbox" name="task_activity_alert_dept_manager" <?php echo $task_activity_alert_dept_manager == 1?"checked":"";?> value="1">
+              Department Manager            </td>
+        </tr>
+        <tr><th><em><b>Task Assignment Alert</b> :
+            </em></th></tr>
+        <tr>
+            <td><em><b>Status: </b></em> &nbsp;
+              <input name="task_assignment_alert_active" value="1" type="radio" <?php echo $task_assignment_alert_active == 1?"checked":"";?>> Enable              &nbsp;&nbsp;
+              <input name="task_assignment_alert_active" value="0" type="radio" <?php echo $task_assignment_alert_active == 0?"checked":"";?>> Disable               &nbsp;&nbsp;&nbsp;<font class="error">&nbsp;</font>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <input type="checkbox" name="task_assignment_alert_staff" <?php echo $task_assignment_alert_staff == 1?"checked":"";?> value="1"> Assigned Agent            </td>
+        </tr>
+        <tr>
+            <td>
+              <input type="checkbox" name="task_assignment_alert_team_lead" <?php echo $task_assignment_alert_team_lead == 1?"checked":"";?> value="1"> Team Lead            </td>
+        </tr>
+        <tr>
+            <td>
+              <input type="checkbox" name="task_assignment_alert_team_members" <?php echo $task_assignment_alert_team_members == 1?"checked":"";?> value="1">
+                Team Members            </td>
+        </tr>
+        <tr><th><em><b>Task Transfer Alert</b> :
+            </em></th></tr>
+        <tr>
+            <td><em><b>Status:</b></em> &nbsp;
+            <input type="radio" name="task_transfer_alert_active" value="1" <?php echo $task_transfer_alert_active == 1?"checked":"";?>>
+                Enable            
+            <input type="radio" name="task_transfer_alert_active" value="0" <?php echo $task_transfer_alert_active == 0?"checked":"";?>>
+                Disable              &nbsp;&nbsp;&nbsp;<font class="error">&nbsp;</font>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <input type="checkbox" name="task_transfer_alert_assigned" <?php echo $task_transfer_alert_assigned == 1?"checked":"";?> value="1">
+                Assigned Agent / Team            </td>
+        </tr>
+        <tr>
+            <td>
+              <input type="checkbox" name="task_transfer_alert_dept_manager" <?php echo $task_transfer_alert_dept_manager == 1?"checked":"";?> value="1">
+                Department Manager            </td>
+        </tr>
+        <tr>
+            <td>
+              <input type="checkbox" name="task_transfer_alert_dept_members" <?php echo $task_transfer_alert_dept_members == 1?"checked":"";?> value="1">
+                Department Members            </td>
+        </tr>
+        <tr><th><em><b>Overdue Task Alert</b> :
+            </em></th></tr>
+        <tr>
+            <td><em><b>Status:</b></em> &nbsp;
+              <input type="radio" name="task_overdue_alert_active" value="1" <?php echo $task_overdue_alert_active == 1?"checked":"";?>> Enable              
+              <input type="radio" name="task_overdue_alert_active" value="0" <?php echo $task_overdue_alert_active == 0?"checked":"";?>> Disable              &nbsp;&nbsp;<font class="error">&nbsp;</font>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <input type="checkbox" name="task_overdue_alert_assigned" <?php echo $task_overdue_alert_assigned == 1?"checked":"";?> value="1"> Assigned Agent / Team            </td>
+        </tr>
+        <tr>
+            <td>
+              <input type="checkbox" name="task_overdue_alert_dept_manager" <?php echo $task_overdue_alert_dept_manager == 1?"checked":"";?> value="1"> Department Manager            </td>
+        </tr>
+        <tr>
+            <td>
+              <input type="checkbox" name="task_overdue_alert_dept_members" <?php echo $task_overdue_alert_dept_members == 1?"checked":"";?> value="1"> Department Members            </td>
+        </tr>
+    </tbody>
+</table>
 </div>
 <p style="text-align:center;">
     <input class="button" type="submit" name="submit" value="Save Changes">

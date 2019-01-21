@@ -406,7 +406,7 @@ class admin_settings_controller extends CI_Controller {
         }
      }
 
-      public function ticketlist()
+    public function ticketlist()
     {
         if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
         {   
@@ -523,6 +523,27 @@ class admin_settings_controller extends CI_Controller {
                 'ticket_number_format' => $this->db->query("SELECT * FROM ost_config_test WHERE id ='72'"),
                 'ticket_seq_list' => $this->db->query("SELECT * FROM ost_sequence_test"),
                 'ticket_seq' => $this->db->query("SELECT value FROM ost_config_test WHERE id='73'")->row('value'),
+                'admin_email' => $this->db->query("SELECT value FROM ost_config_test WHERE id = '1'")->row('value'),
+                'task_alert_active' => $this->db->query("SELECT value FROM ost_config_test WHERE id='143'")->row('value'),
+                'task_alert_admin' => $this->db->query("SELECT value FROM ost_config_test WHERE id='144'")->row('value'),
+                'task_alert_dept_manager' => $this->db->query("SELECT value FROM ost_config_test WHERE id='145'")->row('value'),
+                'task_alert_dept_members' => $this->db->query("SELECT value FROM ost_config_test WHERE id='146'")->row('value'),
+                'task_activity_alert_active' => $this->db->query("SELECT value FROM ost_config_test WHERE id='147'")->row('value'),
+                'task_activity_alert_laststaff' => $this->db->query("SELECT value FROM ost_config_test WHERE id='148'")->row('value'),
+                'task_activity_alert_assigned' => $this->db->query("SELECT value FROM ost_config_test WHERE id='149'")->row('value'),
+                'task_activity_alert_dept_manager' => $this->db->query("SELECT value FROM ost_config_test WHERE id='150'")->row('value'),
+                'task_assignment_alert_active' => $this->db->query("SELECT value FROM ost_config_test WHERE id='151'")->row('value'),
+                'task_assignment_alert_staff' => $this->db->query("SELECT value FROM ost_config_test WHERE id='152'")->row('value'),
+                'task_assignment_alert_team_lead' => $this->db->query("SELECT value FROM ost_config_test WHERE id='153'")->row('value'),
+                'task_assignment_alert_team_members' => $this->db->query("SELECT value FROM ost_config_test WHERE id='154'")->row('value'),
+                'task_transfer_alert_active' => $this->db->query("SELECT value FROM ost_config_test WHERE id='155'")->row('value'),
+                'task_transfer_alert_assigned' => $this->db->query("SELECT value FROM ost_config_test WHERE id='156'")->row('value'),
+                'task_transfer_alert_dept_manager' => $this->db->query("SELECT value FROM ost_config_test WHERE id='157'")->row('value'),
+                'task_transfer_alert_dept_members' => $this->db->query("SELECT value FROM ost_config_test WHERE id='158'")->row('value'),
+                'task_overdue_alert_active' => $this->db->query("SELECT value FROM ost_config_test WHERE id='159'")->row('value'),
+                'task_overdue_alert_assigned' => $this->db->query("SELECT value FROM ost_config_test WHERE id='160'")->row('value'),
+                'task_overdue_alert_dept_manager' => $this->db->query("SELECT value FROM ost_config_test WHERE id='161'")->row('value'),
+                'task_overdue_alert_dept_members' => $this->db->query("SELECT value FROM ost_config_test WHERE id='162'")->row('value'),
             );
 
             $browser_id = $_SERVER["HTTP_USER_AGENT"];
@@ -549,14 +570,54 @@ class admin_settings_controller extends CI_Controller {
 
     public function task_update()
     {   
-        $ticket_number_format = $this->input->post('ticket_number_format');
-        $ticket_sequence_guid = $this->input->post('ticket_sequence_guid');
+        $ticket_number_format = $this->input->post('task_number_format');
+        $ticket_sequence_guid = $this->input->post('task_sequence_guid');
+        $task_alert_active = $this->input->post('task_alert_active');
+        $task_alert_admin = $this->input->post('task_alert_admin');
+        $task_alert_dept_manager = $this->input->post('task_alert_dept_manager');
+        $task_alert_dept_members = $this->input->post('task_alert_dept_members');
+        $task_activity_alert_active = $this->input->post('task_activity_alert_active');
+        $task_activity_alert_laststaff = $this->input->post('task_activity_alert_laststaff');
+        $task_activity_alert_assigned = $this->input->post('task_activity_alert_assigned');
+        $task_activity_alert_dept_manager = $this->input->post('task_activity_alert_dept_manager');
+        $task_assignment_alert_active = $this->input->post('task_assignment_alert_active');
+        $task_assignment_alert_staff = $this->input->post('task_assignment_alert_staff');
+        $task_assignment_alert_team_lead = $this->input->post('task_assignment_alert_team_lead');
+        $task_assignment_alert_team_members = $this->input->post('task_assignment_alert_team_members');
+        $task_transfer_alert_active = $this->input->post('task_transfer_alert_active');
+        $task_transfer_alert_assigned = $this->input->post('task_transfer_alert_assigned');
+        $task_transfer_alert_dept_manager = $this->input->post('task_transfer_alert_dept_manager');
+        $task_transfer_alert_dept_members = $this->input->post('task_transfer_alert_dept_members');
+        $task_overdue_alert_active = $this->input->post('task_overdue_alert_active');
+        $task_overdue_alert_assigned = $this->input->post('task_overdue_alert_assigned');
+        $task_overdue_alert_dept_manager = $this->input->post('task_overdue_alert_dept_manager');
+        $task_overdue_alert_dept_members = $this->input->post('task_overdue_alert_dept_members');        
 
         $this->db->query("UPDATE ost_config_test SET value = '$ticket_number_format', updated = NOW() WHERE id='72' ");
         $this->db->query("UPDATE ost_config_test SET value = '$ticket_sequence_guid', updated = NOW() WHERE id='73' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$task_alert_active', updated = NOW() WHERE id='143' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$task_alert_admin', updated = NOW() WHERE id='144' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$task_alert_dept_manager', updated = NOW() WHERE id='145' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$task_alert_dept_members', updated = NOW() WHERE id='146' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$task_activity_alert_active', updated = NOW() WHERE id='147' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$task_activity_alert_laststaff', updated = NOW() WHERE id='148' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$task_activity_alert_assigned', updated = NOW() WHERE id='149' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$task_activity_alert_dept_manager', updated = NOW() WHERE id='150' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$task_assignment_alert_active', updated = NOW() WHERE id='151' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$task_assignment_alert_staff', updated = NOW() WHERE id='152' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$task_assignment_alert_team_lead', updated = NOW() WHERE id='153' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$task_assignment_alert_team_members', updated = NOW() WHERE id='154' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$task_transfer_alert_active', updated = NOW() WHERE id='155' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$task_transfer_alert_assigned', updated = NOW() WHERE id='156' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$task_transfer_alert_dept_manager', updated = NOW() WHERE id='157' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$task_transfer_alert_dept_members', updated = NOW() WHERE id='158' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$task_overdue_alert_active', updated = NOW() WHERE id='159' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$task_overdue_alert_assigned', updated = NOW() WHERE id='160' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$task_overdue_alert_dept_manager', updated = NOW() WHERE id='161' ");
+        $this->db->query("UPDATE ost_config_test SET value = '$task_overdue_alert_dept_members', updated = NOW() WHERE id='162' ");
 
         echo "<script> alert('Successfully change settings');</script>";
-        echo "<script> document.location='" . base_url() . "/index.php/admin_settings_controller/settings_user' </script>";
+        echo "<script> document.location='" . base_url() . "/index.php/admin_settings_controller/settings_task' </script>";
     }
 
     public function settings_agent()

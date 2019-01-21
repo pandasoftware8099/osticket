@@ -164,8 +164,8 @@ class staff_new_ticket_model extends CI_Model
 
 				if ($notes != '')
 				{
-					$sql2 = $this->db->query("INSERT INTO osticket.ost_thread_entry_test ( ticket_guid, staff_guid, type, poster, body, ip_address, created, updated, class, avatar )
-					VALUES ('$ticket_guid', '$poster_id', 'N','$posterfname $posterlname', '$notes', '$ipaddress', now(), now(), 'note', 'left')");
+					$sql2 = $this->db->query("INSERT INTO osticket.ost_thread_entry_test ( thread_entry_guid, ticket_guid, staff_guid, type, poster, body, ip_address, created, updated, class, avatar )
+					VALUES (REPLACE(UPPER(UUID()),'-',''), '$ticket_guid', '$poster_id', 'N','$posterfname $posterlname', '$notes', '$ipaddress', now(), now(), 'note', 'left')");
 				}
 			}
 

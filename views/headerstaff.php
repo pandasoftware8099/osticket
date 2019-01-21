@@ -241,7 +241,7 @@ div.dataTables_wrapper div.dataTables_paginate ul.pagination {
 <?php 
 
 $staffid = $_SESSION["staffid"];
-$userdirallow = $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = ' $staffid' AND permissions LIKE '%user.dir%'")->num_rows() ;
+$userdirallow = $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = '$staffid' AND permissions LIKE '%user.dir%'")->num_rows() ;
 
 if ($userdirallow != 0 ) { 
 ?> 
@@ -300,7 +300,7 @@ if ($show_answered_tickets->row('value') == '1') { ?>
 <li class="inactive  dropdown"><a href="#" helpdesk="" scp="" kb.php="" class="dropdown-toggle" data-toggle="dropdown">Knowledgebase <span class="caret"></span></a><ul class="dropdown-menu">
 <li><a class="kb" href="<?php echo site_url('staff_faqs_controller/main')?>" title="" id="nav0">FAQs</a></li>
 
-<?php $faqallow = $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = ' $staffid' AND permissions LIKE '%faq.manage%'")->num_rows();
+<?php $faqallow = $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = '$staffid' AND permissions LIKE '%faq.manage%'")->num_rows();
 
     if ($faqallow != 0 ) {
 ?>

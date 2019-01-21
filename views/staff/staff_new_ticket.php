@@ -195,7 +195,7 @@
         <div class="col-sm-10">
             <select name="statusId" class="form-control">
                 <?php foreach ($status->result() as $sticket) { ?>   
-                <option value="<?php echo $sticket->status_guid?>" <?php echo $sticket->id == $defaultstatusid->row('value')?"selected":"";?>><?php echo $sticket->name?></option>
+                <option value="<?php echo $sticket->status_guid?>" <?php echo $sticket->status_guid == $defaultstatusid->row('value')?"selected":"";?>><?php echo $sticket->name?></option>
                 <?php }?>
             </select>
                 &nbsp;<font class="error">&nbsp;</font>

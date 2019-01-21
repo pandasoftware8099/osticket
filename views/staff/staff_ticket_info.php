@@ -238,13 +238,15 @@ function myFunction() {
                                         </li>
                                         <?php if($value1->editor != ''){ ?>
                                         <li>
-                                            <a id="viewh" class="confirm" data-toggle="modal" data-target="#viewh" href="#"><i class="icon-copy"></i> View History</a>
+                                            <a id="view" class="confirm" data-toggle="modal" data-target="#viewh" href="#"><i class="icon-copy"></i> View History</a>
                                         </li>
                                     <?php } ?>
                                     </ul>
                                 </div>
                                 <span class="textra light">
-                                    <span class="label label-bare" title="Edited by Hugh Panda">Edited</span>
+                                    <?php if($value1->editor != ''){ ?>
+                                    <span class="label label-bare">Edited</span>
+                                    <?php } ?>
                                 </span>
                             </div>
 
@@ -276,16 +278,17 @@ function myFunction() {
                             <!-- /.box-header -->
                             <div class="box-body pad">
                                 <input  type="hidden" value="" id="threadguid" name="threadguid">
-                                <textarea name="edit" class="textarea" id="threadbody" name="threadbody" style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"></textarea>
+                                <textarea class="textarea" id="threadbody" name="threadbody" style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"></textarea>
                             </div>
                         </div>
               </div>
-              </form>
+              
               <div class="modal-footer">
               <p class="full-width">
                 <span class="buttons pull-right">
                     <input type="submit" value="Save" class="confirm">
                 </span>
+                </form>
               </p>
 
               </div>
@@ -306,22 +309,20 @@ function myFunction() {
               <div class="modal-body">
                 <div class="accordian">
                     <dt class="active">
-                    <i class ="icon=copy"></i>
-                    <?php $editor = $this->db->query("SELECT CONCAT(firstname,' ', lastname) as editor FROM ost_staff WHERE staff_id = '".$value1->editor."'")->row('editor');?>
-                    <em>Edited by $editor</em>
+                    <i class ="icon-copy"></i>
+                    <?php $editor = $this->db->query("SELECT editor FROM ost_thread_entry_test WHERE thread_entry_guid = '$value1->thread_entry_guid'")->row('editor');
+                    echo '<em>Edited by '.$editor.'</em>';
+                    ?>
                     </dt>
                     <dd style="background-color: transparent;">
-                        <div style="background-color: transparent;"><?php echo $value->last_body?></div>
+                        <div class="title truncate" style="background-color: transparent;min-height: 50px;font-size: 1.5em;"><?php echo $value1->last_body?></div>
                     </dd>
                 </div>
               </div>
               <div class="modal-footer">
               <p class="full-width">
-                <span class="buttons pull-left">
-                    <input type="button" value="No, Cancel" class="close">
-                </span>
                 <span class="buttons pull-right">
-                    <input type="submit" value="Yes, Do it!" class="confirm">
+                    <input type="button" value="Done" class="close">
                 </span>
               </p>
               </div>

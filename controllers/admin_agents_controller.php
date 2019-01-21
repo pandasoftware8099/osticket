@@ -454,7 +454,7 @@ class admin_agents_controller extends CI_Controller {
                 return strnatcasecmp($a['depart_name'], $b['depart_name']);
             });
 
-            $staffid = $_REQUEST['id'];
+           $staffid = $_REQUEST['id'];
             $data = array(
 
                 'department' => $depart_name,
@@ -466,15 +466,15 @@ class admin_agents_controller extends CI_Controller {
                 'staffpermissions' => $this->db->query("SELECT * FROM ost_staff_permissions_test WHERE staff_guid = '$staffid' ")->row(),
                 'staffextdept' => $this->db->query("SELECT * FROM ost_staff_dept_access_test INNER JOIN ost_department_test ON ost_staff_dept_access_test.dept_guid = ost_department_test.department_guid WHERE staff_guid = '$staffid' "),
                 'staffteam' => $this->db->query("SELECT * FROM ost_team_member_test INNER JOIN ost_team_test ON ost_team_member_test.team_guid = ost_team_test.team_guid WHERE staff_guid = '$staffid' "),
-                'adduserallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = ' $staffid' AND permissions LIKE '%user.add%'")->num_rows(),
-                'edituserallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = ' $staffid' AND permissions LIKE '%user.edit%'")->num_rows(),
-                'deleteuserallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = ' $staffid' AND permissions LIKE '%user.delete%'")->num_rows(),
-                'activeallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = ' $staffid' AND permissions LIKE '%user.manage%'")->num_rows(),
-                'dirallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = ' $staffid' AND permissions LIKE '%user.dir%'")->num_rows(),
-                'addorgallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = ' $staffid' AND permissions LIKE '%org.create%'")->num_rows(),
-                'editorgallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = ' $staffid' AND permissions LIKE '%org.edit%'")->num_rows(),
-                'deleteorgallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = ' $staffid' AND permissions LIKE '%org.delete%'")->num_rows(),
-                'managefaqallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = ' $staffid' AND permissions LIKE '%faq.manage%'")->num_rows(),
+                'adduserallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = '$staffid' AND permissions LIKE '%user.add%'")->num_rows(),
+                'edituserallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = '$staffid' AND permissions LIKE '%user.edit%'")->num_rows(),
+                'deleteuserallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = '$staffid' AND permissions LIKE '%user.delete%'")->num_rows(),
+                'activeallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = '$staffid' AND permissions LIKE '%user.manage%'")->num_rows(),
+                'dirallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = '$staffid' AND permissions LIKE '%user.dir%'")->num_rows(),
+                'addorgallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = '$staffid' AND permissions LIKE '%org.create%'")->num_rows(),
+                'editorgallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = '$staffid' AND permissions LIKE '%org.edit%'")->num_rows(),
+                'deleteorgallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = '$staffid' AND permissions LIKE '%org.delete%'")->num_rows(),
+                'managefaqallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = '$staffid' AND permissions LIKE '%faq.manage%'")->num_rows(),
 
             );
         $browser_id = $_SERVER["HTTP_USER_AGENT"];
@@ -528,7 +528,7 @@ class admin_agents_controller extends CI_Controller {
         $dept_access_alerts = $this->input->post('dept_access_alerts[]');
         $perms = !empty($this->input->post('perms[]'))?"".implode(", ", $this->input->post('perms[]'))."":"";
         $team = $this->input->post('teams[]');
-        $staffid = $_REQUEST['id'];
+       $staffid = $_REQUEST['id'];
 
         array_shift($ext_role_guid);
 

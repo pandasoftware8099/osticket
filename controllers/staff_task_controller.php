@@ -394,7 +394,7 @@ class staff_task_controller extends CI_Controller {
         {
 
         $task_guid = $_REQUEST["id"];
-        $staffid = $_SESSION["staffid"];
+       $staffid = $_SESSION["staffid"];
 
         $data = array(
 

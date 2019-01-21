@@ -224,7 +224,7 @@
         <tr>
             <td>
                 <input type="checkbox" name="ticket_alert_acct_manager" <?php echo $ticket_alert_acct_manager == 1?"checked":"";?> value="1">
-                Organization Account Manager            </td>
+                Organization Account Manager/Team Leader</td>
         </tr>
         <tr><th><em><b>New Message Alert</b> :
             </em></th></tr>
@@ -252,7 +252,7 @@
         <tr>
             <td>
                 <input type="checkbox" name="message_alert_acct_manager" <?php echo $message_alert_acct_manager == 1?"checked":"";?> value="1">
-                Organization Account Manager            </td>
+                Organization Account Manager/Team Leader</td>
         </tr>
         <tr><th><em><b>New Internal Activity Alert</b> :
             </em></th></tr>
