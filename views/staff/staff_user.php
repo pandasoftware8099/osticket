@@ -1,10 +1,4 @@
-<style type="text/css">
-    
-select {
-  font-family: 'FontAwesome', 'Second Font name'
-}
 
-</style>
 
 <div id="content">
 
@@ -289,6 +283,30 @@ $(function() {
             <input type="text" name="phoneext" value="" size="5">
                     </div>
                 </div>
+
+                <?php if ($_SESSION['staffdept'] == '1') { ?>
+
+                <div class="col-lg-12" style="overflow:auto;margin-top:10px;">
+                    <label class="col-lg-3 control-label">
+                        Department  :
+                    </label>
+                    <div class="col-lg-9">        
+
+
+                    <select name="dept" >
+                        <?php foreach ($department->result() as $value) { ?>
+                        <option value="<?php echo $value->department_guid?>"><?php echo $value->name?></option>
+                        <?php } ?>
+
+                    </select>
+
+
+                    </div>
+                </div>
+
+                <?php } ?>
+
+
                             <!--<td class="multi-line " style="min-width:120px;" >-->
                 <div class="col-lg-12" style="overflow:auto;margin-top:10px;">
                     <label class="col-lg-3 control-label">
@@ -356,6 +374,23 @@ $(function() {
                 <h2 style="margin-bottom:10px">Name and Email</h2>
                 <p>Enter one name, email address and phone number per line.<br><em>To import more other fields, use the Upload tab.</em>
                 </p>
+                 <?php if ($_SESSION['staffdept'] == '1') { ?>
+
+                <div class="col-lg-12" style="overflow:auto;margin-top:10px;">
+                    <label class="col-lg-3 control-label">
+                        Department  :
+                    </label>
+
+                    <select name="dept" >
+                        <?php foreach ($department->result() as $value) { ?>
+                        <option value="<?php echo $value->department_guid?>"><?php echo $value->name?></option>
+                        <?php } ?>
+
+                    </select>
+
+                </div>
+
+                <?php } ?>
                 <textarea name="pasted" style="display:block;width:100%;height:8em" placeholder="e.g. John Doe, john.doe@osticket.com, 012-3456789"></textarea>
 
                
@@ -406,6 +441,26 @@ $(function() {
                 
                 <br>
                 <form method="post" action="<?php echo site_url('staff_user_controller/importcsv?direct=user')?>" enctype="multipart/form-data">
+                    <?php if ($_SESSION['staffdept'] == '1') { ?>
+
+                <div class="col-lg-12" style="overflow:auto;margin-top:10px;">
+                    <label class="col-lg-3 control-label">
+                        Department  :
+                    </label>
+    
+
+
+                    <select name="dept" >
+                        <?php foreach ($department->result() as $value) { ?>
+                        <option value="<?php echo $value->department_guid?>"><?php echo $value->name?></option>
+                        <?php } ?>
+
+                    </select>
+
+
+                </div>
+
+                <?php } ?>
                     <input type="file" name="file" required="true">
                     <br>
                     <div class="modal-footer">

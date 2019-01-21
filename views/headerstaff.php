@@ -76,7 +76,11 @@
 <script type="text/javascript">
     
 $(document).ready(function() {
-  $('.textarea').summernote();
+  $('.textarea').summernote({
+
+    minHeight: 200
+
+  });
 });
 
 </script>
@@ -309,7 +313,7 @@ if ($show_answered_tickets->row('value') == '1') { ?>
 
 <?php } ?>
 
-<li><a class="canned" href="/helpdesk/scp/canned.php" title="" id="nav2">Canned Responses</a></li>
+<li><a class="canned" href="<?php echo site_url('staff_faqs_controller/canned_response')?>" title="" id="nav2">Canned Responses</a></li>
 </ul>
 
 </li>

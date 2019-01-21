@@ -61,7 +61,11 @@
 <script type="text/javascript">
     
 $(document).ready(function() {
-  $('.textarea').summernote();
+  $('.textarea').summernote({
+
+    minHeight: 200
+
+  });
 });
 
 </script>

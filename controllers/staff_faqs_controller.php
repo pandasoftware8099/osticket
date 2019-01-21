@@ -76,6 +76,7 @@ class staff_faqs_controller extends CI_Controller {
             'faqallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = '$staffid' AND permissions LIKE '%faq.manage%'")->num_rows(),
 
             );
+
         $browser_id = $_SERVER["HTTP_USER_AGENT"];
         if(strpos($browser_id,"Windows CE") || strpos($browser_id,"Windows NT 5.1") )
             {
@@ -537,6 +538,178 @@ class staff_faqs_controller extends CI_Controller {
         {
            redirect('user_controller/superlogin');
         }
+
+    }
+
+    public function canned_response()
+    {      
+        if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
+        {  
+            $data = array(
+                'faqcanned' => $this->db->query("SELECT a.isenabled,a.canned_id, a.title, a.response, a.dept_id, b.department_guid, b.`name` FROM ost_canned_response a LEFT JOIN ost_department_test b ON a.`dept_id` = b.`department_guid` "),
+                'faqinfocount' => $this->db->query("SELECT * FROM ost_faq_test "),
+                'max_page_size' => $this->db->query("SELECT value FROM ost_config_test WHERE id = '21'")->row('value'),
+            );
+            
+            $browser_id = $_SERVER["HTTP_USER_AGENT"];
+            if(strpos($browser_id,"Windows CE") || strpos($browser_id,"Windows NT 5.1") )
+            {
+
+                /*$this->load->view('WinCe/header');
+                $this->load->view('WinCe/po/po_main',$data);*/
+                
+            }
+            else
+            {
+                $this->load->view('headerstaff');
+                $this->load->view('faqs/knowledgebase_canned', $data);
+                /*$this->load->view('footer');*/
+            }    
+        }
+
+        else       
+        {
+           redirect('user_controller/superlogin');
+        }
+
+    }
+
+    public function canned_response_process()
+    {      
+        $canned_guid = $this->input->post('tids[]');
+        $status = $this->input->post('status');
+
+        if ($status == '2') {
+            foreach ($canned_guid as $value) {
+            $this->db->query("DELETE FROM ost_canned_response WHERE canned_id = '$value' ");
+            }
+
+            echo "<script> alert('Selected canned response(s) deleted.');</script>";
+            echo "<script> document.location='" . base_url() . "/index.php/staff_faqs_controller/canned_response' </script>";
+        }
+
+        else{
+
+            foreach ($canned_guid as $value) {
+            $this->db->query("UPDATE ost_canned_response SET isenabled = '$status' WHERE canned_id = '$value'  ");
+        }
+
+        echo "<script> alert('Selected canned response(s) status changed.');</script>";
+        echo "<script> document.location='" . base_url() . "/index.php/staff_faqs_controller/canned_response' </script>";
+
+        }
+
+        
+
+    }
+
+    public function canned_response_add()
+    {      
+        if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
+        {  $data = array(
+                'department' => $this->db->query("SELECT * FROM ost_department_test "),
+            );
+            
+            
+            $browser_id = $_SERVER["HTTP_USER_AGENT"];
+            if(strpos($browser_id,"Windows CE") || strpos($browser_id,"Windows NT 5.1") )
+            {
+
+                /*$this->load->view('WinCe/header');
+                $this->load->view('WinCe/po/po_main',$data);*/
+                
+            }
+            else
+            {
+                $this->load->view('headerstaff');
+                $this->load->view('faqs/knowledgebase_canned_add', $data);
+                /*$this->load->view('footer');*/
+            }    
+        }
+
+        else       
+        {
+           redirect('user_controller/superlogin');
+        }
+
+    }
+
+    public function canned_response_add_process()
+    {      
+        $isenabled = $this->input->post('isenabled');
+        $dept_guid = $this->input->post('dept_guid');
+        $title = $this->input->post('title');
+        $canned_response = $this->input->post('canned_response');
+        $notes = $this->input->post('notes');
+
+
+        $this->db->query("INSERT INTO ost_canned_response (isenabled, dept_id, title, response, notes, created, updated  )
+            VALUES ('$isenabled', '$dept_guid', '$title', '$canned_response','$notes', NOW(), NOW() )");
+
+            echo "<script> alert('Canned response added.');</script>";
+            echo "<script> document.location='" . base_url() . "/index.php/staff_faqs_controller/canned_response' </script>";
+      
+
+    }
+
+    public function canned_response_info()
+    {      
+        if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
+        {  
+
+            $canned_guid = $_REQUEST['id'];
+
+            $data = array(
+                'department' => $this->db->query("SELECT * FROM ost_department_test "),
+                'canned_info' => $this->db->query("SELECT * FROM ost_canned_response WHERE canned_id = '$canned_guid' ")
+            );
+            
+            
+            $browser_id = $_SERVER["HTTP_USER_AGENT"];
+            if(strpos($browser_id,"Windows CE") || strpos($browser_id,"Windows NT 5.1") )
+            {
+
+                /*$this->load->view('WinCe/header');
+                $this->load->view('WinCe/po/po_main',$data);*/
+                
+            }
+            else
+            {
+                $this->load->view('headerstaff');
+                $this->load->view('faqs/knowledgebase_canned_info', $data);
+                /*$this->load->view('footer');*/
+            }    
+        }
+
+        else       
+        {
+           redirect('user_controller/superlogin');
+        }
+
+    }
+
+    public function canned_response_info_process()
+    {      
+        $isenabled = $this->input->post('isenabled');
+        $dept_guid = $this->input->post('dept_guid');
+        $title = $this->input->post('title');
+        $canned_response = $this->input->post('canned_response');
+        $notes = $this->input->post('notes');
+        $canned_id = $_REQUEST['id'];
+
+
+        $this->db->query("UPDATE ost_canned_response 
+            SET isenabled = '$isenabled',
+            dept_id = '$dept_guid',
+            title = '$title',
+            response ='$canned_response',
+            notes ='$notes',
+            updated = NOW()
+            WHERE canned_id = '$canned_id'  ");
+
+            echo "<script> alert('Canned response added.');</script>";
+            echo "<script> document.location='" . base_url() . "/index.php/staff_faqs_controller/canned_response' </script>";
+      
 
     }
 
