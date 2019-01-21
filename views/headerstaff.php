@@ -291,10 +291,21 @@ if ($userdirallow != 0 ) {
 <?php 
 $show_answered_tickets = $this->db->query("SELECT value FROM ost_config_test WHERE id = '66'");
 if ($show_answered_tickets->row('value') == '1') { ?>
-<li><a class="answeredTickets active" href="<?php echo site_url('staff_ticket_controller/main?title=Open&direct=answered')?>" title="Answered Tickets" id="subnav4">Answered (<?php echo $this->db->query("SELECT * FROM ost_ticket_test AS a INNER JOIN ost_help_topic_test AS b ON b.topic_guid = a.topic_guid INNER JOIN ost_ticket_status_test AS c ON c.status_guid = a.status_guid INNER JOIN ost_user_test AS d ON a.user_guid = d.user_guid INNER JOIN ost_ticket_priority_test AS e ON e.priority_guid = a.priority_guid INNER JOIN ost_thread_entry_test AS f ON a.ticket_guid = f.ticket_guid WHERE f.type = 'S' AND a.created_at != f.created GROUP BY a.ticket_guid")->num_rows();?>)</a></li>
+<li><a class="answeredTickets active" href="<?php echo site_url('staff_ticket_controller/main?title=Open&direct=answered')?>" title="Answered Tickets" id="subnav4">Answered (<?php echo $this->db->query("SELECT * FROM ost_ticket_test AS a  
+                    INNER JOIN ost_help_topic_test AS b ON b.topic_guid = a.topic_guid 
+                    INNER JOIN ost_ticket_status_test AS c ON c.status_guid = a.status_guid 
+                    INNER JOIN ost_user_test AS d ON a.user_guid = d.user_guid 
+                    INNER JOIN ost_ticket_priority_test AS e ON e.priority_guid = a.priority_guid
+                    INNER JOIN ost_thread_entry_test AS f ON a.ticket_guid = f.ticket_guid
+                    WHERE f.type = 'S' AND a.created_at != f.created AND a.department IN (SELECT NAME FROM ost_department_test a INNER JOIN ost_staff_dept_access_test b ON a.department_guid = b.`dept_guid` WHERE B.`staff_guid` = '$staff_guid' UNION SELECT NAME FROM ost_department_test WHERE department_guid = '$userdeptid') GROUP BY a.ticket_guid")->num_rows();?>)</a></li>
 <?php } ?>
 <li><a class="assignedTickets active" href="<?php echo site_url('staff_ticket_controller/mytickets?title=My')?>" title="Assigned Tickets" id="subnav4">My Tickets (<?php echo $this->db->query("SELECT * FROM  ost_ticket_test AS a INNER JOIN ost_help_topic_test AS b  ON b.topic_guid = a.topic_guid INNER JOIN ost_ticket_status_test AS c  ON c.status_guid = a.status_guid INNER JOIN ost_user_test AS d  ON a.user_guid = d.user_guid INNER JOIN ost_ticket_priority_test AS e  ON e.priority_guid = a.priority_guid WHERE c.state = 'open' AND assigned_to = '$staff_guid'")->num_rows();?>)</a></li>
-<li><a class="overdueTickets" href="<?php echo site_url('staff_ticket_controller/overdue?title=Overdue')?>" title="Stale Tickets" id="subnav3">Overdue (<?php echo $this->db->query("SELECT * FROM  ost_ticket_test AS a INNER JOIN ost_help_topic_test AS b  ON b.topic_guid = a.topic_guid INNER JOIN ost_ticket_status_test AS c  ON c.status_guid = a.status_guid INNER JOIN ost_user_test AS d  ON a.user_guid = d.user_guid INNER JOIN ost_ticket_priority_test AS e  ON e.priority_guid = a.priority_guid WHERE c.state = 'open' AND duedate <= now()")->num_rows();?>)</a></li>
+<li><a class="overdueTickets" href="<?php echo site_url('staff_ticket_controller/overdue?title=Overdue')?>" title="Stale Tickets" id="subnav3">Overdue (<?php echo $this->db->query("SELECT * FROM  ost_ticket_test AS a  
+                    INNER JOIN ost_help_topic_test AS b  ON b.topic_guid = a.topic_guid 
+                    INNER JOIN ost_ticket_status_test AS c  ON c.status_guid = a.status_guid 
+                    INNER JOIN ost_user_test AS d  ON a.user_guid = d.user_guid 
+                    INNER JOIN ost_ticket_priority_test AS e  ON e.priority_guid = a.priority_guid 
+                    WHERE c.state = 'open' AND duedate <= now() AND a.department IN (SELECT NAME FROM ost_department_test a INNER JOIN ost_staff_dept_access_test b ON a.department_guid = b.`dept_guid` WHERE B.`staff_guid` = '$staff_guid' UNION SELECT NAME FROM ost_department_test WHERE department_guid = '$userdeptid')")->num_rows();?>)</a></li>
 <li><a class="closedTickets" href="<?php echo site_url('staff_ticket_controller/closed?title=Closed')?>" title="Closed Tickets" id="subnav4">Closed</a></li>
 <li><a class="newTicket" href="<?php echo site_url('staff_ticket_controller/newticket?id=')?>" title="Open a New Ticket" id="new-ticket">New Ticket</a></li>
 
