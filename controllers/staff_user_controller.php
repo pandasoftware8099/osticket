@@ -27,15 +27,17 @@ class staff_user_controller extends CI_Controller {
                 'result' => $this->db->query("SELECT * FROM  ost_user_test 
                     LEFT JOIN ost_user_status_test ON ost_user_test.status = ost_user_status_test.user_status_guid"), 
 
-                'adduserallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = ' $staffid' AND permissions LIKE '%user.create%'")->num_rows(),
+                'adduserallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = '$staffid' AND permissions LIKE '%user.add%'")->num_rows(),
 
-                'edituserallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = ' $staffid' AND permissions LIKE '%user.edit%'")->num_rows(),
+                'edituserallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = '$staffid' AND permissions LIKE '%user.edit%'")->num_rows(),
 
-                'deleteallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = ' $staffid' AND permissions LIKE '%user.delete%'")->num_rows(),
+                'deleteallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = '$staffid' AND permissions LIKE '%user.delete%'")->num_rows(),
 
-                'activeallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = ' $staffid' AND permissions LIKE '%user.manage%'")->num_rows(),
+                'activeallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = '$staffid' AND permissions LIKE '%user.manage%'")->num_rows(),
 
                 'max_page_size' => $this->db->query("SELECT value FROM ost_config_test WHERE id = '21'")->row('value'),
+
+                'department' => $this->db->query("SELECT department_guid, name FROM ost_department_test "),
             );
 
             $browser_id = $_SERVER["HTTP_USER_AGENT"];
@@ -64,6 +66,14 @@ class staff_user_controller extends CI_Controller {
     {
         $direct = $_REQUEST['direct'];
         $poster_id = $_SESSION['staffid'];
+
+        if ($_SESSION['staffdept'] == '1' ) {
+            $staff_dept = addslashes($this->input->post('dept'));
+        } else {
+            $staff_dept = $_SESSION['staffdept'];
+        }
+        
+
         $user_email = addslashes($this->input->post('email'));
         $user_name = addslashes($this->input->post('fullname'));
         $user_phone = addslashes($this->input->post('phone'));
@@ -81,12 +91,12 @@ class staff_user_controller extends CI_Controller {
         if($usercheck->num_rows() == 0)
         {
             $sql = $this->db->query("INSERT INTO ost_user_test (user_guid, user_name , user_created_at, user_updated_at, user_depart, user_email, user_phone, user_phoneext, notes, status ,active)
-            VALUES (REPLACE(UPPER(UUID()),'-',''), '$user_name', now(), now(), '1', '$user_email', '$user_phone', '$user_phoneext' ,'$user_note', '4' , '0')");
+            VALUES (REPLACE(UPPER(UUID()),'-',''), '$user_name', now(), now(), '$staff_dept', '$user_email', '$user_phone', '$user_phoneext' ,'$user_note', '4' , '0')");
 
             $user_guid = $this->db->query("SELECT user_guid FROM ost_user_test WHERE user_name = '$user_name'")->row('user_guid');
 
             if ($user_note != "")
-                $this->db->query("UPDATE ost_user_test SET usernote_poster = '$poster_id', usernote_created = now() WHERE user_guid = $user_guid ");
+                $this->db->query("UPDATE ost_user_test SET usernote_poster = '$poster_id', usernote_created = now() WHERE user_guid = '$user_guid' ");
 
             foreach ($org->result() as $orgdomain)
             {
@@ -645,7 +655,7 @@ class staff_user_controller extends CI_Controller {
             $user_guid = $_REQUEST['id'];
             $staffid = $_SESSION["staffid"];
             
-            $org_guid = $this->db->query("SELECT * FROM ost_user_test WHERE user_guid = $user_guid")->row('user_org_guid');
+            $org_guid = $this->db->query("SELECT * FROM ost_user_test WHERE user_guid = '$user_guid'")->row('user_org_guid');
             if ($org_guid != "")
             {
                 $orgphone = $this->db->query("SELECT * FROM ost_organization__cdata_test WHERE org_guid = $org_guid")->row('phone');
@@ -675,20 +685,20 @@ class staff_user_controller extends CI_Controller {
                     WHERE user_guid = '$user_guid'"),
                 'inforesult' => $this->db->query("SELECT * FROM ost_user_test
                     INNER JOIN ost_user_status_test ON ost_user_test.status = ost_user_status_test.user_status_guid
-                    WHERE user_guid = $user_guid"),
+                    WHERE user_guid = '$user_guid'"),
                 'inforesultcheckbox' => $this->db->query("SELECT a.*, b.*, c.*, a.notes AS usernote, c.notes AS staffnote FROM ost_user_test AS a
                     INNER JOIN ost_user_status_test AS b ON a.status = b.user_status_guid
                     LEFT JOIN ost_staff_test AS c ON a.usernote_poster = c.staff_guid
-                    WHERE a.user_guid = $user_guid")->row(),
+                    WHERE a.user_guid = '$user_guid'")->row(),
                 'ticketinfo' => $this->db->query("SELECT * FROM ost_ticket_test AS a
                     INNER JOIN ost_ticket_status_test AS b ON a.status_guid = b.status_guid
                     INNER JOIN ost_help_topic_test AS c ON a.topic_guid = c.topic_guid
-                    WHERE a.user_guid = $user_guid"),
+                    WHERE a.user_guid = '$user_guid'"),
                 'phone' => $phone,
                 'phoneext' => $phoneext,
-                'edituserallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = ' $staffid' AND permissions LIKE '%user.edit%'")->num_rows(),
-                'deleteallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = ' $staffid' AND permissions LIKE '%user.delete%'")->num_rows(),
-                'activeallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = ' $staffid' AND permissions LIKE '%user.manage%'")->num_rows(),
+                'edituserallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = '$staffid' AND permissions LIKE '%user.edit%'")->num_rows(),
+                'deleteallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = '$staffid' AND permissions LIKE '%user.delete%'")->num_rows(),
+                'activeallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = '$staffid' AND permissions LIKE '%user.manage%'")->num_rows(),
                 'max_page_size' => $this->db->query("SELECT value FROM ost_config_test WHERE id = '21'")->row('value'),
             );
 
@@ -843,7 +853,7 @@ class staff_user_controller extends CI_Controller {
                     user_phoneext = '$cphoneext' ,
                     notes = '$cnote',
                     user_updated_at = NOW()
-                    WHERE user_guid = $user_guid ");
+                    WHERE user_guid = '$user_guid' ");
 
                 foreach ($org->result() as $orgdomain)
                 {
@@ -856,25 +866,25 @@ class staff_user_controller extends CI_Controller {
                 }
 
                 if ($cnote != "")
-                    $this->db->query("UPDATE ost_user_test SET usernote_poster = '$poster_id', usernote_created = now() , user_updated_at = NOW() WHERE user_guid = $user_guid ");
+                    $this->db->query("UPDATE ost_user_test SET usernote_poster = '$poster_id', usernote_created = now() , user_updated_at = NOW() WHERE user_guid = '$user_guid' ");
                 else
-                    $this->db->query("UPDATE ost_user_test SET usernote_poster = '0', usernote_created = NULL, user_updated_at = NOW() WHERE user_guid = $user_guid ");
+                    $this->db->query("UPDATE ost_user_test SET usernote_poster = '0', usernote_created = NULL, user_updated_at = NOW() WHERE user_guid = '$user_guid' ");
 
                 if ($direct == 'manageuser')
                 {
                     $this->db->query("UPDATE ost_user_test SET
                         resetpass = '$resetpass',
                         changepass = '$changepass'
-                        WHERE user_guid = $user_guid ");
+                        WHERE user_guid = '$user_guid' ");
 
                     if ($cpass1 == "" && $adminlock == "2")
-                        $this->db->query("UPDATE ost_user_test SET status = '$adminlock' ,user_updated_at = NOW() WHERE user_guid = $user_guid ");
+                        $this->db->query("UPDATE ost_user_test SET status = '$adminlock' ,user_updated_at = NOW() WHERE user_guid = '$user_guid' ");
                     else if ($cpass1 == "" && $adminlock == "")
-                        $this->db->query("UPDATE ost_user_test SET status = '1' , user_updated_at = NOW() WHERE user_guid =$user_guid ");
+                        $this->db->query("UPDATE ost_user_test SET status = '1' , user_updated_at = NOW() WHERE user_guid ='$user_guid' ");
                     else if ($cpass1 != "" && $adminlock == "2")
-                        $this->db->query("UPDATE ost_user_test SET user_pas = '$cpass2', status = '$adminlock' , user_updated_at = NOW() WHERE user_guid = $user_guid "); 
+                        $this->db->query("UPDATE ost_user_test SET user_pas = '$cpass2', status = '$adminlock' , user_updated_at = NOW() WHERE user_guid = '$user_guid' "); 
                     else if ($cpass1 != "" && $adminlock == "")
-                        $this->db->query("UPDATE ost_user_test SET user_pas = '$cpass2', status = '1', user_updated_at = NOW() WHERE user_guid = $user_guid ");
+                        $this->db->query("UPDATE ost_user_test SET user_pas = '$cpass2', status = '1', user_updated_at = NOW() WHERE user_guid = '$user_guid' ");
                 }
 
                 echo "<script> alert('Edit Profile Successfully');</script>";
@@ -1018,7 +1028,7 @@ class staff_user_controller extends CI_Controller {
     {
         $user_guid = $_REQUEST['id'];
         $poster_id = $_SESSION['staffid'];
-        $org_guid = $this->db->query("SELECT * FROM ost_user_test WHERE user_guid = $user_guid")->row('user_org_guid');
+        $org_guid = $this->db->query("SELECT * FROM ost_user_test WHERE user_guid = '$user_guid'")->row('user_org_guid');
         $org_name = addslashes($this->input->post('orgname'));
         $org_address = addslashes($this->input->post('orgadd'));
         $org_phone = addslashes($this->input->post('orgphone'));
@@ -1073,7 +1083,7 @@ class staff_user_controller extends CI_Controller {
         $this->db->query("UPDATE ost_user_test 
             SET notes = '$usernote', usernote_poster = '$poster_id', usernote_created = now() ,user_updated_at = NOW() WHERE user_guid = '$user_guid'");
 
-        redirect('staff_user_controller/user_info?id='.$user_guid);
+        redirect('staff_user_controller/user_info?id='.'$user_guid');
     }
 
     public function deleteusernote()
@@ -1082,7 +1092,7 @@ class staff_user_controller extends CI_Controller {
 
         $this->db->query("UPDATE ost_user_test SET notes = NULL, usernote_poster = '0', usernote_created = NULL, user_updated_at = NOW() WHERE user_guid = '$user_guid'");
 
-        redirect('staff_user_controller/user_info?id='.$user_guid);
+        redirect('staff_user_controller/user_info?id='.'$user_guid');
     }
 
     public function organization()
@@ -1094,9 +1104,9 @@ class staff_user_controller extends CI_Controller {
         $data = array(
             'organization' => $this->db->query("SELECT * FROM ost_organization_test"), 
 
-            'creteorgallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = ' $staffid' AND permissions LIKE '%org.create%'")->num_rows(),
+            'creteorgallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = '$staffid' AND permissions LIKE '%org.create%'")->num_rows(),
 
-            'deleteorgallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = ' $staffid' AND permissions LIKE '%org.delete%'")->num_rows(),
+            'deleteorgallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = '$staffid' AND permissions LIKE '%org.delete%'")->num_rows(),
 
             'max_page_size' => $this->db->query("SELECT value FROM ost_config_test WHERE id = '21'")->row('value'),
         );
@@ -1213,11 +1223,12 @@ class staff_user_controller extends CI_Controller {
                 'orgteam' => $this->db->query("SELECT * FROM ost_team_test"),
                 'phone' => $phone,
                 'phoneext' => $phoneext,
-                'adduserallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = ' $staffid' AND permissions LIKE '%user.create%'")->num_rows(),
-                'deleteuserallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = ' $staffid' AND permissions LIKE '%user.delete%'")->num_rows(),
-                'editorgallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = ' $staffid' AND permissions LIKE '%org.edit%'")->num_rows(),
-                'deleteorgallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = ' $staffid' AND permissions LIKE '%org.delete%'")->num_rows(),
+                'adduserallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = '$staffid' AND permissions LIKE '%user.add%'")->num_rows(),
+                'deleteuserallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = '$staffid' AND permissions LIKE '%user.delete%'")->num_rows(),
+                'editorgallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = '$staffid' AND permissions LIKE '%org.edit%'")->num_rows(),
+                'deleteorgallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = '$staffid' AND permissions LIKE '%org.delete%'")->num_rows(),
                 'max_page_size' => $this->db->query("SELECT value FROM ost_config_test WHERE id = '21'")->row('value'),
+                'department' => $this->db->query("SELECT department_guid, name FROM ost_department_test "),
             );
 
             $browser_id = $_SERVER["HTTP_USER_AGENT"];
@@ -1269,6 +1280,12 @@ class staff_user_controller extends CI_Controller {
         $org_guid = $_REQUEST['id'];
         $poster_id = $_SESSION['staffid'];
 
+        if ($_SESSION['staffdept'] == '1' ) {
+            $staff_dept = addslashes($this->input->post('dept'));
+        } else {
+            $staff_dept = $_SESSION['staffdept'];
+        }
+
         $splitemail = explode('@', $user_email);
         $domain = '@'.$splitemail[1];
         $org = $this->db->query("SELECT * FROM ost_organization_test");
@@ -1289,7 +1306,7 @@ class staff_user_controller extends CI_Controller {
             }
 
             $sql = $this->db->query("INSERT INTO osticket.ost_user_test (user_guid, user_org_guid, user_name, user_created_at, user_updated_at, user_depart, user_email, user_phone, user_phoneext, notes, status, active)
-            VALUES (REPLACE(UPPER(UUID()),'-',''), '$org_guid', '$user_name', now(), now(), '1', '$user_email', '$user_phone', '$user_phoneext' ,'$user_note', '4' , '0')");
+            VALUES (REPLACE(UPPER(UUID()),'-',''), '$org_guid', '$user_name', now(), now(), '$staff_dept', '$user_email', '$user_phone', '$user_phoneext' ,'$user_note', '4' , '0')");
 
             $user_guid = $this->db->query("SELECT user_guid FROM ost_user_test WHERE user_created_at = now()")->row('user_guid');
 
@@ -1519,7 +1536,7 @@ class staff_user_controller extends CI_Controller {
             {
                 $output .= '
                 <div style="border-style:groove;border-width:1px;">
-                    -- <b><a href ="userinfo_assignorg?oid='.$row->id.'&id='.$user_guid.'">
+                    -- <b><a href ="userinfo_assignorg?oid='.$row->id.'&id='.'$user_guid'.'">
                         '.$row->name.'
                     </a></b><br>
                 </div>
