@@ -158,7 +158,7 @@
         <div class="filedrop">
             <div class="files"></div>
             <div class="dropzone" style="color: black;">
-                <input style="display:unset;border:0;padding:0;background-color:white;" type="file" name="file[]" id="file" class="file" multiple>
+                <input style="display:unset;border:0;padding:0;background-color:white;" type="file" name="logo[]" id="logo" class="logo" multiple>
             </div>
         </div>
     </div>
@@ -200,7 +200,7 @@
         <div class="filedrop">
             <div class="files"></div>
             <div class="dropzone" style="color: black;">
-                <input style="display:unset;border:0;padding:0;background-color:white;" type="file" name="file[]" id="file" class="file" multiple>
+                <input style="display:unset;border:0;padding:0;background-color:white;" type="file" name="backdrop[]" id="backdrop" class="backdrop" multiple>
             </div>
         </div>
     </div>
