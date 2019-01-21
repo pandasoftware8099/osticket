@@ -279,7 +279,7 @@ class staff_user_controller extends CI_Controller {
                         }
                     }
                   
-                    $this->db->query("INSERT INTO ost_user_test (user_guid, user_org_guid, user_name, user_email, user_phone, user_created_at, user_updated_at, status, active ) VALUES (REPLACE(UPPER(UUID()),'-',''), $org_guid , '$username', '$useremail', '$userphone', now(), now(), '4', '0' )");
+                    $this->db->query("INSERT INTO ost_user_test (user_guid, user_org_guid, user_name, user_email, user_phone, user_depart, user_created_at, user_updated_at, status, active ) VALUES (REPLACE(UPPER(UUID()),'-',''), $org_guid , '$username', '$useremail', '$userphone', '$staff_dept', now(), now(), '4', '0' )");
 
                     echo "<script> alert('Import Successfully');</script>";
                     echo "<script> document.location='" . base_url() . "/index.php/staff_user_controller/org_info?id=$org_guid' </script>";
@@ -403,7 +403,7 @@ class staff_user_controller extends CI_Controller {
                             }
                         }
 
-                        $this->db->query("INSERT INTO ost_user_test (user_guid, user_org_guid , user_name, user_email, user_phone, user_created_at, user_updated_at, status, active) VALUES (REPLACE(UPPER(UUID()),'-',''), '$org_guid' , '$username', '$email', '$phone', now(), now(), '4' , '0')");
+                        $this->db->query("INSERT INTO ost_user_test (user_guid, user_org_guid , user_name, user_email, user_phone, user_depart, user_created_at, user_updated_at, status, active) VALUES (REPLACE(UPPER(UUID()),'-',''), '$org_guid' , '$username', '$email', '$phone', '$staff_dept', now(), now(), '4' , '0')");
 
                         echo "<script> alert('Import Successfully');</script>";
                         echo "<script> document.location='" . base_url() . "/index.php/staff_user_controller/org_info?id=$org_guid' </script>";
