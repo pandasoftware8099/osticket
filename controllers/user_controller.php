@@ -605,7 +605,7 @@ class user_controller extends CI_Controller {
                 $username1 = $this->input->post('userid');
                 $userpass = $this->input->post('passwd');
                 $username = $this->db->query("SELECT username FROM osticket.ost_staff_test WHERE username = '$username1' OR email = '$username1'")->row('username');
-                $staffid = $this->db->query("SELECT staff_guid FROM osticket.ost_staff_test WHERE username = '$username' AND passwd = '$userpass'")->row('staff_guid');
+               $staffid = $this->db->query("SELECT staff_guid FROM osticket.ost_staff_test WHERE username = '$username' AND passwd = '$userpass'")->row('staff_guid');
                 $pw_expire = $this->db->query("SELECT passwdreset FROM osticket.ost_staff_test WHERE username = '$username' AND passwd = '$userpass'")->row('passwdreset');
                 $staffemail = $this->db->query("SELECT email FROM osticket.ost_staff_test WHERE username = '$username' AND passwd = '$userpass'")->row('email');
                 $staffdept = $this->db->query("SELECT dept_guid FROM osticket.ost_staff_test WHERE username = '$username' AND passwd = '$userpass'")->row('dept_guid');
@@ -631,7 +631,7 @@ class user_controller extends CI_Controller {
                         /*'userpass' => $userpass,*/
                         'staffpass' => $userpass,
                         'change_passwd' => $change_passwd,
-                        'staffid' => $staffid,
+                        'staffid' =>$staffid,
                         /*'userdepname' => $userdepname,*/
                         'staffemail' =>  $staffemail,
                         'staffdept' => $staffdept ,

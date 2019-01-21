@@ -72,7 +72,7 @@ if(isset($_REQUEST['id']))
 <?php }
     else if(isset($staffid))
     { ?>
-        <form action="<?php echo site_url('staff_controller/staffchangepassword')?>?id=<?php echo $staffid?>" method="post" class="form-horizontal">
+        <form action="<?php echo site_url('staff_controller/staffchangepassword')?>?id=<?php echo$staffid?>" method="post" class="form-horizontal">
 <?php }; ?>
 
 <!-- <div class="col-lg-12">

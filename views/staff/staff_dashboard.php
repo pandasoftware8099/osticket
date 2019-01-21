@@ -70,8 +70,6 @@
                     <th>Overdue</th>
                     <th>Closed</th>
                     <th>Reopened</th>
-                    <th>Service Time</th>
-                    <th>Response Time</th>
                 </tr>
             </tbody>
 
@@ -98,8 +96,6 @@
                         SELECT COUNT(*) as departreopen FROM ost_ticket_test AS a 
                         INNER JOIN ost_ticket_status_test AS b ON a.status_guid = b.status_guid 
                         WHERE b.state = 'open' AND reopened != '0' AND a.department = '".$department->name."'")->row('departreopen');?></td>
-                    <td>12.4</td>
-                    <td>0.0</td>
             </tr>
             <?php }?>
             </tbody>
@@ -122,8 +118,6 @@
                     <th>Overdue</th>
                     <th>Closed</th>
                     <th>Reopened</th>
-                    <th>Service Time</th>
-                    <th>Response Time</th>
                 </tr>
             </tbody>
 
@@ -150,8 +144,6 @@
                         SELECT COUNT(*) as topicreopen FROM ost_ticket_test AS a 
                         INNER JOIN ost_ticket_status_test AS b ON a.status_guid = b.status_guid 
                         WHERE b.state = 'open' AND reopened != '0' AND a.topic_guid = '".$topics->topic_guid."'")->row('topicreopen');?></td>
-                        <td>31.0</td>
-                        <td>0.0</td>
                 </tr>
                 <?php }?>
             </tbody>
@@ -172,8 +164,6 @@
                     <th>Overdue</th>
                     <th>Closed</th>
                     <th>Reopened</th>
-                    <th>Service Time</th>
-                    <th>Response Time</th>
                 </tr>
             </tbody>
 
@@ -200,8 +190,6 @@
                         SELECT COUNT(*) as agentreopen FROM ost_ticket_test AS a 
                         INNER JOIN ost_ticket_status_test AS b ON a.status_guid = b.status_guid 
                         WHERE b.state = 'open' AND reopened != '0' AND a.assigned_to = '".$agent->staff_guid."'")->row('agentreopen');?></td>               
-                        <td>0.0</td>              
-                        <td>0.0</td>
                 </tr> 
             <?php } ?>
             </tbody>

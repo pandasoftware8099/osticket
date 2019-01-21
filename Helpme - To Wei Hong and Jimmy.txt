@@ -11,7 +11,7 @@ twh1) (Not Sure) Agent User info -> Manage Account -> Manage Access, "Password R
 (a) Reason: Error occured if there's an href inside button of modal box (eg. <a href="" data-toggle="modal" data-target="">), but there's no way to remove href from these two buttons, so better just remove them off
 //jim3) User Ticket - Remove Inventory field and edit ticket button? These information/functions seem useless for me
 //jim4) Ticket info, thread entry type = 'E'
-twh5) Agent edit thread entry text
+//twh5) Agent edit thread entry text
 
 Priority: Low
 twh1) Agent Dashboard: Graph unprepared, double confirm statistics accuracy

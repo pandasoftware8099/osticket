@@ -454,7 +454,7 @@ class admin_agents_controller extends CI_Controller {
                 return strnatcasecmp($a['depart_name'], $b['depart_name']);
             });
 
-            $staffid = $_REQUEST['id'];
+           $staffid = $_REQUEST['id'];
             $data = array(
 
                 'department' => $depart_name,
@@ -528,7 +528,7 @@ class admin_agents_controller extends CI_Controller {
         $dept_access_alerts = $this->input->post('dept_access_alerts[]');
         $perms = !empty($this->input->post('perms[]'))?"".implode(", ", $this->input->post('perms[]'))."":"";
         $team = $this->input->post('teams[]');
-        $staffid = $_REQUEST['id'];
+       $staffid = $_REQUEST['id'];
 
         array_shift($ext_role_guid);
 

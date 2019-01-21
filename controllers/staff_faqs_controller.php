@@ -68,7 +68,7 @@ class staff_faqs_controller extends CI_Controller {
     {      
         if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
         {   $category_guid = $_REQUEST['cid'];
-            $staffid = $_SESSION["staffid"];
+           $staffid = $_SESSION["staffid"];
             $data = array(
             'faqcate' => $this->db->query("SELECT * FROM ost_faq_category_test WHERE category_guid ='$category_guid' "),
             'faqinfo' => $this->db->query("SELECT * FROM ost_faq_test WHERE category_guid = '$category_guid' "),
@@ -104,7 +104,7 @@ class staff_faqs_controller extends CI_Controller {
     {      
         if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
         {   $faqid = $_REQUEST['id'];
-            $staffid = $_SESSION["staffid"];
+           $staffid = $_SESSION["staffid"];
             $data = array(
             'faqdetails' => $this->db->query("SELECT * FROM ost_faq_info_test WHERE faq_guid ='$faqid' "),
             'faqinfo' => $this->db->query("SELECT * FROM ost_faq_test WHERE faq_guid = '$faqid' "),

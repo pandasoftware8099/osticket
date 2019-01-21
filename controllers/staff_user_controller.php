@@ -22,12 +22,14 @@ class staff_user_controller extends CI_Controller {
         if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
         {
 
-            $staffid = $_SESSION["staffid"];    
+           $staffid = $_SESSION["staffid"];    
             $data = array(
                 'result' => $this->db->query("SELECT * FROM  ost_user_test 
                     LEFT JOIN ost_user_status_test ON ost_user_test.status = ost_user_status_test.user_status_guid"), 
 
+
                 'adduserallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = '$staffid' AND permissions LIKE '%user.add%'")->num_rows(),
+
 
                 'edituserallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = '$staffid' AND permissions LIKE '%user.edit%'")->num_rows(),
 
@@ -666,7 +668,7 @@ class staff_user_controller extends CI_Controller {
         if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
         {
             $user_guid = $_REQUEST['id'];
-            $staffid = $_SESSION["staffid"];
+           $staffid = $_SESSION["staffid"];
             
             $org_guid = $this->db->query("SELECT * FROM ost_user_test WHERE user_guid = '$user_guid'")->row('user_org_guid');
             if ($org_guid != "")
@@ -1113,7 +1115,7 @@ class staff_user_controller extends CI_Controller {
         if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
         {
 
-        $staffid = $_SESSION["staffid"];    
+       $staffid = $_SESSION["staffid"];    
         $data = array(
             'organization' => $this->db->query("SELECT * FROM ost_organization_test"), 
 
@@ -1203,7 +1205,7 @@ class staff_user_controller extends CI_Controller {
     {      
         if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
         {
-            $staffid = $_SESSION["staffid"];
+           $staffid = $_SESSION["staffid"];
             $org_guid = $_REQUEST['id'];
 
             $orgphone = $this->db->query("SELECT * FROM ost_organization__cdata_test WHERE org_guid = $org_guid")->row('phone');
@@ -1236,7 +1238,9 @@ class staff_user_controller extends CI_Controller {
                 'orgteam' => $this->db->query("SELECT * FROM ost_team_test"),
                 'phone' => $phone,
                 'phoneext' => $phoneext,
+
                 'adduserallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = '$staffid' AND permissions LIKE '%user.add%'")->num_rows(),
+
                 'deleteuserallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = '$staffid' AND permissions LIKE '%user.delete%'")->num_rows(),
                 'editorgallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = '$staffid' AND permissions LIKE '%org.edit%'")->num_rows(),
                 'deleteorgallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = '$staffid' AND permissions LIKE '%org.delete%'")->num_rows(),
