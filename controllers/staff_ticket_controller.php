@@ -23,6 +23,19 @@ class staff_ticket_controller extends CI_Controller {
         {   
             $userdeptid = $_SESSION['staffdept'];
             $staff_guid = $_SESSION["staffid"];
+
+            if ($userdeptid == '1') {
+                $staff_list = $this->db->query("SELECT * FROM ost_staff_test ");
+
+                $team_list = $this->db->query("SELECT * FROM ost_team_test ");
+            } else {
+
+                $staff_list = $this->db->query("SELECT * FROM ost_staff_test WHERE dept_guid = '$userdeptid'");
+
+                $team_list = $this->db->query("SELECT * FROM ost_team_test a LEFT JOIN ost_team_member_test b ON a.`team_guid` = b.`team_guid` WHERE b.`staff_guid` IN (SELECT staff_guid FROM ost_staff_test WHERE dept_guid = '$userdeptid') AND  a.flags = '1' GROUP BY a.team_guid ");
+
+            }   
+
             $direct = $_REQUEST['direct'];
             $show_assigned_tickets = $this->db->query("SELECT value FROM ost_config_test WHERE id = '65'")->row('value');
             $show_answered_tickets = $this->db->query("SELECT value FROM ost_config_test WHERE id = '66'")->row('value');
@@ -78,9 +91,9 @@ class staff_ticket_controller extends CI_Controller {
 
                 'default_depart' => $defaultdept,
 
-                'staff' => $this->db->query("SELECT * FROM ost_staff_test WHERE dept_guid = '$userdeptid'"), 
+                'staff' => $staff_list,
 
-                'team' => $this->db->query("SELECT * FROM ost_team_test WHERE flags = 1 "),
+                'team' => $team_list,
 
                 'max_page_size' => $this->db->query("SELECT value FROM ost_config_test WHERE id = '21'")->row('value'),
 
@@ -331,6 +344,19 @@ class staff_ticket_controller extends CI_Controller {
         {
             $user_guid = $_REQUEST['id'];
             $staff_guid = $_SESSION['staffid'];
+            $userdeptid = $_SESSION['staffdept'];
+
+            if ($userdeptid == '1') {
+                $staff_list = $this->db->query("SELECT * FROM ost_staff_test ");
+
+                $team_list = $this->db->query("SELECT * FROM ost_team_test ");
+            } else {
+
+                $staff_list = $this->db->query("SELECT * FROM ost_staff_test WHERE dept_guid = '$userdeptid'");
+
+                $team_list = $this->db->query("SELECT * FROM ost_team_test a LEFT JOIN ost_team_member_test b ON a.`team_guid` = b.`team_guid` WHERE b.`staff_guid` IN (SELECT staff_guid FROM ost_staff_test WHERE dept_guid = '$userdeptid') AND  a.flags = '1' GROUP BY a.team_guid ");
+
+            }   
 
             $default_topic = $this->db->query("SELECT value FROM ost_config_test WHERE id ='102'");
             $manager = $this->db->query("SELECT * FROM ost_organization_test AS a
@@ -372,8 +398,8 @@ class staff_ticket_controller extends CI_Controller {
                     'defaultstatusid' => $this->db->query("SELECT * FROM ost_config_test WHERE id ='103'"),
                     'default_help_topic' => $default_topic,
                     'current_sub' => $this->db->query("SELECT list_item_guid, value FROM ost_list_items_test WHERE topic_guid = '".$default_topic->row('value')."' ORDER BY value"),
-                    'agent' => $this->db->query("SELECT * FROM ost_staff_test ORDER BY firstname"),
-                    'team' => $this->db->query("SELECT * FROM ost_team_test WHERE flags = 1  ORDER BY name"),
+                    'agent' => $staff_list,
+                    'team' => $team_list,
                     'status' => $this->db->query("SELECT * FROM ost_ticket_status_test"),
                     'max_file_size' => $this->db->query("SELECT value FROM ost_config_test WHERE id = '77'")->row('value'),
                     'max_files' => $this->db->query("SELECT value FROM ost_config_test WHERE id = '119'")->row('value'),
@@ -392,8 +418,8 @@ class staff_ticket_controller extends CI_Controller {
                     'defaultstatusid' => $this->db->query("SELECT * FROM ost_config_test WHERE id ='103'"),
                     'default_help_topic' => $default_topic,
                     'current_sub' => $this->db->query("SELECT list_item_guid, value FROM ost_list_items_test WHERE topic_guid = '".$default_topic->row('value')."' ORDER BY value"),
-                    'agent' => $this->db->query("SELECT * FROM ost_staff_test ORDER BY firstname"),
-                    'team' => $this->db->query("SELECT * FROM ost_team_test  WHERE flags = 1 ORDER BY name"),
+                    'agent' => $staff_list,
+                    'team' => $team_list,
                     'status' => $this->db->query("SELECT * FROM ost_ticket_status_test"),
                     'max_file_size' => $this->db->query("SELECT value FROM ost_config_test WHERE id = '77'")->row('value'),
                     'max_files' => $this->db->query("SELECT value FROM ost_config_test WHERE id = '119'")->row('value'),
@@ -749,8 +775,22 @@ class staff_ticket_controller extends CI_Controller {
         {
 
             $ticketid = $_REQUEST['id'];
-           $staffid =$_SESSION['staffid'];
+            $staffid =$_SESSION['staffid'];
             $staff_guid =$_SESSION['staffid'];
+            $userdeptid = $_SESSION['staffdept'];
+
+            if ($userdeptid == '1') {
+                $staff_list = $this->db->query("SELECT * FROM ost_staff_test ");
+
+                $team_list = $this->db->query("SELECT * FROM ost_team_test ");
+            } else {
+
+                $staff_list = $this->db->query("SELECT * FROM ost_staff_test WHERE dept_guid = '$userdeptid'");
+
+                $team_list = $this->db->query("SELECT * FROM ost_team_test a LEFT JOIN ost_team_member_test b ON a.`team_guid` = b.`team_guid` WHERE b.`staff_guid` IN (SELECT staff_guid FROM ost_staff_test WHERE dept_guid = '$userdeptid') AND  a.flags = '1' GROUP BY a.team_guid ");
+
+            }
+
             $userid = $this->db->query("SELECT * FROM ost_ticket_test WHERE ticket_guid = '$ticketid'")->row('user_guid');
             $taskid = $this->db->query("SELECT * FROM ost_task_test WHERE ticket_guid = '$ticketid'")->row('task_guid');
             $userticket = $this->db->query("SELECT * FROM ost_user_test AS a 
@@ -799,11 +839,11 @@ class staff_ticket_controller extends CI_Controller {
 
                 'default_depart' => $default_depart,
 
-                'staff' => $this->db->query("SELECT * FROM ost_staff_test WHERE dept_guid = (SELECT department_guid FROM ost_department_test WHERE NAME = (SELECT department FROM ost_ticket_test WHERE ticket_guid = '$ticketid'))"),
+                'staff' => $staff_list,
 
                 'stafflogin' => $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = '$staffid'")->row(),
 
-                'team' => $this->db->query("SELECT * FROM ost_team_test WHERE flags = 1 "), 
+                'team' => $team_list, 
 
                 'task' => $this->db->query("SELECT a.*, b.*, c.*, d.*, e.*, c.name AS deptname, e.name AS teamname, a.staff_guid AS taskstaff, a.team_guid AS taskteam FROM ost_task_test AS a 
                     INNER JOIN ost_task__cdata_test AS b ON a.task_guid = b.tasksub_guid
