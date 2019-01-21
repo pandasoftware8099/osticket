@@ -245,7 +245,7 @@ div.dataTables_wrapper div.dataTables_paginate ul.pagination {
 <?php 
 
 $staffid = $_SESSION["staffid"];
-$userdirallow = $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = ' $staffid' AND permissions LIKE '%user.dir%'")->num_rows() ;
+$userdirallow = $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = '$staffid' AND permissions LIKE '%user.dir%'")->num_rows() ;
 
 if ($userdirallow != 0 ) { 
 ?> 

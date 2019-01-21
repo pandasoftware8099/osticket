@@ -1926,7 +1926,7 @@ class staff_ticket_controller extends CI_Controller {
                     $posterlname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = $poster_id")->row('lastname');
                     $user_name = $this->db->query("SELECT * FROM ost_user_test WHERE user_guid = $user_guid")->row('user_name');
 
-                    $description = '<b>'.$posterfname.''.$posterlname.'</b> change owenership of this ticcket to <strong>'.$user_name.'</strong>' ;
+                    $description = '<b>'.$posterfname.''.$posterlname.'</b> change owenership of this ticket to <strong>'.$user_name.'</strong>' ;
 
                     $this->db->query("INSERT INTO osticket.ost_thread_entry_test (thread_entry_guid, ticket_guid , staff_guid , type, poster , body , ip_address, created, updated, class, avatar )
                     VALUES (REPLACE(UPPER(UUID()),'-',''), '$ticket_guid' ,'$poster_id', 'E' ,'$posterfname $posterlname', '$description', '$ipaddress', now(), now(), 'pencil', 'left')");
@@ -1977,7 +1977,7 @@ class staff_ticket_controller extends CI_Controller {
         else if($data->num_rows() > 0)
         {
             $output .= '
-              <div style="background-color: lightyellow;border-style:groove;border-width:1px;">
+              <div style="background-color: lightyellow;border-style:groove;border-radius: 10px;text-align:center;">
             ';
 
             if ($direct == 'new')
@@ -1985,8 +1985,8 @@ class staff_ticket_controller extends CI_Controller {
                 foreach($data->result() as $nrow)
                 {
                     $output .= '
-                    <div style="border-style:groove;border-width:1px;">
-                        -- <b><a href ="ticketinfo_assignuser?id='.$nrow->user_guid.'&tid='.$ticket_guid.'">
+                    <div style="border-bottom: 1px groove;">
+                        <b><a href ="ticketinfo_assignuser?id='.$nrow->user_guid.'&tid='.$ticket_guid.'">
                           <span>'.$nrow->user_name.'</span> (<span>'.$nrow->user_email.'</span>)
                         </a></b><br>
                     </div>
@@ -1998,8 +1998,8 @@ class staff_ticket_controller extends CI_Controller {
                 foreach($data->result() as $trow)
                 {
                     $output .= '
-                    <div style="border-style:groove;border-width:1px;">
-                        -- <b><a href ="ticketinfoedit?id='.$ticket_guid.'&uid='.$trow->user_guid.'">
+                    <div style="border-bottom: 1px groove;">
+                        <b><a href ="ticketinfoedit?id='.$ticket_guid.'&uid='.$trow->user_guid.'">
                           <span>'.$trow->user_name.'</span> (<span>'.$trow->user_email.'</span>)
                         </a></b><br>
                     </div>
@@ -2015,7 +2015,10 @@ class staff_ticket_controller extends CI_Controller {
         else
         {
             $output .= '<tr>
-                <td colspan="5">No Data Found</td>
+                <div style="border-style:groove;border-width:1px;border-radius: 10px;">
+                    <b>No Data
+                    </a></b><br>
+                </div>
             </tr>';
         }
           
@@ -2043,14 +2046,14 @@ class staff_ticket_controller extends CI_Controller {
         else if($data->num_rows() > 0)
         {
             $output .= '
-                <div style="background-color: lightyellow;border-style:groove;border-width:1px;">
+                <div style="background-color: lightyellow;border-style:groove;border-radius: 10px;text-align:center;">
             ';
 
             foreach($data->result() as $row)
             {
                 $output .= '
-                <div style="border-style:groove;border-width:1px;">
-                    -- <b><a href ="newticket?id='.$row->user_guid.'">
+                <div style="border-bottom: 1px groove;">
+                    <b><a href ="newticket?id='.$row->user_guid.'">
                         <span>'.$row->user_name.'</span> (<span>'.$row->user_email.'</span>)
                     </a></b><br>
                 </div>
@@ -2063,9 +2066,11 @@ class staff_ticket_controller extends CI_Controller {
         }
         else
         {
-            $output .= '<tr>
-                <td colspan="5">No Data Found</td>
-            </tr>';
+            $output .= '<div style="background-color: lightyellow;text-align:center;">
+                <div style="border-style:groove;border-width:1px;border-radius: 10px;">
+                    <b>No Data
+                    </a></b><br>
+                </div></div>';
         }
       
         echo $output;
