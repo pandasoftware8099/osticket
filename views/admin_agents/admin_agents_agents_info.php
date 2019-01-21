@@ -211,7 +211,7 @@
             <select data-name="ext_role_guid" data-quick-add="role" name="ext_role_guid[]">
               <option value="0">— Select Role —</option>
               <?php foreach ($role->result() as $role2) { ?>   
-                        <option value="<?php echo $role2->id?>"><?php echo $role2->name?></option>
+                        <option value="<?php echo $role2->role_guid?>"><?php echo $role2->name?></option>
                     <?php } ?>
             </select>
           </td>
