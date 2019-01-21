@@ -48,7 +48,7 @@ class staff_ticket_controller extends CI_Controller {
                     INNER JOIN ost_user_test AS d ON a.user_guid = d.user_guid 
                     INNER JOIN ost_ticket_priority_test AS e ON e.priority_guid = a.priority_guid
                     INNER JOIN ost_thread_entry_test AS f ON a.ticket_guid = f.ticket_guid
-                    WHERE f.type = 'S' AND a.created_at != f.created GROUP BY a.ticket_guid");
+                    WHERE f.type = 'S' AND a.created_at != f.created AND a.department IN (SELECT NAME FROM ost_department_test a INNER JOIN ost_staff_dept_access_test b ON a.department_guid = b.`dept_guid` WHERE B.`staff_guid` = '$staff_guid' UNION SELECT NAME FROM ost_department_test WHERE department_guid = '$userdeptid') GROUP BY a.ticket_guid");
             }
 
             if ($userdeptid == $defaultdept->row('value'))
@@ -207,7 +207,7 @@ class staff_ticket_controller extends CI_Controller {
                     INNER JOIN ost_ticket_status_test AS c  ON c.status_guid = a.status_guid 
                     INNER JOIN ost_user_test AS d  ON a.user_guid = d.user_guid 
                     INNER JOIN ost_ticket_priority_test AS e  ON e.priority_guid = a.priority_guid 
-                    WHERE c.state = 'open' AND duedate <= now()"), 
+                    WHERE c.state = 'open' AND duedate <= now() AND a.department IN (SELECT NAME FROM ost_department_test a INNER JOIN ost_staff_dept_access_test b ON a.department_guid = b.`dept_guid` WHERE B.`staff_guid` = '$staff_guid' UNION SELECT NAME FROM ost_department_test WHERE department_guid = '$userdeptid')"), 
 
                  'editallow' => $this->db->query(" SELECT dept_guid, a.role_guid ,b.`permissions` FROM ost_staff_test AS a INNER JOIN ost_role_test AS b ON a.`role_guid` = b.role_guid WHERE staff_guid = '$staff_guid' AND b.`permissions` LIKE '%ticket.edit%'")->num_rows(),
 
@@ -596,8 +596,7 @@ class staff_ticket_controller extends CI_Controller {
                         }
                     }
                 }
-                echo var_dump($alluseremail),$user_email;die;
-                
+            
                 foreach ($alluseremail as $value)
                 {
                     $this->load->library('email');
@@ -752,11 +751,11 @@ class staff_ticket_controller extends CI_Controller {
             $ticketid = $_REQUEST['id'];
            $staffid =$_SESSION['staffid'];
             $staff_guid =$_SESSION['staffid'];
-            $userid = $this->db->query("SELECT * FROM ost_ticket_test WHERE ticket_guid = $ticketid")->row('user_guid');
-            $taskid = $this->db->query("SELECT * FROM ost_task_test WHERE ticket_guid = $ticketid")->row('task_guid');
+            $userid = $this->db->query("SELECT * FROM ost_ticket_test WHERE ticket_guid = '$ticketid'")->row('user_guid');
+            $taskid = $this->db->query("SELECT * FROM ost_task_test WHERE ticket_guid = '$ticketid'")->row('task_guid');
             $userticket = $this->db->query("SELECT * FROM ost_user_test AS a 
                 INNER JOIN ost_ticket_test AS b ON a.user_guid = b.user_guid 
-                WHERE ticket_guid = $ticketid");
+                WHERE ticket_guid = '$ticketid'");
             $default_depart = $this->db->query("SELECT name, value FROM ost_config_test a 
                 INNER JOIN ost_department_test b ON a.value = b.department_guid WHERE a.id = '85'");
 
@@ -782,7 +781,7 @@ class staff_ticket_controller extends CI_Controller {
                     INNER JOIN ost_ticket_status_test AS c ON c.status_guid = a.status_guid
                     INNER JOIN ost_ticket_priority_test AS d ON a.priority_guid = d.priority_guid 
                     INNER JOIN ost_list_items_test AS e ON a.subtopic_guid = e.list_item_guid
-                    WHERE ticket_guid = '$ticketid'"),
+                    WHERE ticket_guid = '$ticketid' "),
 
                 'department' => $department, 
 
@@ -813,7 +812,7 @@ class staff_ticket_controller extends CI_Controller {
                     LEFT JOIN ost_team_test AS e ON a.team_guid = e.team_guid
                     WHERE a.ticket_guid = '$ticketid' ORDER BY a.task_created DESC"),
 
-                'thread' => $this->db->query("SELECT * FROM ost_thread_entry_test WHERE ticket_guid = $ticketid"),
+                'thread' => $this->db->query("SELECT * FROM ost_thread_entry_test WHERE ticket_guid = '$ticketid'"),
 
                 'thread_num' => $this->db->query("SELECT * FROM ost_thread_entry_test WHERE ticket_guid = '$ticketid' AND type != 'E'"),
 
@@ -822,7 +821,7 @@ class staff_ticket_controller extends CI_Controller {
                     INNER JOIN ost_ticket_test AS c ON b.`ticket_guid` = c.`ticket_guid`
                     INNER JOIN ost_department_test AS d ON a.dept_guid = d.department_guid
                     
-                    WHERE c.ticket_guid = $ticketid")->row(),
+                    WHERE c.ticket_guid = '$ticketid'")->row(),
                 
                 'user' => $this->db->query("SELECT * FROM ost_user_test AS a
                     INNER JOIN ost_ticket_test AS b ON a.user_guid = b.user_guid
@@ -831,15 +830,15 @@ class staff_ticket_controller extends CI_Controller {
 
                 'phone' => $phone,
 
-                'editticket' => $this->db->query("SELECT * FROM ost_ticket_test WHERE ticket_guid = $ticketid"),
+                'editticket' => $this->db->query("SELECT * FROM ost_ticket_test WHERE ticket_guid = '$ticketid'"),
 
-                'openclose' => $this->db->query("SELECT * FROM ost_ticket_test WHERE ticket_guid = $ticketid")->row(),
+                'openclose' => $this->db->query("SELECT * FROM ost_ticket_test WHERE ticket_guid = '$ticketid'")->row(),
 
                 'org' => $this->db->query("SELECT * FROM ost_user_test AS a 
                     INNER JOIN ost_ticket_test AS b ON a.user_guid = b.user_guid 
                     LEFT JOIN ost_staff_test AS c ON a.usernote_poster = c.staff_guid
                     LEFT JOIN ost_organization__cdata_test AS d ON a.user_org_guid = d.org_guid
-                    WHERE ticket_guid = $ticketid")->row(),
+                    WHERE ticket_guid = '$ticketid'")->row(),
 
                 'ticketstatus' => $this->db->query("SELECT * FROM ost_ticket_status_test"),
 
@@ -1175,7 +1174,7 @@ class staff_ticket_controller extends CI_Controller {
 
                 'phone' => $phone,
 
-                'editticket' => $this->db->query("SELECT * FROM ost_ticket_test WHERE ticket_guid = $ticketid"),
+                'editticket' => $this->db->query("SELECT * FROM ost_ticket_test WHERE ticket_guid = '$ticketid'"),
 
                 'departmt' => $this->db->query("SELECT * FROM  ost_department_test AS a INNER JOIN ost_user_test AS b ON a.department_guid = b.user_depart INNER JOIN ost_ticket_test AS c ON b.user_guid = c.user_guid WHERE ticket_guid = $ticketid")->row(),
             );            
