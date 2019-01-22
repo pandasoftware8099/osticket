@@ -346,7 +346,7 @@ class staff_new_ticket_model extends CI_Model
 				}
 
 				if ($datetime > $todaydatetime)
-					$insertdue = $this->db->query("UPDATE osticket.ost_ticket_test SET duedate = '$datetime' WHERE ticket_guid = $ticket_guid");
+					$insertdue = $this->db->query("UPDATE osticket.ost_ticket_test SET duedate = '$datetime' WHERE ticket_guid = '$ticket_guid'");
 
 				$sql1 = $this->db->query("INSERT INTO osticket.ost_thread_entry_test (thread_entry_guid, ticket_guid, staff_guid, type, poster, body, ip_address, created, updated, class, avatar )
 					VALUES (REPLACE(UPPER(UUID()),'-',''), '$ticket_guid', '$poster_id', 'S','$posterfname $posterlname', '$description', '$ipaddress', now(), now(), 'response', 'left')");

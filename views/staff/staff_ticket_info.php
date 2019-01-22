@@ -613,7 +613,7 @@ function myFunction() {
                             <input class="ckb" type="checkbox" name="tids[]" value="<?php echo $task->task_guid;?>"></td>
                         <td nowrap="">
                             <a class="preview" href="<?php echo site_url('staff_task_controller/taskinfo');?>?id=<?php echo $task->task_guid;?>">
-                                <b><?php echo $task->task_guid;?></b></a></td>
+                                <b><?php echo $task->number;?></b></a></td>
                         <td nowrap=""><?php echo $task->task_created;?></td>
                         <td>
                             <a href="<?php echo site_url('staff_task_controller/taskinfo');?>?id=<?php echo $task->task_guid;?>"><?php echo $task->title;?></a>

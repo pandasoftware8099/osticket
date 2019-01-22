@@ -6,7 +6,7 @@
         <div class="content" style="width: 908px;">
             <div class="pull-left flush-left">
                 <?php foreach ($task->result() as $taskinfo) { ?>
-                <h2><a id="reload-task" href="<?php echo site_url('staff_task_controller/taskinfo');?>?id=<?php echo $taskinfo->task_guid;?>"><i class="icon-refresh"></i>&nbsp;Task #<?php echo $taskinfo->task_guid;?></a></h2>
+                <h2><a id="reload-task" href="<?php echo site_url('staff_task_controller/taskinfo');?>?id=<?php echo $taskinfo->task_guid;?>"><i class="icon-refresh"></i>&nbsp;Task #<?php echo $taskinfo->number;?></a></h2>
             </div>
         <?php if ($editallow != 0 ) { ?>
             <div class="pull-right flush-right">
@@ -151,6 +151,17 @@
         </table>
 <div class="clear"></div>
 <?php foreach ($taskthread->result() as $thread) { ?>
+
+    <?php if ($thread->type == 'E') { ?>
+                <div class="thread-event action">
+                    <span class="type-icon">
+                        <i class="faded icon-<?php echo $thread->class;?> "></i>
+                    </span>
+                    <span class="faded description">
+                        <?php echo $thread->body;?> 
+                    </span>
+                </div>
+            <?php }  else { ?>
 <div id="task_thread_container">
     <div id="task_thread_content">
     <div id="thread-22">
@@ -256,7 +267,7 @@
 
     </div>
 </div>
-<?php } ?>
+<?php } } ?>
 <div class="clear"></div>
 
 <?php if ($replyallow != 0 ) { ?>

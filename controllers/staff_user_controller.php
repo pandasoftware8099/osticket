@@ -1546,14 +1546,14 @@ class staff_user_controller extends CI_Controller {
         else if($data->num_rows() > 0)
         {
             $output .= '
-                <div style="background-color: lightyellow;border-style:groove;border-width:1px;">
+                <div style="background-color: lightyellow;border-style:groove;border-radius: 10px;text-align:center;">
             ';
 
             foreach($data->result() as $row)
             {
                 $output .= '
-                <div style="border-style:groove;border-width:1px;">
-                    -- <b><a href ="userinfo_assignorg?oid='.$row->id.'&id='.'$user_guid'.'">
+                <div style="border-bottom: 1px groove;">
+                    <b><a href ="userinfo_assignorg?oid='.$row->id.'&id='.'$user_guid'.'">
                         '.$row->name.'
                     </a></b><br>
                 </div>
@@ -1617,14 +1617,14 @@ class staff_user_controller extends CI_Controller {
         else if($data->num_rows() > 0)
         {
             $output .= '
-                <div style="background-color: lightyellow;border-style:groove;border-width:1px;">
+                <div style="background-color: lightyellow;border-style:groove;border-radius: 10px;text-align:center;">
             ';
 
             foreach($data->result() as $row)
             {
                 $output .= '
-                <div style="border-style:groove;border-width:1px;">
-                    -- <a href ="userinfo_assignuser?id='.$row->user_guid.'&oid='.$org_guid.'">
+                <div style="border-bottom: 1px groove;">
+                    <a href ="userinfo_assignuser?id='.$row->user_guid.'&oid='.$org_guid.'">
                         <b>'.$row->user_name.' ('.$row->user_email.')</b>
                     </a>
                 <br></div>

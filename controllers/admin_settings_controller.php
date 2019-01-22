@@ -211,8 +211,8 @@ class admin_settings_controller extends CI_Controller {
         $delbackdrop = $this->input->post('delbackdrop[]');
 
         $this->db->query("UPDATE ost_company_test SET name_template = '$cname', web_template = '$cwebsite', phone_template = '$cphone', address_template = '$caddress', company_updated = now()");
-        $this->db->query("UPDATE ost_content_test SET in_use = '1', updated = now() WHERE content_guid IN ($landing_page_guid, $offline_page_guid, $ty_page_guid)");
-        $this->db->query("UPDATE ost_content_test SET in_use = '0', updated = now() WHERE field = 'pages' AND content_guid NOT IN ($landing_page_guid, $offline_page_guid, $ty_page_guid)");
+        $this->db->query("UPDATE ost_content_test SET in_use = '1', updated = now() WHERE content_guid IN ('$landing_page_guid', '$offline_page_guid', '$ty_page_guid')");
+        $this->db->query("UPDATE ost_content_test SET in_use = '0', updated = now() WHERE field = 'pages' AND content_guid NOT IN ('$landing_page_guid', '$offline_page_guid', '$ty_page_guid')");
         $this->db->query("UPDATE ost_file_test SET default_client = '1' WHERE file_guid = '$clientlogo'");
         $this->db->query("UPDATE ost_file_test SET default_client = '0' WHERE file_guid != '$clientlogo' AND type = 'logo'");
         $this->db->query("UPDATE ost_file_test SET default_staff = '1' WHERE file_guid = '$stafflogo'");
@@ -235,7 +235,7 @@ class admin_settings_controller extends CI_Controller {
                     // Upload file
                     move_uploaded_file($_FILES['logo']['tmp_name'][$i],'../helpme/uploads/'.$filename);
 
-                    $this->db->query("INSERT ost_file_test ( name, type, created )
+                    $this->db->query("INSERT ost_file_test ( file_guid, name, type, created )
                     VALUES ( REPLACE(UPPER(UUID()),'-',''), '$filename', 'logo', NOW() ) ");
                 }
             }
