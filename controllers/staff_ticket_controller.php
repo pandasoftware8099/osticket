@@ -1065,10 +1065,10 @@ class staff_ticket_controller extends CI_Controller {
                     $team_guid = '0';
                     $poster_id = $_SESSION['staffid'];      
                     $ipaddress = $_SERVER['REMOTE_ADDR'];
-                    $posterfname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = $poster_id")->row('firstname');
-                    $posterlname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = $poster_id")->row('lastname');
-                    $assignstafffname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = $staff_guid")->row('firstname');
-                    $assignstafflname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = $staff_guid")->row('lastname');
+                    $posterfname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = '$poster_id'")->row('firstname');
+                    $posterlname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = '$poster_id'")->row('lastname');
+                    $assignstafffname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = '$staff_guid'")->row('firstname');
+                    $assignstafflname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = '$staff_guid'")->row('lastname');
                     $description = '<b>'.$posterfname.''.$posterlname.'</b> assigned this ticket to <strong>'.$assignstafffname. ''.$assignstafflname. '</strong>';
 
                     $this->db->query("INSERT INTO osticket.ost_thread_entry_test (thread_entry_guid, ticket_guid , staff_guid , type, poster , body , ip_address, created, updated, class, avatar )
