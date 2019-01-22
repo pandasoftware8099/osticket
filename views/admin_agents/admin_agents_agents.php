@@ -1,26 +1,5 @@
 <div id="content">
-        <div id="basic_search">
-    <div style="min-height:25px;overflow:auto;">
-        <div class="pull-left">
-            <form action="staff.php" method="GET" name="filter">
-                <input type="hidden" name="a" value="filter">
-                <select name="did" id="did">
-                    <option value="0">—
-                        All Departments —</option>
-                    
-                    <option value="2">Assigned Department</option>
-                    <option value="5">Panda Department</option>
-                    <option value="8">TF Value Mart</option>                </select>
-                <select name="tid" id="tid">
-                    <option value="0">—
-                        All Teams —</option>
-                    
-                    <option value="1">Panda</option>                </select>
-                <input type="submit" name="submit" class="button muted" value="Apply">
-            </form>
-        </div>
-    </div>
-</div>
+
 <div style="margin-bottom:20px; padding-top:5px;">
     <div class="sticky placeholder"></div><div class="sticky bar opaque">
         <div class="content" style="width: 908px;">
@@ -279,6 +258,8 @@
 </div>
 <!-- more popup modal -->
 </form>
+</div>
+
 
 
 
@@ -414,4 +395,4 @@ $(document).ready(function () {
 });
 
 </script>
-   
+  
