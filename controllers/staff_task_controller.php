@@ -608,19 +608,45 @@ class staff_task_controller extends CI_Controller {
         {
 
             $taskid = $_REQUEST['id'];
+            $poster_id = $_SESSION['staffid'];
+            $ipaddress = $_SERVER['REMOTE_ADDR'];
             $status = $this->input->post('status_guid');
             $depart = $this->input->post('departmentid');
             $assignto = $this->input->post('assignto');
             $ctitle = addslashes($this->input->post('ctitle'));
             $delete = $this->input->post('delete');
+            $task_status = $this->db->query("SELECT task_status FROM ost_task_test WHERE task_guid = '$taskid' ")->row('task_status');
+            $posterfname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = $poster_id")->row('firstname');
+            $posterlname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = $poster_id")->row('lastname');
 
             if ($status != "" ){
                 $this->db->query("UPDATE ost_task_test SET task_status = '$status', task_updated = NOW() WHERE task_guid = '$taskid' ");
                 echo "<script> alert('Successfully change status');</script>";
+
+
+                if ($task_status == 1) {
+                    $description = 'Closed by <b>'.$posterfname.''.$posterlname.'</b>';
+                } else if ($task_status == 0){
+                    $description = 'Reopen by <b>'.$posterfname.''.$posterlname.'</b>';        
+                }
+                
+
+                $this->db->query("INSERT INTO osticket.ost_thread_entry_test ( thread_entry_guid, task_guid , staff_guid , type, poster , body , ip_address, created, updated, class, avatar )
+                            VALUES (REPLACE(UPPER(UUID()),'-',''), '$taskid' ,'$poster_id', 'E' ,'$posterfname $posterlname', '$description', '$ipaddress', now(), now(), 'thumbs-up-alt', 'left')");
+
             }
             else if ($depart != "" ){
               $this->db->query("UPDATE ost_task_test SET dept_guid = '$depart', task_updated = NOW() WHERE task_guid = '$taskid' ");
                 echo "<script> alert('Successfully change department');</script>";
+
+                $departmentname = $this->db->query("SELECT name FROM ost_department_test WHERE department_guid = '$depart'")->row('name');
+
+                $description = '<b>'.$posterfname.''.$posterlname.'</b> transfered this ticket to <strong>'.$departmentname. '</strong>';
+                
+
+                $this->db->query("INSERT INTO osticket.ost_thread_entry_test ( thread_entry_guid, task_guid , staff_guid , type, poster , body , ip_address, created, updated, class, avatar )
+                            VALUES (REPLACE(UPPER(UUID()),'-',''), '$taskid' ,'$poster_id', 'E' ,'$posterfname $posterlname', '$description', '$ipaddress', now(), now(), 'share-alt', 'left')");
+
             }
             else if ($assignto{0} == 'a'){
                 $staff_guid = substr($assignto, 1);
@@ -628,6 +654,15 @@ class staff_task_controller extends CI_Controller {
 
                 $this->db->query("UPDATE ost_task_test SET staff_guid = '$staff_guid' , team_guid = '$team_guid', task_updated = NOW() WHERE task_guid = '$taskid' ");
                 echo "<script> alert('Successfully assign to agent');</script>";
+
+                $assignstafffname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = '$staff_guid'")->row('firstname');
+                $assignstafflname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = '$staff_guid'")->row('lastname');
+                $description = '<b>'.$posterfname.''.$posterlname.'</b> assigned this ticket to <strong>'.$assignstafffname. ''.$assignstafflname. '</strong>';
+                
+
+                $this->db->query("INSERT INTO osticket.ost_thread_entry_test ( thread_entry_guid, task_guid , staff_guid , type, poster , body , ip_address, created, updated, class, avatar )
+                VALUES (REPLACE(UPPER(UUID()),'-',''), '$taskid' ,'$poster_id', 'E' ,'$posterfname $posterlname', '$description', '$ipaddress', now(), now(), 'hand-right', 'left')");
+
             }
 
             else if ($assignto{0} == 't'){
@@ -636,11 +671,25 @@ class staff_task_controller extends CI_Controller {
 
                 $this->db->query("UPDATE ost_task_test SET staff_guid = '$staff_guid' , team_guid = '$team_guid', task_updated = NOW() WHERE task_guid = '$taskid' ");
                 echo "<script> alert('Successfully assign to team');</script>";
+
+                $assignteamname = $this->db->query("SELECT name FROM ost_team_test WHERE team_guid = '$team_guid' ")->row('name');
+                $description = '<b>'.$posterfname.''.$posterlname.'</b> assigned this ticket to <strong>'.$assignteamname. '</strong>';
+
+                $this->db->query("INSERT INTO osticket.ost_thread_entry_test ( thread_entry_guid, task_guid , staff_guid , type, poster , body , ip_address, created, updated, class, avatar )
+                VALUES (REPLACE(UPPER(UUID()),'-',''), '$taskid' ,'$poster_id', 'E' ,'$posterfname $posterlname', '$description', '$ipaddress', now(), now(), 'hand-right', 'left')");
             }
 
             else if ($ctitle != "" ){
-                $this->db->query("UPDATE ost_task__cdata_test SET title = '$ctitle', task_updated = NOW() WHERE tasksub_guid = '$taskid'");
+                $this->db->query("UPDATE ost_task__cdata_test SET title = '$ctitle' WHERE tasksub_guid = '$taskid'");
+
+                $this->db->query("UPDATE ost_task_test SET task_updated = NOW() WHERE task_guid = '$taskid'");
+
                 echo "<script> alert('Successfully change title');</script>";
+
+                $description = '<b>'.$posterfname.''.$posterlname.'</b> change title of this task to <strong>'.$ctitle. '</strong>';
+
+                $this->db->query("INSERT INTO osticket.ost_thread_entry_test ( thread_entry_guid, task_guid , staff_guid , type, poster , body , ip_address, created, updated, class, avatar )
+                VALUES (REPLACE(UPPER(UUID()),'-',''), '$taskid' ,'$poster_id', 'E' ,'$posterfname $posterlname', '$description', '$ipaddress', now(), now(), 'pencil', 'left')");
             }
             else if ($delete == '5'){
                 $team_guid = substr($assignto, 1);

@@ -151,6 +151,17 @@
         </table>
 <div class="clear"></div>
 <?php foreach ($taskthread->result() as $thread) { ?>
+
+    <?php if ($thread->type == 'E') { ?>
+                <div class="thread-event action">
+                    <span class="type-icon">
+                        <i class="faded icon-<?php echo $thread->class;?> "></i>
+                    </span>
+                    <span class="faded description">
+                        <?php echo $thread->body;?> 
+                    </span>
+                </div>
+            <?php }  else { ?>
 <div id="task_thread_container">
     <div id="task_thread_content">
     <div id="thread-22">
@@ -256,7 +267,7 @@
 
     </div>
 </div>
-<?php } ?>
+<?php } } ?>
 <div class="clear"></div>
 
 <?php if ($replyallow != 0 ) { ?>
