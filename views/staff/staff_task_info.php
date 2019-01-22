@@ -6,7 +6,7 @@
         <div class="content" style="width: 908px;">
             <div class="pull-left flush-left">
                 <?php foreach ($task->result() as $taskinfo) { ?>
-                <h2><a id="reload-task" href="<?php echo site_url('staff_task_controller/taskinfo');?>?id=<?php echo $taskinfo->task_guid;?>"><i class="icon-refresh"></i>&nbsp;Task #<?php echo $taskinfo->task_guid;?></a></h2>
+                <h2><a id="reload-task" href="<?php echo site_url('staff_task_controller/taskinfo');?>?id=<?php echo $taskinfo->task_guid;?>"><i class="icon-refresh"></i>&nbsp;Task #<?php echo $taskinfo->number;?></a></h2>
             </div>
         <?php if ($editallow != 0 ) { ?>
             <div class="pull-right flush-right">

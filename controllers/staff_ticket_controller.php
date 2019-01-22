@@ -1007,7 +1007,25 @@ class staff_ticket_controller extends CI_Controller {
                     else
                     {
                         $original = $this->db->query("SELECT * FROM ost_ticket_test WHERE ticket_guid = '$ticketid'")->row('status_guid');
-                        $statusname = $this->db->query("SELECT * FROM ost_ticket_status_test WHERE status_guid = $status")->row('name');
+                        
+                        
+                        $new = $this->db->query("SELECT * FROM ost_ticket_status_test WHERE status_guid = '$status'")->row('state');
+
+                        if ($original == '3' && $new == 'open')
+                        {
+                            $this->db->query("UPDATE ost_ticket_test SET status_guid = '$status',closed = NULL, reopened = now(), ticket_updated = now(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_guid = '$ticketid'");
+
+                            $poster_id = $_SESSION['staffid'];      
+                            $ipaddress = $_SERVER['REMOTE_ADDR'];
+                            $posterfname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = $poster_id")->row('firstname');
+                            $posterlname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = $poster_id")->row('lastname');
+                            $description = 'Reopened by <b>'.$posterfname.''.$posterlname.'</b>';
+
+                            $this->db->query("INSERT INTO osticket.ost_thread_entry_test (thread_entry_guid, ticket_guid , staff_guid , type, poster , body , ip_address, created, updated, class, avatar )
+                            VALUES (REPLACE(UPPER(UUID()),'-',''), '$ticketid' ,'$poster_id', 'E' ,'$posterfname $posterlname', '$description', '$ipaddress', now(), now(), 'rotate-right', 'left')");
+                        } else{
+
+                            $statusname = $this->db->query("SELECT * FROM ost_ticket_status_test WHERE status_guid = $status")->row('name');
 
                         $this->db->query("UPDATE ost_ticket_test SET status_guid = '$status', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_guid = '$ticketid' ");
                         
@@ -1019,21 +1037,7 @@ class staff_ticket_controller extends CI_Controller {
 
                         $this->db->query("INSERT INTO osticket.ost_thread_entry_test (thread_entry_guid, ticket_guid , staff_guid , type, poster , body , ip_address, created, updated, class, avatar )
                         VALUES (REPLACE(UPPER(UUID()),'-',''), '$ticketid' ,'$poster_id', 'E' ,'$posterfname $posterlname', '$description', '$ipaddress', now(), now(), 'pencil', 'left')");
-                        
-                        $new = $this->db->query("SELECT * FROM ost_ticket_status_test WHERE status_guid = '$status'")->row('state');
-
-                        if ($original == '3' && $new == 'open')
-                        {
-                            $this->db->query("UPDATE ost_ticket_test SET closed = NULL, reopened = now(), ticket_updated = now(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_guid = '$ticketid'");
-
-                            $poster_id = $_SESSION['staffid'];      
-                            $ipaddress = $_SERVER['REMOTE_ADDR'];
-                            $posterfname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = $poster_id")->row('firstname');
-                            $posterlname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = $poster_id")->row('lastname');
-                            $description = 'Reopened by <b>'.$posterfname.''.$posterlname.'</b>';
-
-                            $this->db->query("INSERT INTO osticket.ost_thread_entry_test (thread_entry_guid, ticket_guid , staff_guid , type, poster , body , ip_address, created, updated, class, avatar )
-                            VALUES (REPLACE(UPPER(UUID()),'-',''), '$ticketid' ,'$poster_id', 'E' ,'$posterfname $posterlname', '$description', '$ipaddress', now(), now(), 'rotate-right', 'left')");
+                            
                         }
 
                         echo "<script> alert('Successfully change status');</script>";

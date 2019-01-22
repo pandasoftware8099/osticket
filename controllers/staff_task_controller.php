@@ -224,14 +224,23 @@ class staff_task_controller extends CI_Controller {
 
         if ($duedatetime >= $todaydatetime)
         {
-            $this->db->query("UPDATE ost_task_test SET duedate = '$duedatetime' WHERE task_guid = $task_guid");
+            $this->db->query("UPDATE ost_task_test SET duedate = '$duedatetime' WHERE task_guid = '$task_guid'");
         }
 
         $this->db->query("INSERT INTO osticket.ost_task__cdata_test ( tasksub_guid,title )
-            VALUES ( REPLACE(UPPER(UUID()),'-',''), '$title' )");
+            VALUES ('$task_guid', '$title' )");
 
         $this->db->query("INSERT INTO osticket.ost_thread_entry_test ( thread_entry_guid, task_guid , staff_guid , type, poster , body , ip_address, created, updated, class , avatar )
         VALUES (REPLACE(UPPER(UUID()),'-',''), '$task_guid' ,'$poster_id', 'S' ,'$posterfname $posterlname', '$description', '$ipaddress', now(), now(), 'response', 'left')");
+
+        $posterfname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = $poster_id")->row('firstname');
+        $posterlname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = $poster_id")->row('lastname');
+
+        $description = '<b>'.$posterfname.''.$posterlname.'</b> created task ';
+                
+
+        $this->db->query("INSERT INTO osticket.ost_thread_entry_test ( thread_entry_guid, task_guid , staff_guid , type, poster , body , ip_address, created, updated, class, avatar )
+        VALUES (REPLACE(UPPER(UUID()),'-',''), '$task_guid' ,'$poster_id', 'E' ,'$posterfname $posterlname', '$description', '$ipaddress', now(), now(), 'magic', 'left')");
 
         if(isset($_POST['submit'])){
             // Count total files
@@ -398,7 +407,7 @@ class staff_task_controller extends CI_Controller {
 
         $data = array(
 
-            'task' => $this->db->query("SELECT a.*, b.*, c.*, d.*, e.*, f.*, a.duedate AS taskdue, a.staff_guid AS taskstaff, a.team_guid AS taskteam, c.name AS deptname, f.name AS teamname, a.dept_guid AS taskdept FROM ost_task_test AS a
+            'task' => $this->db->query("SELECT a.*, b.*, c.*, d.*, e.*, f.*, a.duedate AS taskdue, a.staff_guid AS taskstaff, a.team_guid AS taskteam, c.name AS deptname, f.name AS teamname, a.dept_guid AS taskdept, a.number FROM ost_task_test AS a
                 INNER JOIN ost_task__cdata_test AS b ON a.task_guid = b.tasksub_guid
                 INNER JOIN ost_department_test AS c ON a.dept_guid = c.department_guid
                 LEFT JOIN ost_ticket_test AS d ON a.ticket_guid = d.ticket_guid
@@ -425,7 +434,7 @@ class staff_task_controller extends CI_Controller {
                     INNER JOIN ost_task_test AS c ON b.`task_guid` = c.`task_guid`
                     INNER JOIN ost_department_test AS d ON a.dept_guid = d.department_guid
                     
-                    WHERE b.task_guid = $task_guid ")->row(),
+                    WHERE b.task_guid = '$task_guid' ")->row(),
 
             'department' => $this->db->query("SELECT * FROM  ost_department_test"), 
 
@@ -734,7 +743,7 @@ class staff_task_controller extends CI_Controller {
         {
             $taskid = $_REQUEST['id'];
 
-            $taskstatus = $this->db->query("SELECT * FROM ost_task_test WHERE task_guid = $taskid")->row('task_status');
+            $taskstatus = $this->db->query("SELECT * FROM ost_task_test WHERE task_guid ='$taskid'")->row('task_status');
             if ($taskstatus == "0")
                 $statusname = 'Closed';
             else if ($taskstatus == "1")
@@ -744,16 +753,16 @@ class staff_task_controller extends CI_Controller {
                 
                 'result' => $this->db->query("SELECT * FROM  ost_task_test 
                     INNER JOIN ost_department_test ON ost_department_test.department_guid = ost_task_test.dept_guid 
-                    WHERE task_guid = $taskid"),
+                    WHERE task_guid = '$taskid' "),
 
                 'status' => $statusname,
 
                 'user' => $this->db->query("SELECT * FROM ost_task_test AS a
                     LEFT JOIN ost_staff_test  AS b ON a.staff_guid = b.staff_guid
                     LEFT JOIN ost_team_test AS c ON a.team_guid = c.team_guid
-                    WHERE task_guid = '$taskid'"),
+                    WHERE task_guid = '$taskid' "),
 
-                'thread' => $this->db->query("SELECT * FROM  ost_thread_entry_test WHERE task_guid = $taskid"),
+                'thread' => $this->db->query("SELECT * FROM  ost_thread_entry_test WHERE task_guid = '$taskid' "),
             );
 
             $browser_id = $_SERVER["HTTP_USER_AGENT"];
