@@ -899,7 +899,7 @@ $(function() {
                     <i class="icon-group icon-4x pull-left icon-border"></i>
                         <a class="action-button pull-right user-action" style="overflow:inherit" data-toggle="modal" data-target="#useraddorg-modal"><i class="icon-user"></i>
                         Change</a>
-                    <a class="action-button pull-right" href="<?php echo site_url('staff_user_controller/org_info');?>?id=<?php echo $org->id;?>"><i class="icon-share"></i>
+                    <a class="action-button pull-right" href="<?php echo site_url('staff_user_controller/org_info');?>?id=<?php echo $org->organization_guid;?>"><i class="icon-share"></i>
                         Manage</a>
                         <div><b><a data-toggle="modal" data-target="#updateorg-modal"><i class="icon-edit"></i>&nbsp;<?php echo $org->name;?></a></b></div>
                     <table style="margin-top: 1em;">

@@ -1455,8 +1455,8 @@ class staff_user_controller extends CI_Controller {
                 }
 
                 $userid = $this->db->query("SELECT * FROM ost_user_test AS a
-                    LEFT JOIN ost_organization_test AS b ON a.user_org_guid = b.id
-                    WHERE b.id = '$org_guid'");
+                    LEFT JOIN ost_organization_test AS b ON a.user_org_guid = b.organization_guid
+                    WHERE b.organization_guid = '$org_guid'");
 
                 foreach ($userid->result() as $userassign)
                 {
@@ -1465,7 +1465,7 @@ class staff_user_controller extends CI_Controller {
             }
             
             foreach ($user->result() as $userorg) {
-                $splitemail = explode('@', $userorg->user_email);
+                $splitemail = explode('@', "$userorg->user_email@");
                 $userdomain = '@'.$splitemail[1];
                 $org = $this->db->query("SELECT * FROM ost_organization_test");
                 $user_guid = $userorg->user_guid;
