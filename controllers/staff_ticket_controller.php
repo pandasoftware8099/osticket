@@ -945,50 +945,66 @@ public function ticketinfoupdate()
         if ($ticketinfo->row('assigned_to') == $poster_id || date('Y-m-d H:i:s') > $autolock_time || $ticketinfo->row('ticket_updated_by_id') == $poster_id || $ticketinfo->row('ticket_updated_by_role') == 'user')
         {
             if ($status != "" )
-            {
-                if ($status == 3)
                 {
-                    $primaryclosecheck = $this->db->query("SELECT a.dept_guid , a.role_guid, b.`permissions` FROM ost_staff_test a INNER JOIN ost_role_test b ON a.`role_guid` = b.role_guid INNER JOIN ost_department_test c ON a.dept_guid = c.`department_guid` INNER JOIN ost_ticket_test d ON C.`name` = d.`department` WHERE staff_guid = '$poster_id' AND b.permissions LIKE '%ticket.close%' AND ticket_guid = '$ticketid'")->num_rows();
-                    $closecheck = $this->db->query("SELECT * FROM ost_ticket_test a INNER JOIN ost_department_test b ON a.`department` = b.`name` INNER JOIN ost_staff_dept_access_test c ON b.`department_guid` = c.dept_guid INNER JOIN ost_role_test d ON c.`role_guid` = d.`role_guid` WHERE a.ticket_guid = '$ticketid' AND d.permissions LIKE '%ticket.close%' AND C.`staff_guid` = '$poster_id'")->num_rows();
-
-                    if ($primaryclosecheck != 0)
+                    if ($status == 3)
                     {
-                        $original = $this->db->query("SELECT * FROM ost_ticket_test WHERE ticket_guid = '$ticketid'")->row('status_guid');
+                        $primaryclosecheck = $this->db->query("SELECT a.dept_guid , a.role_guid, b.`permissions` FROM ost_staff_test a INNER JOIN ost_role_test b ON a.`role_guid` = b.role_guid INNER JOIN ost_department_test c ON a.dept_guid = c.`department_guid` INNER JOIN ost_ticket_test d ON C.`name` = d.`department` WHERE staff_guid = '$poster_id' AND b.permissions LIKE '%ticket.close%' AND ticket_guid = '$ticketid'")->num_rows();
+                        $closecheck = $this->db->query("SELECT * FROM ost_ticket_test a INNER JOIN ost_department_test b ON a.`department` = b.`name` INNER JOIN ost_staff_dept_access_test c ON b.`department_guid` = c.dept_guid INNER JOIN ost_role_test d ON c.`role_guid` = d.`role_guid` WHERE a.ticket_guid = '$ticketid' AND d.permissions LIKE '%ticket.close%' AND C.`staff_guid` = '$poster_id'")->num_rows();
 
-                        $this->db->query("UPDATE ost_ticket_test SET status_guid = '$status', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_guid = '$ticketid' ");
-
-                        $new = $this->db->query("SELECT * FROM ost_ticket_status_test WHERE status_guid = '$status'")->row('state');
-
-                        if ($original != '3' && $new == 'closed')
+                        if ($primaryclosecheck != 0)
                         {
-                            $this->db->query("UPDATE ost_ticket_test SET closed = now(), reopened = NULL, ticket_updated = now(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_guid = '$ticketid'");
+                            $original = $this->db->query("SELECT * FROM ost_ticket_test WHERE ticket_guid = '$ticketid'")->row('status_guid');
+
+                            $this->db->query("UPDATE ost_ticket_test SET status_guid = '$status', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_guid = '$ticketid' ");
+
+                            $new = $this->db->query("SELECT * FROM ost_ticket_status_test WHERE status_guid = '$status'")->row('state');
+
+                            if ($original != '3' && $new == 'closed')
+                            {
+                                $this->db->query("UPDATE ost_ticket_test SET closed = now(), reopened = NULL, ticket_updated = now(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_guid = '$ticketid'");
+                            }
+
+                            $poster_id = $_SESSION['staffid'];      
+                            $ipaddress = $_SERVER['REMOTE_ADDR'];
+                            $posterfname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = $poster_id")->row('firstname');
+                            $posterlname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = $poster_id")->row('lastname');
+                            $description = 'Closed by <b>'.$posterfname.''.$posterlname.'</b>';
+
+                            $this->db->query("INSERT INTO osticket.ost_thread_entry_test ( thread_entry_guid, ticket_guid , staff_guid , type, poster , body , ip_address, created, updated, class, avatar )
+                            VALUES (REPLACE(UPPER(UUID()),'-',''), '$ticketid' ,'$poster_id', 'E' ,'$posterfname $posterlname', '$description', '$ipaddress', now(), now(), 'thumbs-up-alt', 'left')");
+
+                            echo "<script> alert('Successfully change status');</script>";
                         }
 
-                        $poster_id = $_SESSION['staffid'];      
-                        $ipaddress = $_SERVER['REMOTE_ADDR'];
-                        $posterfname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = $poster_id")->row('firstname');
-                        $posterlname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = $poster_id")->row('lastname');
-                        $description = 'Closed by <b>'.$posterfname.''.$posterlname.'</b>';
-
-                        $this->db->query("INSERT INTO osticket.ost_thread_entry_test ( thread_entry_guid, ticket_guid , staff_guid , type, poster , body , ip_address, created, updated, class, avatar )
-                        VALUES (REPLACE(UPPER(UUID()),'-',''), '$ticketid' ,'$poster_id', 'E' ,'$posterfname $posterlname', '$description', '$ipaddress', now(), now(), 'thumbs-up-alt', 'left')");
-
-                        echo "<script> alert('Successfully change status');</script>";
-                    }
-
-                    else if ($closecheck != 0)
-                    {
-                        $original = $this->db->query("SELECT * FROM ost_ticket_test WHERE ticket_guid = '$ticketid'")->row('status_guid');
-
-                        $this->db->query("UPDATE ost_ticket_test SET status_guid = '$status', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_guid = '$ticketid' ");
-
-                        $new = $this->db->query("SELECT * FROM ost_ticket_status_test WHERE status_guid = '$status'")->row('state');
-
-                        if ($original != '3' && $new == 'closed')
+                        else if ($closecheck != 0)
                         {
-                            $this->db->query("UPDATE ost_ticket_test SET closed = now(), reopened = NULL, ticket_updated = now(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_guid = '$ticketid'");
+                            $original = $this->db->query("SELECT * FROM ost_ticket_test WHERE ticket_guid = '$ticketid'")->row('status_guid');
+
+                            $this->db->query("UPDATE ost_ticket_test SET status_guid = '$status', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_guid = '$ticketid' ");
+
+                            $new = $this->db->query("SELECT * FROM ost_ticket_status_test WHERE status_guid = '$status'")->row('state');
+
+                            if ($original != '3' && $new == 'closed')
+                            {
+                                $this->db->query("UPDATE ost_ticket_test SET closed = now(), reopened = NULL, ticket_updated = now(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_guid = '$ticketid'");
+                            }
+
+                            $poster_id = $_SESSION['staffid'];      
+                            $ipaddress = $_SERVER['REMOTE_ADDR'];
+                            $posterfname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = $poster_id")->row('firstname');
+                            $posterlname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = $poster_id")->row('lastname');
+                            $description = 'Closed by <b>'.$posterfname.''.$posterlname.'</b>';
+
+                            $this->db->query("INSERT INTO osticket.ost_thread_entry_test ( thread_entry_guid, ticket_guid , staff_guid , type, poster , body , ip_address, created, updated, class, avatar )
+                            VALUES (REPLACE(UPPER(UUID()),'-',''), '$ticketid' ,'$poster_id', 'E' ,'$posterfname $posterlname', '$description', '$ipaddress', now(), now(), 'thumbs-up-alt', 'left')");
+
+                            echo "<script> alert('Successfully change status');</script>";
                         }
 
+                        else
+                        {
+                            echo "<script> alert('You have no permission for this ticket');</script>";
+                        }
                     }
                     
                     else
@@ -1029,56 +1045,7 @@ public function ticketinfoupdate()
 
                         echo "<script> alert('Successfully change status');</script>";
                     }
-
-                    else
-                    {
-                        echo "<script> alert('You have no permission for this ticket');</script>";
-                    }
                 }
-                
-                else
-                {
-                    $original = $this->db->query("SELECT * FROM ost_ticket_test WHERE ticket_guid = '$ticketid'")->row('status_guid');
-                    $statusname = $this->db->query("SELECT * FROM ost_ticket_status_test WHERE status_guid = $status")->row('name');
-
-                    $this->db->query("UPDATE ost_ticket_test SET status_guid = '$status', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_guid = '$ticketid' ");
-                    
-                    $poster_id = $_SESSION['staffid'];      
-                    $ipaddress = $_SERVER['REMOTE_ADDR'];
-                    $posterfname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = $poster_id")->row('firstname');
-                    $posterlname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = $poster_id")->row('lastname');
-                    $description = '<b>'.$posterfname.''.$posterlname.'</b> change status of this ticket to <strong>'.$statusname.'</strong>' ;
-
-                    $this->db->query("INSERT INTO osticket.ost_thread_entry_test (thread_entry_guid, ticket_guid , staff_guid , type, poster , body , ip_address, created, updated, class, avatar )
-                    VALUES (REPLACE(UPPER(UUID()),'-',''), '$ticketid' ,'$poster_id', 'E' ,'$posterfname $posterlname', '$description', '$ipaddress', now(), now(), 'pencil', 'left')");
-                    
-                    $new = $this->db->query("SELECT * FROM ost_ticket_status_test WHERE status_guid = '$status'")->row('state');
-
-                    if ($original == '3' && $new == 'open')
-                    {
-                        $this->db->query("UPDATE ost_ticket_test SET closed = NULL, reopened = now(), ticket_updated = now(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_guid = '$ticketid'");
-
-
-                else if ($assignto{0} == 'a')
-                {
-                    $staff_guid = substr($assignto, 1);
-                    $team_guid = '0';
-                    $poster_id = $_SESSION['staffid'];      
-                    $ipaddress = $_SERVER['REMOTE_ADDR'];
-                    $posterfname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = '$poster_id'")->row('firstname');
-                    $posterlname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = '$poster_id'")->row('lastname');
-                    $assignstafffname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = '$staff_guid'")->row('firstname');
-                    $assignstafflname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = '$staff_guid'")->row('lastname');
-                    $description = '<b>'.$posterfname.''.$posterlname.'</b> assigned this ticket to <strong>'.$assignstafffname. ''.$assignstafflname. '</strong>';
-
-
-                        $this->db->query("INSERT INTO osticket.ost_thread_entry_test (thread_entry_guid, ticket_guid , staff_guid , type, poster , body , ip_address, created, updated, class, avatar )
-                        VALUES (REPLACE(UPPER(UUID()),'-',''), '$ticketid' ,'$poster_id', 'E' ,'$posterfname $posterlname', '$description', '$ipaddress', now(), now(), 'rotate-right', 'left')");
-                    }
-
-                    echo "<script> alert('Successfully change status');</script>";
-                }
-            }
             
             else if ($depart != "" )
             {
