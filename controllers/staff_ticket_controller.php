@@ -111,7 +111,7 @@ class staff_ticket_controller extends CI_Controller {
             {
                 $this->load->view('headerstaff');
                 $this->load->view('staff/staff_ticket',$data);
-                /*$this->load->view('footer');*/
+                $this->load->view('footerstaff');
             }
         }
 
@@ -183,7 +183,7 @@ class staff_ticket_controller extends CI_Controller {
             {
                 $this->load->view('headerstaff');
                 $this->load->view('staff/staff_ticket',$data);
-                /*$this->load->view('footer');*/
+                $this->load->view('footerstaff');
             }    
         }
         else       
@@ -255,7 +255,7 @@ class staff_ticket_controller extends CI_Controller {
             {
                 $this->load->view('headerstaff');
                 $this->load->view('staff/staff_ticket',$data);
-                /*$this->load->view('footer');*/
+                $this->load->view('footerstaff');
             }
         }
 
@@ -327,7 +327,7 @@ class staff_ticket_controller extends CI_Controller {
             {
                 $this->load->view('headerstaff');
                 $this->load->view('staff/staff_ticket',$data);
-                /*$this->load->view('footer');*/
+                $this->load->view('footerstaff');
             }    
         }
 
@@ -440,7 +440,7 @@ class staff_ticket_controller extends CI_Controller {
             {
                 $this->load->view('headerstaff');
                 $this->load->view('staff/staff_new_ticket', $data);
-                /*$this->load->view('footer');*/
+                $this->load->view('footerstaff');
             }    
         }
 
@@ -911,7 +911,7 @@ public function ticketinfo()
         {
             $this->load->view('headerstaff');
             $this->load->view('staff/staff_ticket_info', $data);
-            /*$this->load->view('footer');*/
+            $this->load->view('footerstaff');
         }    
     }
 
@@ -1336,7 +1336,7 @@ public function ticketinfoedit()
         {
             $this->load->view('headerstaff');
             $this->load->view('staff/staff_ticket_info_edit', $data);
-            /*$this->load->view('footer');*/
+            $this->load->view('footerstaff');
         }    
     }
 

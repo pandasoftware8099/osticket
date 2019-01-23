@@ -40,7 +40,7 @@ class staff_faqs_controller extends CI_Controller {
             {
                 $this->load->view('headerstaff');
                 $this->load->view('faqs/faqs_main', $data);
-                /*$this->load->view('footer');*/
+                $this->load->view('footerstaff');
             }    
         }
 
@@ -89,7 +89,7 @@ class staff_faqs_controller extends CI_Controller {
             {
                 $this->load->view('headerstaff');
                 $this->load->view('faqs/faqs_category', $data);
-                /*$this->load->view('footer');*/
+                $this->load->view('footerstaff');
             }    
         }
 
@@ -126,7 +126,7 @@ class staff_faqs_controller extends CI_Controller {
             {
                 $this->load->view('headerstaff');
                 $this->load->view('faqs/faqs_info', $data);
-                /*$this->load->view('footer');*/
+                $this->load->view('footerstaff');
             }    
         }
 
@@ -159,7 +159,7 @@ class staff_faqs_controller extends CI_Controller {
             {
                 $this->load->view('headerstaff');
                 $this->load->view('faqs/faqs_addfaq', $data);
-                /*$this->load->view('footer');*/
+                $this->load->view('footerstaff');
             }    
         }
 
@@ -238,7 +238,7 @@ class staff_faqs_controller extends CI_Controller {
             {
                 $this->load->view('headerstaff');
                 $this->load->view('faqs/faqs_editfaq', $data);
-                /*$this->load->view('footer');*/
+                $this->load->view('footerstaff');
             }    
         }
 
@@ -338,7 +338,7 @@ class staff_faqs_controller extends CI_Controller {
             {
                 $this->load->view('headerstaff');
                 $this->load->view('faqs/faqs_editcate', $data);
-                /*$this->load->view('footer');*/
+                $this->load->view('footerstaff');
             }    
         }
 
@@ -426,7 +426,7 @@ class staff_faqs_controller extends CI_Controller {
             {
                 $this->load->view('headerstaff');
                 $this->load->view('faqs/knowledgebase_categories', $data);
-                /*$this->load->view('footer');*/
+                $this->load->view('footerstaff');
             }    
         }
 
@@ -481,7 +481,7 @@ class staff_faqs_controller extends CI_Controller {
             {
                 $this->load->view('headerstaff');
                 $this->load->view('faqs/knowledgebase_categories_add', $data);
-                /*$this->load->view('footer');*/
+                $this->load->view('footerstaff');
             }    
         }
 
@@ -530,7 +530,7 @@ class staff_faqs_controller extends CI_Controller {
             {
                 $this->load->view('headerstaff');
                 $this->load->view('faqs/faqs_agent');
-                /*$this->load->view('footer');*/
+                $this->load->view('footerstaff');
             }    
         }
 
@@ -563,7 +563,7 @@ class staff_faqs_controller extends CI_Controller {
             {
                 $this->load->view('headerstaff');
                 $this->load->view('faqs/knowledgebase_canned', $data);
-                /*$this->load->view('footer');*/
+                $this->load->view('footerstaff');
             }    
         }
 
@@ -623,7 +623,7 @@ class staff_faqs_controller extends CI_Controller {
             {
                 $this->load->view('headerstaff');
                 $this->load->view('faqs/knowledgebase_canned_add', $data);
-                /*$this->load->view('footer');*/
+                $this->load->view('footerstaff');
             }    
         }
 
@@ -677,7 +677,7 @@ class staff_faqs_controller extends CI_Controller {
             {
                 $this->load->view('headerstaff');
                 $this->load->view('faqs/knowledgebase_canned_info', $data);
-                /*$this->load->view('footer');*/
+                $this->load->view('footerstaff');
             }    
         }
 

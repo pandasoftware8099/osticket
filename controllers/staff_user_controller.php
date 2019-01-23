@@ -54,7 +54,7 @@ class staff_user_controller extends CI_Controller {
             {
                 $this->load->view('headerstaff');
                 $this->load->view('staff/staff_user',$data);
-                /*$this->load->view('footer');*/
+                $this->load->view('footerstaff');
             }    
         }
 
@@ -743,7 +743,7 @@ class staff_user_controller extends CI_Controller {
                 {
                     $this->load->view('headerstaff');
                     $this->load->view('staff/staff_user_info', $data);
-                    /*$this->load->view('footer');*/
+                    $this->load->view('footerstaff');
                 }    
             }
 
@@ -1161,7 +1161,7 @@ class staff_user_controller extends CI_Controller {
             {
                 $this->load->view('headerstaff');
                 $this->load->view('staff/staff_organization',$data);
-                /*$this->load->view('footer');*/
+                $this->load->view('footerstaff');
             }    
         }
 
@@ -1284,7 +1284,7 @@ class staff_user_controller extends CI_Controller {
             {
                 $this->load->view('headerstaff');
                 $this->load->view('staff/staff_organization_info', $data);
-                /*$this->load->view('footer');*/
+                $this->load->view('footerstaff');
             }    
         }
 
