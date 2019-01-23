@@ -68,7 +68,7 @@ class staff_task_controller extends CI_Controller {
             {
                 $this->load->view('headerstaff');
                 $this->load->view('staff/staff_task',$data);
-                /*$this->load->view('footer');*/
+                $this->load->view('footerstaff');
             }    
         }
 
@@ -121,7 +121,7 @@ class staff_task_controller extends CI_Controller {
             {
                 $this->load->view('headerstaff');
                 $this->load->view('staff/staff_task',$data);
-                /*$this->load->view('footer');*/
+                $this->load->view('footerstaff');
             }    
         }
 
@@ -467,7 +467,7 @@ class staff_task_controller extends CI_Controller {
             {
                 $this->load->view('headerstaff');
                 $this->load->view('staff/staff_task_info', $data);
-                /*$this->load->view('footer');*/
+                $this->load->view('footerstaff');
             }    
         }
 
@@ -543,7 +543,7 @@ class staff_task_controller extends CI_Controller {
             {
                 $this->load->view('headerstaff');
                 $this->load->view('staff/staff_task_info',$data);
-                /*$this->load->view('footer');*/
+                $this->load->view('footerstaff');
             }    
         }
 

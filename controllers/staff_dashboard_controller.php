@@ -43,7 +43,7 @@ class staff_dashboard_controller extends CI_Controller {
             {
                 $this->load->view('headerstaff');
                 $this->load->view('staff/staff_dashboard',$data);
-                /*$this->load->view('footer');*/
+                $this->load->view('footerstaff');
             }    
         }
 
@@ -79,7 +79,7 @@ class staff_dashboard_controller extends CI_Controller {
             {
                 $this->load->view('headerstaff');
                 $this->load->view('staff/staff_profile',$data);
-                /*$this->load->view('footer');*/
+                $this->load->view('footerstaff');
             }    
         }
 
@@ -256,7 +256,7 @@ class staff_dashboard_controller extends CI_Controller {
             {
                 $this->load->view('headerstaff');
                 $this->load->view('staff/staff_agent',$data);
-                /*$this->load->view('footer');*/
+                $this->load->view('footerstaff');
             }    
         }
 
