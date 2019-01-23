@@ -940,6 +940,10 @@ public function ticketinfoupdate()
         $assigned_alert_staff = $this->db->query("SELECT value FROM ost_config_test WHERE id = '60'")->row('value');
         $assigned_alert_team_lead = $this->db->query("SELECT value FROM ost_config_test WHERE id = '61'")->row('value');
         $assigned_alert_team_members = $this->db->query("SELECT value FROM ost_config_test WHERE id = '62'")->row('value');
+        $transfer_alert_active = $this->db->query("SELECT value FROM ost_config_test WHERE id = '51'")->row('value');
+        $transfer_alert_assigned = $this->db->query("SELECT value FROM ost_config_test WHERE id = '52'")->row('value');
+        $transfer_alert_dept_manager = $this->db->query("SELECT value FROM ost_config_test WHERE id = '53'")->row('value');
+        $transfer_alert_dept_members = $this->db->query("SELECT value FROM ost_config_test WHERE id = '54'")->row('value');
         $alluseremail = array();
 
         if ($ticketinfo->row('assigned_to') == $poster_id || date('Y-m-d H:i:s') > $autolock_time || $ticketinfo->row('ticket_updated_by_id') == $poster_id || $ticketinfo->row('ticket_updated_by_role') == 'user')
@@ -1063,6 +1067,70 @@ public function ticketinfoupdate()
                 $this->db->query("INSERT INTO osticket.ost_thread_entry_test (thread_entry_guid, ticket_guid , staff_guid , type, poster , body , ip_address, created, updated, class, avatar )
                 VALUES (REPLACE(UPPER(UUID()),'-',''), '$ticketid' ,'$poster_id', 'E' ,'$posterfname $posterlname', '$description', '$ipaddress', now(), now(), 'share-alt', 'left')");
 
+                if($transfer_alert_active == '1')
+                            {
+                                if($transfer_alert_assigned == '1')
+                                {
+                                    $assigned = $this->db->query("SELECT assigned_to, team_guid FROM ost_ticket_test WHERE ticket_guid = '$ticketid'");
+
+                                    if($assigned->row('assigned_to') != '' && $assigned->row('team_guid') != '')
+                                    {
+                                        if($assigned->row('assigned_to') != '0')
+                                        {
+                                            $assigned_email = $this->db->query("SELECT email FROM ost_staff_test WHERE staff_guid = '".$assigned->row('assigned_to')."'")->row('email');
+
+                                            if (!in_array($assigned_email, $alluseremail))
+                                            {
+                                                array_push($alluseremail, $assigned_email);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            $assigned_teamlead_email = $this->db->query("SELECT a.email FROM ost_staff_test a INNER JOIN ost_team_test b ON b.lead_guid = a.staff_guid WHERE team_guid = '".$assigned->row('team_guid')."'")->row('email');
+
+                                            if (!in_array($assigned_teamlead_email, $alluseremail))
+                                            {
+                                                array_push($alluseremail, $assigned_teamlead_email);
+                                            }
+
+                                            $assigned_teammem_emails = $this->db->query("SELECT a.email FROM ost_staff_test a INNER JOIN ost_team_member_test b ON b.staff_guid = a.staff_guid WHERE team_guid = '".$assigned->row('assigned_to')."'");
+
+                                            foreach($assigned_teammem_emails->result() as $value3)
+                                            {
+                                                if (!in_array($value3->email, $alluseremail))
+                                                {
+                                                    array_push($alluseremail, $value3->email);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                                if($transfer_alert_dept_manager == '1')
+                                {
+                                    $dept_manager_email = $this->db->query("SELECT a.email FROM ost_staff_test a INNER JOIN ost_department_test b ON b.manager_guid = a.staff_guid WHERE b.name = '$depart'")->row('email');
+
+                                    if (!in_array($dept_manager_email, $alluseremail))
+                                    {
+                                        array_push($alluseremail, $dept_manager_email);
+                                    }
+
+                                }
+
+                                if($transfer_alert_dept_members == '1')
+                                {
+                                    $dept_members_email = $this->db->query("SELECT a.email FROM ost_staff_test a INNER JOIN ost_department_test b on b.department_guid = a.dept_guid WHERE b.name = '$depart'");
+
+                                    foreach($dept_members_email->result() as $email)
+                                    {
+                                        if (!in_array($email->email, $alluseremail))
+                                        {
+                                            array_push($alluseremail, $email->email);
+                                        }
+                                    }
+                                }
+                            }
+
                 echo "<script> alert('Successfully change department');</script>";
             }
 
@@ -1179,17 +1247,30 @@ public function ticketinfoupdate()
                 
                 $default_template_id = $this->db->query("SELECT * FROM ost_config_test WHERE id = '87'")->row('value');
 
-                    $login = 'http://[::1]/helpme/index.php/user_controller/login';
-
-                $data = array(
-                    'body' => $this->db->query("SELECT REPLACE(subject, '%number%', '".$emailinfo->row('number')."') AS email_subject, 
-                        REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(body, '%user_name%', '".$username->row('username')."'), '%assigner%', '$poster'), '%number%', '".$emailinfo->row('number')."'), '%topic%', '".$topicinfo->row('topic')."'), '%department%', '".$username->row('name')."'), '%subtopic%', '".$topicinfo->row('value')."') AS email
-                        FROM ost_email_template_test WHERE code_name = 'assigned.alert' AND tpl_guid = '$default_template_id'"),
-                    'ticketsign' => $this->db->query("SELECT a.*, b.*, a.signature AS staffsign, b.signature AS deptsign FROM ost_staff_test AS a
-                        INNER JOIN ost_department_test AS b ON a.dept_guid = b.department_guid
-                        WHERE staff_guid = '$poster_id'"),
-                    'template' => $this->db->query("SELECT * FROM ost_company_test"),
-                );
+                if($depart != '')
+                {
+                    $data = array(
+                        'body' => $this->db->query("SELECT REPLACE(REPLACE(subject, '%number%', '".$emailinfo->row('number')."'), '%department%', '".$username->row('name')."') AS email_subject, 
+                            REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(body, '%user_name%', '".$username->row('username')."'), '%assigner%', '$poster'), '%number%', '".$emailinfo->row('number')."'), '%department%', '".$username->row('name')."'), '%comment%', '".$notearr['transfernote']."') AS email
+                            FROM ost_email_template_test WHERE code_name = 'transfer.alert' AND tpl_guid = '$default_template_id'"),
+                        'ticketsign' => $this->db->query("SELECT a.*, b.*, a.signature AS staffsign, b.signature AS deptsign FROM ost_staff_test AS a
+                            INNER JOIN ost_department_test AS b ON a.dept_guid = b.department_guid
+                            WHERE staff_guid = '$poster_id'"),
+                        'template' => $this->db->query("SELECT * FROM ost_company_test"),
+                    );
+                }
+                else
+                {
+                    $data = array(
+                        'body' => $this->db->query("SELECT REPLACE(subject, '%number%', '".$emailinfo->row('number')."') AS email_subject, 
+                            REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(body, '%user_name%', '".$username->row('username')."'), '%assigner%', '$poster'), '%number%', '".$emailinfo->row('number')."'), '%topic%', '".$topicinfo->row('topic')."'), '%department%', '".$username->row('name')."'), '%subtopic%', '".$topicinfo->row('value')."') AS email
+                            FROM ost_email_template_test WHERE code_name = 'assigned.alert' AND tpl_guid = '$default_template_id'"),
+                        'ticketsign' => $this->db->query("SELECT a.*, b.*, a.signature AS staffsign, b.signature AS deptsign FROM ost_staff_test AS a
+                            INNER JOIN ost_department_test AS b ON a.dept_guid = b.department_guid
+                            WHERE staff_guid = '$poster_id'"),
+                        'template' => $this->db->query("SELECT * FROM ost_company_test"),
+                    );
+                }
 
                 $default_email = $this->db->query("SELECT value FROM ost_config_test WHERE id='83'")->row('value');
                 $sender_email = $this->db->query("SELECT * FROM ost_email_test WHERE email_guid='$default_email'")->row();
@@ -1336,10 +1417,10 @@ public function ticketinfoedit()
 
 }
 
-public function ticket_user_update()
-{      
-    if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
-    {
+    public function ticket_user_update()
+    {      
+        if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
+        {
         $ticketid = $_REQUEST['id'];
         $status = $_REQUEST['status'];
         $poster_id = $_SESSION['staffid'];
@@ -1408,14 +1489,14 @@ public function ticket_user_update()
         {
             echo "<script> document.location='" . base_url() . "/index.php/staff_ticket_controller/ticketinfoedit?id=$ticketid&uid=' </script>";
         }
-    }
+        }
 
-    else       
-    {
-       redirect('user_controller/superlogin');
-    }
+        else       
+        {
+           redirect('user_controller/superlogin');
+        }
 
-}
+    }
 
 public function ticketeditsubmit()
 {
@@ -1574,10 +1655,10 @@ public function deleteticketusernote()
     redirect('staff_ticket_controller/ticketinfo?id='.$ticket_guid);
 }
 
-public function staffupdate()
-{
-    if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
+    public function staffupdate()
     {
+        if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
+        {
             $ticketid = $_REQUEST['id'];
             $description = addslashes($this->input->post('response'));
             $poster_id = $_SESSION['staffid'];
@@ -1936,12 +2017,22 @@ public function staffupdate()
 
             $posterfname = $this->db->query("SELECT firstname FROM ost_staff_test WHERE staff_guid = '$poster_id'")->row('firstname');
             $posterlname = $this->db->query("SELECT lastname FROM ost_staff_test WHERE staff_guid = '$poster_id'")->row('lastname');
+            $assigned_alert_active = $this->db->query("SELECT value FROM ost_config_test WHERE id = '59'")->row('value');
+            $assigned_alert_staff = $this->db->query("SELECT value FROM ost_config_test WHERE id = '60'")->row('value');
+            $assigned_alert_team_lead = $this->db->query("SELECT value FROM ost_config_test WHERE id = '61'")->row('value');
+            $assigned_alert_team_members = $this->db->query("SELECT value FROM ost_config_test WHERE id = '62'")->row('value');
+            $transfer_alert_active = $this->db->query("SELECT value FROM ost_config_test WHERE id = '51'")->row('value');
+            $transfer_alert_assigned = $this->db->query("SELECT value FROM ost_config_test WHERE id = '52'")->row('value');
+            $transfer_alert_dept_manager = $this->db->query("SELECT value FROM ost_config_test WHERE id = '53'")->row('value');
+            $transfer_alert_dept_members = $this->db->query("SELECT value FROM ost_config_test WHERE id = '54'")->row('value');
+            
 
             foreach ($check as $value)
             {
                 $ticketinfo = $this->db->query("SELECT assigned_to, ticket_updated, ticket_updated_by_id, ticket_updated_by_role FROM ost_ticket_test WHERE ticket_guid = '$value'");
                 $autolock_minutes = $this->db->query("SELECT value FROM ost_config_test WHERE id = '23'");
                 $autolock_time = date("Y-m-d H:i:s", strtotime("+{$autolock_minutes->row('value')} minutes", strtotime($ticketinfo->row('ticket_updated'))));
+                $alluseremail = array();
 
                 if ($ticketinfo->row('assigned_to') == $poster_id || date('Y-m-d H:i:s') > $autolock_time || $ticketinfo->row('ticket_updated_by_id') == $poster_id || $ticketinfo->row('ticket_updated_by_role') == 'user')
                 {
@@ -2028,6 +2119,70 @@ public function staffupdate()
                         {
                             $transfer_sla_guid = $this->db->query("SELECT sla_guid FROM `ost_department_test` WHERE name = '$depart' ")->row('sla_guid');
 
+                            if($transfer_alert_active == '1')
+                            {
+                                if($transfer_alert_assigned == '1')
+                                {
+                                    $assigned = $this->db->query("SELECT assigned_to, team_guid FROM ost_ticket_test WHERE ticket_guid = $value");
+
+                                    if($assigned->row('assigned_to') != '' && $assigned->row('team_guid') != '')
+                                    {
+                                        if($assigned->row('assigned_to') != '0')
+                                        {
+                                            $assigned_email = $this->db->query("SELECT email FROM ost_staff_test WHERE staff_guid = '".$assigned->row('assigned_to')."'")->row('email');
+
+                                            if (!in_array($assigned_email, $alluseremail))
+                                            {
+                                                array_push($alluseremail, $assigned_email);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            $assigned_teamlead_email = $this->db->query("SELECT a.email FROM ost_staff_test a INNER JOIN ost_team_test b ON b.lead_guid = a.staff_guid WHERE team_guid = '".$assigned->row('team_guid')."'")->row('email');
+
+                                            if (!in_array($assigned_teamlead_email, $alluseremail))
+                                            {
+                                                array_push($alluseremail, $assigned_teamlead_email);
+                                            }
+
+                                            $assigned_teammem_emails = $this->db->query("SELECT a.email FROM ost_staff_test a INNER JOIN ost_team_member_test b ON b.staff_guid = a.staff_guid WHERE team_guid = '".$assigned->row('assigned_to')."'");
+
+                                            foreach($assigned_teammem_emails->result() as $email)
+                                            {
+                                                if (!in_array($email->email, $alluseremail))
+                                                {
+                                                    array_push($alluseremail, $email->email);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                                if($transfer_alert_dept_manager == '1')
+                                {
+                                    $dept_manager_email = $this->db->query("SELECT a.email FROM ost_staff_test a INNER JOIN ost_department_test b ON b.manager_guid = a.staff_guid WHERE b.name = '$depart'")->row('email');
+
+                                    if (!in_array($dept_manager_email, $alluseremail))
+                                    {
+                                        array_push($alluseremail, $dept_manager_email);
+                                    }
+
+                                }
+
+                                if($transfer_alert_dept_members == '1')
+                                {
+                                    $dept_members_email = $this->db->query("SELECT a.email FROM ost_staff_test a INNER JOIN ost_department_test b on b.department_guid = a.dept_guid WHERE b.name = '$depart'");
+
+                                    foreach($dept_members_email->result() as $email)
+                                    {
+                                        if (!in_array($email->email, $alluseremail))
+                                        {
+                                            array_push($alluseremail, $email->email);
+                                        }
+                                    }
+                                }
+                            }
+
                             $this->db->query("UPDATE ost_ticket_test SET department = '$depart', status_guid = '8', sla_guid = '$transfer_sla_guid', assigned_to = '0', team_guid = '0', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_guid = '$value' ");
                             echo "<script> alert('#$number Successfully change department');</script>";
                         }
@@ -2040,18 +2195,29 @@ public function staffupdate()
                             $primaryassigncheck = $this->db->query("SELECT a.dept_guid , a.role_guid, b.`permissions` FROM ost_staff_test a INNER JOIN ost_role_test b ON a.`role_guid` = b.role_guid INNER JOIN ost_department_test c ON a.dept_guid = c.`department_guid` INNER JOIN ost_ticket_test d ON C.`name` = d.`department` WHERE staff_guid = '$poster_id' AND b.permissions LIKE '%ticket.assign%' AND ticket_guid = '$value'")->num_rows();
                             $assgincheck = $this->db->query("SELECT * FROM ost_ticket_test a INNER JOIN ost_department_test b ON a.`department` = b.`name` INNER JOIN ost_staff_dept_access_test c ON b.`department_guid` = c.dept_guid INNER JOIN ost_role_test d ON c.`role_guid` = d.`role_guid` WHERE a.ticket_guid = '$value' AND d.permissions LIKE '%ticket.assign%' AND C.`staff_guid` = '$poster_id'")->num_rows();
 
+                            if($assigned_alert_active == '1')
+                            {
+                                if($assigned_alert_staff == '1')
+                                {
+                                    $staff_email = $this->db->query("SELECT email FROM ost_staff_test WHERE staff_guid = '$staff_guid'")->row('email');
+
+                                    if (!in_array($staff_email, $alluseremail))
+                                    {
+                                        array_push($alluseremail, $staff_email);
+                                    }
+                                }
+                            }
+
                             if ($primaryassigncheck != 0)
                             {
                                 $this->db->query("UPDATE ost_ticket_test SET assigned_to = '$staff_guid' , team_guid = '$team_guid' , status_guid = '7', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_guid = '$value' ");
                                 echo "<script> alert('#$number Successfully assigned to agent');</script>";
                             }
-
                             else if ($assgincheck != 0)
                             {
                                 $this->db->query("UPDATE ost_ticket_test SET assigned_to = '$staff_guid' , team_guid = '$team_guid' , status_guid = '7', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_guid = '$value' ");
                                 echo "<script> alert('#$number Successfully assigned to agent');</script>";
                             }
-
                             else
                             {
                                 echo "<script> alert('You have no permission for #$number');</script>";
@@ -2065,6 +2231,32 @@ public function staffupdate()
 
                             $primaryassigncheck = $this->db->query("SELECT a.dept_guid , a.role_guid, b.`permissions` FROM ost_staff_test a INNER JOIN ost_role_test b ON a.`role_guid` = b.role_guid INNER JOIN ost_department_test c ON a.dept_guid = c.`department_guid` INNER JOIN ost_ticket_test d ON C.`name` = d.`department` WHERE staff_guid = '$poster_id' AND b.permissions LIKE '%ticket.assign%' AND ticket_guid = '$value'")->num_rows();
                             $assgincheck = $this->db->query("SELECT * FROM ost_ticket_test a INNER JOIN ost_department_test b ON a.`department` = b.`name` INNER JOIN ost_staff_dept_access_test c ON b.`department_guid` = c.dept_guid INNER JOIN ost_role_test d ON c.`role_guid` = d.`role_guid` WHERE a.ticket_guid = '$value' AND d.permissions LIKE '%ticket.assign%' AND C.`staff_guid` = '$poster_id'")->num_rows();
+
+                            if($assigned_alert_active == '1')
+                            {
+                                if($assigned_alert_team_lead == '1')
+                                {
+                                    $team_lead_email = $this->db->query("SELECT a.email FROM ost_staff_test a INNER JOIN ost_team_test b ON b.lead_guid = a.staff_guid WHERE b.team_guid = '$team_guid'")->row('email');
+
+                                    if (!in_array($team_lead_email, $alluseremail))
+                                    {
+                                        array_push($alluseremail, $team_lead_email);
+                                    }
+                                }
+
+                                if($assigned_alert_team_members == '1')
+                                {
+                                    $team_members_email = $this->db->query("SELECT a.email FROM ost_staff_test a INNER JOIN ost_team_member_test b ON b.staff_guid = a.staff_guid WHERE b.team_guid = '$team_guid'");
+
+                                    foreach($team_members_email->result() as $value2)
+                                    {
+                                        if (!in_array($value2->email, $alluseremail))
+                                        {
+                                            array_push($alluseremail, $value2->email);
+                                        }
+                                    }
+                                }
+                            }
 
                             if ($primaryassigncheck != 0)
                             {
@@ -2173,8 +2365,72 @@ public function staffupdate()
                     
                         else if ($depart != "" )
                         {
-                          $this->db->query("UPDATE ost_ticket_test SET department = '$depart', status_guid = '8', assigned_to = '0', team_guid = '0', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_guid = '$value' ");
-                          echo "<script> alert('#$number Successfully change department');</script>";
+                            $this->db->query("UPDATE ost_ticket_test SET department = '$depart', status_guid = '8', assigned_to = '0', team_guid = '0', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_guid = '$value' ");
+                            echo "<script> alert('#$number Successfully change department');</script>";
+
+                            if($transfer_alert_active == '1')
+                            {
+                                if($transfer_alert_assigned == '1')
+                                {
+                                    $assigned = $this->db->query("SELECT assigned_to, team_guid FROM ost_ticket_test WHERE ticket_guid = '$value'");
+
+                                    if($assigned->row('assigned_to') != '' && $assigned->row('team_guid') != '')
+                                    {
+                                        if($assigned->row('assigned_to') != '0')
+                                        {
+                                            $assigned_email = $this->db->query("SELECT email FROM ost_staff_test WHERE staff_guid = '".$assigned->row('assigned_to')."'")->row('email');
+
+                                            if (!in_array($assigned_email, $alluseremail))
+                                            {
+                                                array_push($alluseremail, $assigned_email);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            $assigned_teamlead_email = $this->db->query("SELECT a.email FROM ost_staff_test a INNER JOIN ost_team_test b ON b.lead_guid = a.staff_guid WHERE team_guid = '".$assigned->row('team_guid')."'")->row('email');
+
+                                            if (!in_array($assigned_teamlead_email, $alluseremail))
+                                            {
+                                                array_push($alluseremail, $assigned_teamlead_email);
+                                            }
+
+                                            $assigned_teammem_emails = $this->db->query("SELECT a.email FROM ost_staff_test a INNER JOIN ost_team_member_test b ON b.staff_guid = a.staff_guid WHERE team_guid = '".$assigned->row('assigned_to')."'");
+
+                                            foreach($assigned_teammem_emails->result() as $email)
+                                            {
+                                                if (!in_array($email->email, $alluseremail))
+                                                {
+                                                    array_push($alluseremail, $email->email);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                                if($transfer_alert_dept_manager == '1')
+                                {
+                                    $dept_manager_email = $this->db->query("SELECT a.email FROM ost_staff_test a INNER JOIN ost_department_test b ON b.manager_guid = a.staff_guid WHERE b.name = '$depart'")->row('email');
+
+                                    if (!in_array($dept_manager_email, $alluseremail))
+                                    {
+                                        array_push($alluseremail, $dept_manager_email);
+                                    }
+
+                                }
+
+                                if($transfer_alert_dept_members == '1')
+                                {
+                                    $dept_members_email = $this->db->query("SELECT a.email FROM ost_staff_test a INNER JOIN ost_department_test b on b.department_guid = a.dept_guid WHERE b.name = '$depart'");
+
+                                    foreach($dept_members_email->result() as $email)
+                                    {
+                                        if (!in_array($email->email, $alluseremail))
+                                        {
+                                            array_push($alluseremail, $email->email);
+                                        }
+                                    }
+                                }
+                            }
                         }
 
                         else if ($assignto{0} == 'a')
@@ -2184,6 +2440,19 @@ public function staffupdate()
 
                             $primaryassigncheck = $this->db->query("SELECT a.dept_guid , a.role_guid, b.`permissions` FROM ost_staff_test a INNER JOIN ost_role_test b ON a.`role_guid` = b.role_guid INNER JOIN ost_department_test c ON a.dept_guid = c.`department_guid` INNER JOIN ost_ticket_test d ON C.`name` = d.`department` WHERE staff_guid = '$poster_id' AND b.permissions LIKE '%ticket.assign%' AND ticket_guid = '$value'")->num_rows();
                             $assgincheck = $this->db->query("SELECT * FROM ost_ticket_test a INNER JOIN ost_department_test b ON a.`department` = b.`name` INNER JOIN ost_staff_dept_access_test c ON b.`department_guid` = c.dept_guid INNER JOIN ost_role_test d ON c.`role_guid` = d.`role_guid` WHERE a.ticket_guid = '$value' AND d.permissions LIKE '%ticket.assign%' AND C.`staff_guid` = '$poster_id'")->num_rows();
+
+                            if($assigned_alert_active == '1')
+                            {
+                                if($assigned_alert_staff == '1')
+                                {
+                                    $staff_email = $this->db->query("SELECT email FROM ost_staff_test WHERE staff_guid = '$staff_guid'")->row('email');
+
+                                    if (!in_array($staff_email, $alluseremail))
+                                    {
+                                        array_push($alluseremail, $staff_email);
+                                    }
+                                }
+                            }
 
                             if ($primaryassigncheck != 0)
                             {
@@ -2210,6 +2479,32 @@ public function staffupdate()
 
                             $primaryassigncheck = $this->db->query("SELECT a.dept_guid , a.role_guid, b.`permissions` FROM ost_staff_test a INNER JOIN ost_role_test b ON a.`role_guid` = b.role_guid INNER JOIN ost_department_test c ON a.dept_guid = c.`department_guid` INNER JOIN ost_ticket_test d ON C.`name` = d.`department` WHERE staff_guid = '$poster_id' AND b.permissions LIKE '%ticket.assign%' AND ticket_guid = '$value'")->num_rows();
                             $assgincheck = $this->db->query("SELECT * FROM ost_ticket_test a INNER JOIN ost_department_test b ON a.`department` = b.`name` INNER JOIN ost_staff_dept_access_test c ON b.`department_guid` = c.dept_guid INNER JOIN ost_role_test d ON c.`role_guid` = d.`role_guid` WHERE a.ticket_guid = '$value' AND d.permissions LIKE '%ticket.assign%' AND C.`staff_guid` = '$poster_id'")->num_rows();
+
+                            if($assigned_alert_active == '1')
+                            {
+                                if($assigned_alert_team_lead == '1')
+                                {
+                                    $team_lead_email = $this->db->query("SELECT a.email FROM ost_staff_test a INNER JOIN ost_team_test b ON b.lead_guid = a.staff_guid WHERE b.team_guid = '$team_guid'")->row('email');
+
+                                    if (!in_array($team_lead_email, $alluseremail))
+                                    {
+                                        array_push($alluseremail, $team_lead_email);
+                                    }
+                                }
+
+                                if($assigned_alert_team_members == '1')
+                                {
+                                    $team_members_email = $this->db->query("SELECT a.email FROM ost_staff_test a INNER JOIN ost_team_member_test b ON b.staff_guid = a.staff_guid WHERE b.team_guid = '$team_guid'");
+
+                                    foreach($team_members_email->result() as $value2)
+                                    {
+                                        if (!in_array($value2->email, $alluseremail))
+                                        {
+                                            array_push($alluseremail, $value2->email);
+                                        }
+                                    }
+                                }
+                            }
 
                             if ($primaryassigncheck != 0)
                             {
@@ -2264,6 +2559,67 @@ public function staffupdate()
                     else
                     {
                         echo "<script> alert('You have no permission for #$number');</script>";
+                    }
+
+                    foreach ($alluseremail as $value1)
+                    {
+                        $this->load->library('email');
+
+                        $username = $this->db->query("SELECT CONCAT(a.firstname,' ',a.lastname) AS username, b.name FROM ost_staff_test a INNER JOIN ost_department_test b ON b.department_guid = a.dept_guid WHERE email = '$value1'");
+                        $poster = $this->db->query("SELECT CONCAT(a.firstname,' ',a.lastname) AS username FROM ost_staff_test a WHERE staff_guid = '$poster_id'")->row('username');
+                        $emailinfo = $this->db->query("SELECT * FROM ost_ticket_test WHERE ticket_guid = '$value'");
+                        $topicinfo = $this->db->query("SELECT * FROM ost_ticket_test b
+                        INNER JOIN ost_help_topic_test AS c ON b.topic_guid = c.topic_guid
+                        INNER JOIN ost_list_items_test AS d ON b.subtopic_guid = d.list_item_guid
+                        WHERE ticket_guid = '$value'");
+                        
+                        $default_template_id = $this->db->query("SELECT * FROM ost_config_test WHERE id = '87'")->row('value');
+
+                        if($depart != '')
+                        {
+                            $data = array(
+                                'body' => $this->db->query("SELECT REPLACE(REPLACE(subject, '%number%', '".$emailinfo->row('number')."'), '%department%', '".$username->row('name')."') AS email_subject, 
+                                    REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(body, '%user_name%', '".$username->row('username')."'), '%assigner%', '$poster'), '%number%', '".$emailinfo->row('number')."'), '%department%', '".$username->row('name')."'), '%comment%', '".$notearr['transfernote']."') AS email
+                                    FROM ost_email_template_test WHERE code_name = 'transfer.alert' AND tpl_guid = '$default_template_id'"),
+                                'ticketsign' => $this->db->query("SELECT a.*, b.*, a.signature AS staffsign, b.signature AS deptsign FROM ost_staff_test AS a
+                                    INNER JOIN ost_department_test AS b ON a.dept_guid = b.department_guid
+                                    WHERE staff_guid = '$poster_id'"),
+                                'template' => $this->db->query("SELECT * FROM ost_company_test"),
+                            );
+                        }
+                        else
+                        {
+                            $data = array(
+                                'body' => $this->db->query("SELECT REPLACE(subject, '%number%', '".$emailinfo->row('number')."') AS email_subject, 
+                                    REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(body, '%user_name%', '".$username->row('username')."'), '%assigner%', '$poster'), '%number%', '".$emailinfo->row('number')."'), '%topic%', '".$topicinfo->row('topic')."'), '%department%', '".$username->row('name')."'), '%subtopic%', '".$topicinfo->row('value')."') AS email
+                                    FROM ost_email_template_test WHERE code_name = 'assigned.alert' AND tpl_guid = '$default_template_id'"),
+                                'ticketsign' => $this->db->query("SELECT a.*, b.*, a.signature AS staffsign, b.signature AS deptsign FROM ost_staff_test AS a
+                                    INNER JOIN ost_department_test AS b ON a.dept_guid = b.department_guid
+                                    WHERE staff_guid = '$poster_id'"),
+                                'template' => $this->db->query("SELECT * FROM ost_company_test"),
+                            );
+                        }
+
+                        $default_email = $this->db->query("SELECT value FROM ost_config_test WHERE id='83'")->row('value');
+                        $sender_email = $this->db->query("SELECT * FROM ost_email_test WHERE email_guid='$default_email'")->row();
+
+                        $config = array(
+            
+                            'smtp_user' => $sender_email->userid,
+                            'smtp_pass' => $sender_email->userpass,
+                            'smtp_host' => $sender_email->smtp_host,
+                            'smtp_port' => $sender_email->smtp_port,
+                            
+                        );
+                        $bodyContent = $this->load->view('email_template', $data, TRUE);
+
+                        $this->email->initialize($config);
+                        $this->email->from($sender_email->userid); 
+                        $this->email->reply_to($sender_email->userid);    // Optional, an account where a human being reads.
+                        $this->email->to($value1);
+                        $this->email->subject($data['body']->row('email_subject'));
+                        $this->email->message($bodyContent);
+                        $this->email->send();
                     }
                 }
                 else
