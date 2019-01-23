@@ -185,14 +185,20 @@
                   </tr>
                   </tbody>
 
+
+
                   <tbody>
                   <tr>
                     <td colspan="2">
-                      <br><textarea class="form-control" rows="4" cols="40" placeholder="Optional reason for status change (internal note)" id="_e8f5989ca9fa6fe1" name="statusnote"></textarea>
+                      <br>
+                      <div class="popup_selected_ticket" style="font-size: 15px;background-color: lightyellow;"></div>
+                      <br><textarea class="form-control" rows="4" cols="40" placeholder="Optional reason for status change (internal note)" name="statusnote"></textarea>
                     </td>
                   </tr>
                   </tbody>
                 </table>
+
+                
                
                 </div>
               </div>
@@ -261,28 +267,14 @@
                           <div>
                                     </div><div>
                                   <span style="display:inline-block;width:100%">
-                          <textarea class="form-control" rows="4" cols="40" placeholder="Optional reason for the assignment" id="_d8bf82dc954436ab" name="assignnote"></textarea>
+                          <br>
+                          <div class="popup_selected_ticket" style="font-size: 15px;background-color: lightyellow;"></div>
+                          <br>
+                          <textarea class="form-control" rows="4" cols="40" placeholder="Optional reason for the assignment" name="assignnote"></textarea>
                           </span>
                                   </div>
                                   </div>
-                              <script type="text/javascript">
-                            $(function() {
-                                              $(document).off('change.assign');
-                                  $(document).on('change.assign',
-                                      'form#assign :input',
-                                      function() {
-                                          //Clear any current errors...
-                                          var errors = $('#field'+$(this).attr('id')+'_error');
-                                          if (errors.length)
-                                              errors.slideUp('fast', function (){
-                                                  $(this).remove();
-                                                  });
-                                          //TODO: Validation input inplace or via ajax call
-                                          // and set any new errors AND visibilty changes
-                                      }
-                                     );
-                                          });
-                          </script>
+
                           </div>
                               </td> </tr>
                           </tbody>
@@ -331,7 +323,7 @@
             <div class="flush-left custom-field" id="field_b7a7b14540f04e3c">
           <div>
             <div class="field-label required">
-          <label for="b7a7b14540f04e3c">
+          <label>
               Department:
                 <span class="error">*</span>
             </label>
@@ -346,11 +338,14 @@
                 </select>
                 </div>
                 </div>
-            <div class="flush-left custom-field" id="field_e8f5989ca9fa6fe1">
+            <div class="flush-left custom-field">
           <div>
                     </div><div>
                   <span style="display:inline-block;width:100%">
-          <textarea class="form-control" rows="4" cols="40" placeholder="Optional reason for the transfer" id="_e8f5989ca9fa6fe1" name="transfernote"></textarea>
+          <br>
+          <div class="popup_selected_ticket" style="font-size: 15px;background-color: lightyellow;"></div>
+          <br>
+          <textarea class="form-control" rows="4" cols="40" placeholder="Optional reason for the transfer" name="transfernote"></textarea>
           </span>
                   </div>
                 </div>
@@ -420,7 +415,12 @@
                                 <tbody>
                             <tr>
                                 <td colspan="2">
-                                  <br><textarea class="form-control" rows="4" cols="40" placeholder="Optional reason for deleting selected tickets" id="_e8f5989ca9fa6fe1" name="deletenote"></textarea>
+                                  
+                                  <br>
+                                  <div class="popup_selected_ticket" style="font-size: 15px;background-color: lightyellow;"></div>
+                                  <br>
+
+                                  <textarea class="form-control" rows="4" cols="40" placeholder="Optional reason for deleting selected tickets" name="deletenote"></textarea>
                                 </td>
                             </tr>
                         </tbody>
@@ -639,6 +639,48 @@ $(document).ready(function () {
     });
 
 });
+
+</script>
+
+<script type="text/javascript">
+  
+                  $(".action-button").click(function(){
+
+                  var check = [];
+
+                  $.each($(".ckb:checked"), function(){        
+
+                  check.push($(this).val());
+
+                  /*+ check.join(", ")*/
+                  });
+                       
+
+                        $.ajax({
+                          url : "<?php echo site_url('staff_ticket_controller/selected_tickets_ajax?ticket_guid_string='); ?>" + check,
+                          success : function(result){
+                            
+                          result = JSON.parse(result);
+
+                          html = "";
+                          for(i = 0; i < result.length; i++)
+                          {
+                            //console.log(result[i].invoice_number);
+                            
+                            html += "<span style='margin: 2px;'><b> #"+ result[i] +"</b></span>";
+                            
+
+                            
+                          }
+
+                          $('.popup_selected_ticket').html(html);
+                          }
+                        });
+                    });
+
+
+                  
+
 
 </script>
 

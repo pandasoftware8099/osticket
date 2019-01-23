@@ -147,6 +147,10 @@ $(function() {
 
                 <div id="deleteticket2" style="display:none;"><br><input value="1" type="checkbox" name="deletetickets">&nbsp;Also delete all associated tickets and attachments</div>
 
+                <br>
+                    <div class="popup_selected_username" style="font-size: 15px;background-color: lightyellow;"></div>
+                <br>
+
                 <div><br><b>Press OK to confirm and continue.</b></div>
 
                 <script type="text/javascript">
@@ -581,6 +585,49 @@ $(document).ready(function () {
     
 
 });
+
+</script>
+
+<script type="text/javascript">
+  
+                  $(".action-button").click(function(){
+
+                  var check = [];
+
+                  $.each($(".ckb:checked"), function(){        
+
+                  check.push($(this).val());
+
+                  /*+ check.join(", ")*/
+                  });
+                       
+
+                        $.ajax({
+                          url : "<?php echo site_url('staff_user_controller/selected_users_ajax?user_guid_string='); ?>" + check,
+                          success : function(result){
+                            
+                          result = JSON.parse(result);
+
+                          html = "";
+                          a = 1;
+                          for(i = 0; i < result.length; i++)
+                          {
+                            //console.log(result[i].invoice_number);
+                            
+                            html += "<span style='margin: 2px;'><b> "+a+")"+ result[i] +"</b></span>";
+                            
+
+                            a++
+                          }
+
+                          $('.popup_selected_username').html(html);
+                          }
+                        });
+                    });
+
+
+                  
+
 
 </script>
 
