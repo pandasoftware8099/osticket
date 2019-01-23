@@ -362,6 +362,8 @@ class staff_task_controller extends CI_Controller {
                 else if ($delete == '5'){
 
                     $this->db->query("DELETE FROM ost_task_test WHERE task_guid = '$value' ");
+
+                    $this->db->query("DELETE FROM osticket.ost_thread_entry_test WHERE task_guid = '$value'");
                     echo "<script> alert('$number Successfully deleted');</script>";
                 }
 
@@ -706,6 +708,8 @@ class staff_task_controller extends CI_Controller {
 
                 $this->db->query("DELETE FROM ost_task_test WHERE task_guid = '$taskid' ");
 
+                $this->db->query("DELETE FROM osticket.ost_thread_entry_test WHERE task_guid = '$taskid'");
+
                 redirect('staff_task_controller/main');
             }
 
@@ -786,6 +790,30 @@ class staff_task_controller extends CI_Controller {
            redirect('user_controller/superlogin');
         }
 
+    }
+
+    public function selected_tasks_ajax()
+    {
+            
+            $task_guid_string= $_REQUEST['task_guid_string'];
+            $i = 0;
+
+            $checked_array = explode(',', $task_guid_string);
+
+            foreach ($checked_array as $value ) {
+                $data[$i] = $this->db->query("SELECT number from osticket.ost_task_test WHERE task_guid = '$value' GROUP BY number ASC")->row('number');
+                $i++;
+
+            }
+            echo json_encode($data);
+            
+            
+
+            
+        
+            /*$data = $this->db->query("SELECT a.period_code FROM `supplier_monthly_doc_count` a LEFT JOIN `supplier_monthly_main` b ON a.period_code = b.`period_code` WHERE a.customer_guid = '$customerid' AND a.supplier_guid = '$supplierid' AND invoice_number IS NULL;")->result();*/
+
+   
     }
 }
 

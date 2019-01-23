@@ -880,11 +880,11 @@ public function ticketinfo()
 
             'ticketstatus' => $this->db->query("SELECT * FROM ost_ticket_status_test"),
 
-            'userticketcount' => $this->db->query("SELECT * FROM ost_ticket_test WHERE user_guid = $userid"),
+            'userticketcount' => $this->db->query("SELECT * FROM ost_ticket_test WHERE user_guid = '$userid'"),
 
-            'userticketopen' => $this->db->query("SELECT * FROM ost_ticket_test AS a INNER JOIN ost_ticket_status_test AS b ON a.status_guid = b.status_guid WHERE b.state = 'open' AND a.user_guid = $userid"),
+            'userticketopen' => $this->db->query("SELECT * FROM ost_ticket_test AS a INNER JOIN ost_ticket_status_test AS b ON a.status_guid = b.status_guid WHERE b.state = 'open' AND a.user_guid = '$userid'"),
 
-            'userticketclose' => $this->db->query("SELECT * FROM ost_ticket_test AS a INNER JOIN ost_ticket_status_test AS b ON a.status_guid = b.status_guid WHERE b.state = 'closed' AND a.user_guid = $userid"),
+            'userticketclose' => $this->db->query("SELECT * FROM ost_ticket_test AS a INNER JOIN ost_ticket_status_test AS b ON a.status_guid = b.status_guid WHERE b.state = 'closed' AND a.user_guid = '$userid'"),
 
             'enable_avatars' => $this->db->query("SELECT value FROM ost_config_test WHERE id = '93'"),
 
@@ -931,7 +931,7 @@ public function ticketinfoupdate()
         $status = $this->input->post('status_guid');
         $depart = $this->input->post('departmentid');
         $assignto = $this->input->post('assignto');
-        $delete = $this->input->post('deletetask');
+        $delete = $this->input->post('deleteticket'); 
 
         $ticketinfo = $this->db->query("SELECT assigned_to, ticket_updated, ticket_updated_by_id, ticket_updated_by_role FROM ost_ticket_test WHERE ticket_guid = '$ticketid'");
         $autolock_minutes = $this->db->query("SELECT value FROM ost_config_test WHERE id = '23'");
@@ -1147,9 +1147,10 @@ public function ticketinfoupdate()
             else if ($delete == '5')
             {
                 $this->db->query("DELETE FROM ost_ticket_test WHERE ticket_guid = '$ticketid'");
+                $this->db->query("DELETE FROM osticket.ost_thread_entry_test WHERE ticket_guid = '$ticketid'");
 
                 echo "<script> alert('Successfully deleted');</script>";
-                echo "<script> document.location='" . base_url() . "/index.php/staff_ticket_controller/main?title=Open' </script>";    
+                echo "<script> document.location='" . base_url() . "/index.php/staff_ticket_controller/main?title=Open&direct=open' </script>";    
             }
 
             $poster_id = $_SESSION["staffid"];
@@ -1268,6 +1269,7 @@ public function ticketinfoedit()
     {
         $ticketid = $_REQUEST['id'];
         $userid = $_REQUEST['uid'];
+        $poster_id = $_SESSION["staffid"];   
 
         $phone = $this->db->query("SELECT * FROM ost_ticket_test AS a 
             INNER JOIN ost_user_test AS b ON a.user_guid = b.user_guid
@@ -1311,7 +1313,16 @@ public function ticketinfoedit()
             'editticket' => $this->db->query("SELECT * FROM ost_ticket_test WHERE ticket_guid = '$ticketid'"),
 
             'departmt' => $this->db->query("SELECT * FROM  ost_department_test AS a INNER JOIN ost_user_test AS b ON a.department_guid = b.user_depart INNER JOIN ost_ticket_test AS c ON b.user_guid = c.user_guid WHERE ticket_guid = '$ticketid'")->row(),
-        );            
+        );
+
+                    $ipaddress = $_SERVER['REMOTE_ADDR'];
+                    $posterfname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = '$poster_id'")->row('firstname');
+                    $posterlname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = '$poster_id'")->row('lastname');
+                   
+                    $description = '<b>'.$posterfname.''.$posterlname.'</b> edited ticket.' ;
+
+                    $this->db->query("INSERT INTO osticket.ost_thread_entry_test (thread_entry_guid, ticket_guid , staff_guid , type, poster , body , ip_address, created, updated, class, avatar )
+                    VALUES (REPLACE(UPPER(UUID()),'-',''), '$ticketid' ,'$poster_id', 'E' ,'$posterfname $posterlname', '$description', '$ipaddress', now(), now(), 'pencil', 'left')");            
 
         $browser_id = $_SERVER["HTTP_USER_AGENT"];
         if(strpos($browser_id,"Windows CE") || strpos($browser_id,"Windows NT 5.1") )
@@ -2091,12 +2102,18 @@ public function staffupdate()
                             if ($primarydeletecheck != 0)
                             {
                                 $this->db->query("DELETE FROM ost_ticket_test WHERE ticket_guid = '$value' ");
+
+                                $this->db->query("DELETE FROM osticket.ost_thread_entry_test WHERE ticket_guid = '$value'");
+
                                 echo "<script> alert('#$number Successfully delete');</script>";
                             }
 
                             else if ($deletecheck != 0)
                             {
                                 $this->db->query("DELETE FROM ost_ticket_test WHERE ticket_guid = '$value' ");
+
+                                $this->db->query("DELETE FROM osticket.ost_thread_entry_test WHERE ticket_guid = '$value'");
+
                                 echo "<script> alert('#$number Successfully delete');</script>";
                             }
 
@@ -2237,12 +2254,18 @@ public function staffupdate()
                             if ($primarydeletecheck != 0)
                             {
                                 $this->db->query("DELETE FROM ost_ticket_test WHERE ticket_guid = '$value' ");
+
+                                $this->db->query("DELETE FROM osticket.ost_thread_entry_test WHERE ticket_guid = '$value'");
+
                                 echo "<script> alert('#$number Successfully delete');</script>";
                             }
 
                             else if ($deletecheck != 0)
                             {
                                 $this->db->query("DELETE FROM ost_ticket_test WHERE ticket_guid = '$value' ");
+
+                                $this->db->query("DELETE FROM osticket.ost_thread_entry_test WHERE ticket_guid = '$value'");
+
                                 echo "<script> alert('#$number Successfully delete');</script>";
                             }
 
@@ -2455,6 +2478,31 @@ public function staffupdate()
         }
       
         echo $output;
+    }
+
+
+    public function selected_tickets_ajax()
+    {
+            
+            $ticket_guid_string= $_REQUEST['ticket_guid_string'];
+            $i = 0;
+
+            $checked_array = explode(',', $ticket_guid_string);
+
+            foreach ($checked_array as $value ) {
+                $data[$i] = $this->db->query("SELECT number from osticket.ost_ticket_test WHERE ticket_guid = '$value' GROUP BY number ASC")->row('number');
+                $i++;
+
+            }
+            echo json_encode($data);
+            
+            
+
+            
+        
+            /*$data = $this->db->query("SELECT a.period_code FROM `supplier_monthly_doc_count` a LEFT JOIN `supplier_monthly_main` b ON a.period_code = b.`period_code` WHERE a.customer_guid = '$customerid' AND a.supplier_guid = '$supplierid' AND invoice_number IS NULL;")->result();*/
+
+   
     }
 }
 ?>
