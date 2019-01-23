@@ -445,7 +445,7 @@ class staff_task_controller extends CI_Controller {
             'team' => $this->db->query("SELECT * FROM  ost_team_test"), 
 
             'taskthread' => $this->db->query("SELECT * FROM ost_thread_entry_test
-                WHERE task_guid = '$task_guid'"),
+                WHERE task_guid = '$task_guid' GROUP BY created "),
 
             'enable_avatars' => $this->db->query("SELECT value FROM ost_config_test WHERE id = '93'"),
 
