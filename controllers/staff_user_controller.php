@@ -569,10 +569,24 @@ class staff_user_controller extends CI_Controller {
             }
 
             else if ($moreoption == 4 && $deleteticket == 1)
-            {
+            {   
+                $ticket_guid = $this->db->query("SELECT ticket_guid FROM osticket.`ost_ticket_test` WHERE user_guid = '$value' ")->result();
+                
 
                 $this->db->query("DELETE FROM osticket.ost_user_test WHERE user_guid = '$value'");
                 $this->db->query("DELETE FROM osticket.ost_ticket_test WHERE user_guid = '$value'");
+
+                foreach ($ticket_guid as $ticket_guids) {
+                    foreach ($ticket_guids as $ticket_guid) {
+
+                    $this->db->query("DELETE FROM osticket.ost_thread_entry_test WHERE ticket_guid = '$ticket_guid'");
+                }
+                }
+
+
+                
+
+                
 
             }
 
@@ -922,10 +936,19 @@ class staff_user_controller extends CI_Controller {
         $user_guid = $_REQUEST['id'];
 
             if ($deleteticket == 1)
-            {
+            {   
+                $ticket_guid = $this->db->query("SELECT ticket_guid FROM osticket.`ost_ticket_test` WHERE user_guid = '$user_guid' ")->result();
 
                 $this->db->query("DELETE FROM osticket.ost_user_test WHERE user_guid = '$user_guid'");
                 $this->db->query("DELETE FROM osticket.ost_ticket_test WHERE user_guid = '$user_guid'");
+
+                
+                foreach ($ticket_guid as $ticket_guids) {
+                    foreach ($ticket_guids as $ticket_guid) {
+
+                    $this->db->query("DELETE FROM osticket.ost_thread_entry_test WHERE ticket_guid = '$ticket_guid'");
+                }
+                }
 
             }
 
@@ -1644,6 +1667,30 @@ class staff_user_controller extends CI_Controller {
         }
       
         echo $output;
+    }
+
+    public function selected_users_ajax()
+    {
+            
+            $user_guid_string= $_REQUEST['user_guid_string'];
+            $i = 0;
+
+            $checked_array = explode(',', $user_guid_string);
+
+            foreach ($checked_array as $value ) {
+                $data[$i] = $this->db->query("SELECT user_name from osticket.ost_user_test WHERE user_guid = '$value' GROUP BY user_name ASC")->row('user_name');
+                $i++;
+
+            }
+            echo json_encode($data);
+            
+            
+
+            
+        
+            /*$data = $this->db->query("SELECT a.period_code FROM `supplier_monthly_doc_count` a LEFT JOIN `supplier_monthly_main` b ON a.period_code = b.`period_code` WHERE a.customer_guid = '$customerid' AND a.supplier_guid = '$supplierid' AND invoice_number IS NULL;")->result();*/
+
+   
     }
 
 }

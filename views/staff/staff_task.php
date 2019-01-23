@@ -280,7 +280,7 @@ $(function() {
   </table>
 
   <?php if($_REQUEST['title'] == 'Closed' ) {?>
-  <!-- close task status popup modal -->
+  <!-- reopen task status popup modal -->
   <div class="modal fade" id="cstatus" style="display: none;">
           <div class="modal-dialog">
             <div class="modal-content">
@@ -302,6 +302,60 @@ $(function() {
                 <tbody>
                   <tr>
                       <td colspan="2">
+
+                        <br>
+                        <div class="popup_selected_task" style="font-size: 15px;background-color: lightyellow;"></div>
+                        <br>
+                        <textarea class="form-control" rows="4" cols="40" placeholder="Optional reason for status change (internal note)" id="_d8bf82dc954436ab" name="closenote"></textarea>
+                      </td>
+                  </tr>
+                </tbody>
+                </table>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <p class="full-width">
+                <span class="buttons pull-left">
+                  <input type="button" data-dismiss="modal" value ="Cancel">
+                  <input type="reset" value="Reset">
+                </span>
+                <span class="buttons pull-right">
+                <input id="opennn" type="submit" value="Submit">
+                </span>
+                </p>
+              </div>
+            </div>
+          </div>
+  </div>
+  <!-- reopen task status popup modal -->
+  <?php } else if ($_REQUEST['title'] == 'Open'){ ?>
+  <!-- close task status popup modal -->
+  <div class="modal fade" id="cstatus" style="display: none;">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">×</span></button>
+                <h3 class="drag-handle">Close Selected Task(s)</h3>
+              </div>
+              <div class="modal-body">
+
+                <p id="msg_warning">Are you sure you want to close selected task(s)?</p>
+
+                <div id="ticket-status" style="display:block; margin:5px;">
+
+                <table width="100%">
+                <tbody>
+                  <input type="hidden" name="status_guid" id="status_guid" value="0">
+                </tbody>
+                <tbody>
+                  <tr>
+                      <td colspan="2">
+
+                        <br>
+                        <div class="popup_selected_task" style="font-size: 15px;background-color: lightyellow;"></div>
+                        <br>
+
                         <textarea class="form-control" rows="4" cols="40" placeholder="Optional reason for status change (internal note)" id="_d8bf82dc954436ab" name="closenote"></textarea>
                       </td>
                   </tr>
@@ -324,51 +378,6 @@ $(function() {
           </div>
   </div>
   <!-- close task status popup modal -->
-  <?php } else if ($_REQUEST['title'] == 'Open'){ ?>
-  <!-- reopen task status popup modal -->
-  <div class="modal fade" id="cstatus" style="display: none;">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">×</span></button>
-                <h3 class="drag-handle">Close Selected Task(s)</h3>
-              </div>
-              <div class="modal-body">
-
-                <p id="msg_warning">Are you sure you want to close selected task(s)?</p>
-
-                <div id="ticket-status" style="display:block; margin:5px;">
-
-                <table width="100%">
-                <tbody>
-                  <input type="hidden" name="status_guid" id="status_guid" value="0">
-                </tbody>
-                <tbody>
-                  <tr>
-                      <td colspan="2">
-                        <textarea class="form-control" rows="4" cols="40" placeholder="Optional reason for status change (internal note)" id="_d8bf82dc954436ab" name="closenote"></textarea>
-                      </td>
-                  </tr>
-                </tbody>
-                </table>
-                </div>
-              </div>
-              <div class="modal-footer">
-                <p class="full-width">
-                <span class="buttons pull-left">
-                  <input type="button" data-dismiss="modal" value ="Cancel">
-                  <input type="reset" value="Reset">
-                </span>
-                <span class="buttons pull-right">
-                <input id="opennn" type="submit" value="Submit">
-                </span>
-                </p>
-              </div>
-            </div>
-          </div>
-  </div>
-  <!-- reopen task status popup modal -->
   <?php } ?>
   <div class="modal fade" id="claim" style="display: none;">
           <div class="modal-dialog">
@@ -411,11 +420,14 @@ $(function() {
                                   </select>
                                   </div>
                                   </div>
-                              <div class="flush-left custom-field" id="field_d8bf82dc954436ab">
+                              <div class="flush-left custom-field" >
                           <div>
                                     </div><div>
                                   <span style="display:inline-block;width:100%">
-                          <textarea class="form-control" rows="4" cols="40" placeholder="Optional reason for the assignment" id="_d8bf82dc954436ab" name="assignnote"></textarea>
+                                    <br>
+                                    <div class="popup_selected_task" style="font-size: 15px;background-color: lightyellow;"></div>
+                                    <br>
+                          <textarea class="form-control" rows="4" cols="40" placeholder="Optional reason for the assignment" name="assignnote"></textarea>
                           </span>
                                   </div>
                                   </div>
@@ -478,7 +490,7 @@ $(function() {
                   <tbody>
               <tr><td colspan="2">
                <div class="form-simple">
-              <div class="flush-left custom-field" id="field_b7a7b14540f04e3c">
+              <div class="flush-left custom-field">
             <div>
               <div class="field-label required">
             <label for="b7a7b14540f04e3c">
@@ -495,10 +507,13 @@ $(function() {
                   </select>
                   </div>
                   </div>
-              <div class="flush-left custom-field" id="field_e8f5989ca9fa6fe1">
+              <div class="flush-left custom-field">
             <div>
                       </div><div>
                     <span style="display:inline-block;width:100%">
+                      <br>
+                        <div class="popup_selected_task" style="font-size: 15px;background-color: lightyellow;"></div>
+                      <br>
             <textarea class="form-control" rows="4" cols="40" placeholder="Optional reason for the transfer" id="_e8f5989ca9fa6fe1" name="transfernote"></textarea>
             </span>
                     </div>
@@ -569,7 +584,12 @@ $(function() {
                                 <tbody>
                             <tr>
                                 <td colspan="2">
-                                  <br><textarea class="form-control" rows="4" cols="40" placeholder="Optional reason for the assignment" id="_d8bf82dc954436ab" name="assignnote"></textarea>
+                                  
+                                  <br>
+                                    <div class="popup_selected_task" style="font-size: 15px;background-color: lightyellow;"></div>
+                                  <br>
+
+                                  <textarea class="form-control" rows="4" cols="40" placeholder="Optional reason for the assignment" name="assignnote"></textarea>
                                 </td>
                             </tr>
                         </tbody>
@@ -788,6 +808,48 @@ $(document).on('change', '.file', function(){
         }
     }
 });
+</script>
+
+<script type="text/javascript">
+  
+                  $(".action-button").click(function(){
+
+                  var check = [];
+
+                  $.each($(".ckb:checked"), function(){        
+
+                  check.push($(this).val());
+
+                  /*+ check.join(", ")*/
+                  });
+                       
+
+                        $.ajax({
+                          url : "<?php echo site_url('staff_task_controller/selected_tasks_ajax?task_guid_string='); ?>" + check,
+                          success : function(result){
+                            
+                          result = JSON.parse(result);
+
+                          html = "";
+                          for(i = 0; i < result.length; i++)
+                          {
+                            //console.log(result[i].invoice_number);
+                            
+                            html += "<span style='margin: 2px;'><b> #"+ result[i] +"</b></span>";
+                            
+
+                            
+                          }
+
+                          $('.popup_selected_task').html(html);
+                          }
+                        });
+                    });
+
+
+                  
+
+
 </script>
 
 <!-- <script type="text/javascript" src="/helpdesk/js/jquery.pjax.js?9ae093d"></script> -->
