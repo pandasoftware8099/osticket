@@ -886,7 +886,7 @@ class staff_user_controller extends CI_Controller {
 
                 foreach ($org->result() as $orgdomain)
                 {
-                    if ($orgdomain->id != $user_orgid && $orgdomain->domain == $domain)
+                    if ($orgdomain->organization_guid != $user_orgid && $orgdomain->domain == $domain)
                     {
                         $this->db->query("UPDATE ost_user_test SET user_org_guid = '$orgdomain->id' WHERE user_guid = '$user_guid' ");
 
