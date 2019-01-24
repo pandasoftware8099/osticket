@@ -61,6 +61,9 @@
             <input type="password" class="form-control" size="18" name="cpasswd" value="" input pattern=".{5,}"   required title="5 characters minimum"> &nbsp;<span class="error">&nbsp;</span>
           </div>
         </div>
+
+        <?php if ($disallow_change_password == '1') { ?>
+
         <div class="form-group">
           <label for="inputEmail3" class="col-sm-3 control-label">
             New Password          </label>
@@ -77,6 +80,10 @@
         &nbsp;<span class="error">&nbsp;</span>
           </div>
         </div>
+
+        <?php } ?>
+
+
 </div>
 <hr>
 <p style="text-align: center;">
