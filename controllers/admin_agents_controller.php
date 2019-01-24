@@ -1233,37 +1233,37 @@ class admin_agents_controller extends CI_Controller {
 
                 'role' => $this->db->query("SELECT * FROM ost_role_test WHERE role_guid = '$roleid' ")->row(),
 
-                'addticketallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE role_guid = ' $roleid' AND permissions LIKE '%ticket.create%'")->num_rows(),
+                'addticketallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE role_guid = '$roleid' AND permissions LIKE '%ticket.create%'")->num_rows(),
 
-                'editticketallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE role_guid = ' $roleid' AND permissions LIKE '%ticket.edit%'")->num_rows(),
+                'editticketallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE role_guid = '$roleid' AND permissions LIKE '%ticket.edit%'")->num_rows(),
 
-                'asgticketallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE role_guid = ' $roleid' AND permissions LIKE '%ticket.assign%'")->num_rows(),
+                'asgticketallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE role_guid = '$roleid' AND permissions LIKE '%ticket.assign%'")->num_rows(),
 
-                'transticketallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE role_guid = ' $roleid' AND permissions LIKE '%ticket.transfer%'")->num_rows(),
+                'transticketallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE role_guid = '$roleid' AND permissions LIKE '%ticket.transfer%'")->num_rows(),
 
-                'replyticketallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE role_guid = ' $roleid' AND permissions LIKE '%ticket.reply%'")->num_rows(),
+                'replyticketallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE role_guid = '$roleid' AND permissions LIKE '%ticket.reply%'")->num_rows(),
 
-                'closeticketallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE role_guid = ' $roleid' AND permissions LIKE '%ticket.close%'")->num_rows(),
+                'closeticketallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE role_guid = '$roleid' AND permissions LIKE '%ticket.close%'")->num_rows(),
 
-                'deleteticketallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE role_guid = ' $roleid' AND permissions LIKE '%ticket.delete%'")->num_rows(),
+                'deleteticketallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE role_guid = '$roleid' AND permissions LIKE '%ticket.delete%'")->num_rows(),
 
-                'editthreadallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE role_guid = ' $roleid' AND permissions LIKE '%thread.edit%'")->num_rows(),
+                'editthreadallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE role_guid = '$roleid' AND permissions LIKE '%thread.edit%'")->num_rows(),
 
-                'addtaskallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE role_guid = ' $roleid' AND permissions LIKE '%task.create%'")->num_rows(),
+                'addtaskallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE role_guid = '$roleid' AND permissions LIKE '%task.create%'")->num_rows(),
 
-                'edittaskallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE role_guid = ' $roleid' AND permissions LIKE '%task.edit%'")->num_rows(),
+                'edittaskallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE role_guid = '$roleid' AND permissions LIKE '%task.edit%'")->num_rows(),
 
-                'asgtaskallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE role_guid = ' $roleid' AND permissions LIKE '%task.assign%'")->num_rows(),
+                'asgtaskallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE role_guid = '$roleid' AND permissions LIKE '%task.assign%'")->num_rows(),
 
-                'transtaskallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE role_guid = ' $roleid' AND permissions LIKE '%task.transfer%'")->num_rows(),
+                'transtaskallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE role_guid = '$roleid' AND permissions LIKE '%task.transfer%'")->num_rows(),
 
-                'replytaskallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE role_guid = ' $roleid' AND permissions LIKE '%task.reply%'")->num_rows(),
+                'replytaskallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE role_guid = '$roleid' AND permissions LIKE '%task.reply%'")->num_rows(),
 
-                'closetaskallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE role_guid = ' $roleid' AND permissions LIKE '%task.close%'")->num_rows(),
+                'closetaskallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE role_guid = '$roleid' AND permissions LIKE '%task.close%'")->num_rows(),
 
-                'deletetaskallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE role_guid = ' $roleid' AND permissions LIKE '%ticket.delete%'")->num_rows(),
+                'deletetaskallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE role_guid = '$roleid' AND permissions LIKE '%ticket.delete%'")->num_rows(),
 
-                'managecannedallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE role_guid = ' $roleid' AND permissions LIKE '%canned.manage%'")->num_rows(),
+                'managecannedallow' => $this->db->query(" SELECT * FROM ost_role_test WHERE role_guid = '$roleid' AND permissions LIKE '%canned.manage%'")->num_rows(),
 
             );
         $browser_id = $_SERVER["HTTP_USER_AGENT"];
@@ -1296,7 +1296,11 @@ class admin_agents_controller extends CI_Controller {
         $name = $this->input->post('name');
         $notes = $this->input->post('notes');
         $perms = $this->input->post('perms[]');
-        $perms = implode(", ", $perms);
+
+        
+        if ($perms != '' ) {
+            $perms = implode(", ", $perms);
+        }
         $roleid = $_REQUEST['id'];
         
 
