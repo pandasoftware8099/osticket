@@ -126,7 +126,7 @@ $(document).ready(function () {
             html = '';
             for(i = 0; i < result.length; i++)
             {
-              html += "<option value='"+ result[i].id +"'>" + result[i].VALUE + "</option>";
+              html += "<option value='"+ result[i].list_item_guid +"'>" + result[i].VALUE + "</option>";
             }
 
             $('#size').html(html);

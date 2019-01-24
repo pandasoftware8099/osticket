@@ -4,7 +4,7 @@
         action="<?php echo site_url('admin_manage_controller/manage_pages_addnew_process')?>"
     <?php }
     else {?>
-        action="<?php echo site_url('admin_manage_controller/manage_pages_update_process')?>?id=<?php echo $_REQUEST['content_guid'];?>"
+        action="<?php echo site_url('admin_manage_controller/manage_pages_update_process')?>?id=<?php echo $_REQUEST['id'];?>"
     <?php }?>
     method="post" class="save">
 

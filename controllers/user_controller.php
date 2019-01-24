@@ -247,6 +247,15 @@ class user_controller extends CI_Controller {
 
     public function edit()
     {
+        $user_guid = $_SESSION["userid"];
+
+        $disallow_change_password = $this->db->query("SELECT changepass FROM osticket.ost_user_test WHERE user_guid = '$user_guid' ");
+
+        $data = array(
+
+            'disallow_change_password' => $disallow_change_password
+     
+            );
 
         $browser_id = $_SERVER["HTTP_USER_AGENT"];
         if(strpos($browser_id,"Windows CE") || strpos($browser_id,"Windows NT 5.1") )
@@ -259,7 +268,7 @@ class user_controller extends CI_Controller {
         else
             {
                 $this->load->view('header');
-                $this->load->view('user/edit');
+                $this->load->view('user/edit', $data);
                 /*$this->load->view('footer');*/
             }    
 

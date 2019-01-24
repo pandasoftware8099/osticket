@@ -694,7 +694,7 @@ public function ticketinfo()
                 LEFT JOIN ost_staff_test AS d ON a.staff_guid = d.staff_guid
                 LEFT JOIN ost_team_test AS e ON a.team_guid = e.team_guid
                 WHERE a.ticket_guid = '$ticketid' ORDER BY a.task_created DESC"),
-            'thread' => $this->db->query("SELECT * FROM ost_thread_entry_test WHERE ticket_guid = '$ticketid'"),
+            'thread' => $this->db->query("SELECT * FROM ost_thread_entry_test WHERE ticket_guid = '$ticketid' GROUP BY created"),
             'thread_num' => $this->db->query("SELECT * FROM ost_thread_entry_test WHERE ticket_guid = '$ticketid' AND type != 'E'"),
             'threadname' => $this->db->query("SELECT * FROM ost_staff_test AS a
                 INNER JOIN ost_thread_entry_test AS b ON a.staff_guid = b.staff_guid
@@ -1083,7 +1083,7 @@ public function editorupdate()
         $editor = $this->db->query("SELECT CONCAT(firstname,' ',lastname) as editor FROM ost_staff_test WHERE staff_guid = '$staffid'")->row('editor');
         $lastbody = $this->db->query("SELECT body FROM ost_thread_entry_test WHERE thread_entry_guid = '$threadid'")->row('body');
         $this->db->query("UPDATE ost_thread_entry_test SET body = '$body', last_body = '$lastbody', editor = '$editor', updated = NOW() WHERE thread_entry_guid = '$threadid'");
-        $ticketid = $this->db->query("SELECT ticket_guid FROM ost_thread_entry_test WHERE thread_entry_guid = $threadid")->row('ticket_guid');
+        $ticketid = $this->db->query("SELECT ticket_guid FROM ost_thread_entry_test WHERE thread_entry_guid = '$threadid'")->row('ticket_guid');
          echo "<script> document.location='" . base_url() . "/index.php/staff_ticket_controller/ticketinfo?id=$ticketid' </script>";
     }
      else       
@@ -1296,7 +1296,7 @@ public function printpreviewstaff()
             LEFT JOIN ost_team_test AS e ON a.team_guid = e.team_guid
             LEFT JOIN ost_sla_test AS f ON a.sla_guid = f.sla_guid
             WHERE ticket_guid = '$ticketid'"),
-        'thread' => $this->db->query("SELECT * FROM  ost_thread_entry_test WHERE ticket_guid = '$ticketid'"),
+        'thread' => $this->db->query("SELECT * FROM  ost_thread_entry_test WHERE ticket_guid = '$ticketid' GROUP BY created"),
         
         'user' => $this->db->query("SELECT * FROM ost_user_test 
             INNER JOIN ost_ticket_test ON ost_user_test.user_guid = ost_ticket_test.user_guid 
@@ -1404,7 +1404,7 @@ public function deleteticketusernote()
                         // Looping all files
                         for($i=0;$i<$countfiles;$i++)
                         {
-                            $thread_id = $this->db->query("SELECT max(thread_entry_guid) AS id FROM ost_thread_entry_test")->row('id');
+                            $thread_id = $this->db->query("SELECT thread_entry_guid as id FROM ost_thread_entry_test WHERE created = (SELECT max(created) FROM ost_thread_entry_test)")->row('id');
                             $filename = $thread_id.'_'.$_FILES['file']['name'][$i];
                             // Upload file
                             move_uploaded_file($_FILES['file']['tmp_name'][$i],'../helpme/uploads/'.$filename);
@@ -1618,7 +1618,7 @@ public function deleteticketusernote()
                         // Looping all files
                         for($i=0;$i<$countfiles;$i++)
                         {
-                            $thread_id = $this->db->query("SELECT max(thread_entry_guid) AS id FROM ost_thread_entry_test")->row('id');
+                            $thread_id = $this->db->query("SELECT thread_entry_guid as id FROM ost_thread_entry_test WHERE created = (SELECT max(created) FROM ost_thread_entry_test)")->row('id');
                             $filename = $thread_id.'_'.$_FILES['file']['name'][$i];
                             // Upload file
                             move_uploaded_file($_FILES['file']['tmp_name'][$i],'../helpme/uploads/'.$filename);

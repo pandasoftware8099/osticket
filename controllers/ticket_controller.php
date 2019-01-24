@@ -114,25 +114,25 @@ class Ticket_controller extends CI_Controller {
                 INNER JOIN ost_help_topic_test  ON ost_help_topic_test.topic_guid = ost_ticket_test.topic_guid 
                 INNER JOIN ost_ticket_status_test  ON ost_ticket_status_test.status_guid = ost_ticket_test.status_guid 
                 INNER JOIN ost_list_items_test  ON ost_ticket_test.subtopic_guid = ost_list_items_test.list_item_guid 
-                WHERE ticket_guid = $ticketid"),
+                WHERE ticket_guid = '$ticketid'"),
 
             'thread' => $this->db->query("SELECT * FROM  ost_thread_entry_test 
-                WHERE ticket_guid = $ticketid AND type != 'N'"),
+                WHERE ticket_guid = '$ticketid' AND type != 'N' GROUP BY created"),
             
             'user' => $this->db->query("SELECT * FROM ost_user_test INNER JOIN ost_ticket_test ON ost_user_test.user_guid = ost_ticket_test.user_guid WHERE ticket_guid = '$ticketid'"),
 
-            'editticket' => $this->db->query("SELECT * FROM  ost_ticket_test WHERE ticket_guid = $ticketid"),
+            'editticket' => $this->db->query("SELECT * FROM  ost_ticket_test WHERE ticket_guid = '$ticketid'"),
 
-            'openclose' => $this->db->query("SELECT * FROM ost_ticket_test WHERE ticket_guid = $ticketid")->row(),
+            'openclose' => $this->db->query("SELECT * FROM ost_ticket_test WHERE ticket_guid = '$ticketid'")->row(),
 
             'threadname' => $this->db->query("SELECT * FROM ost_staff_test AS a
                     INNER JOIN ost_thread_entry_test AS b ON a.staff_guid = b.staff_guid
                     INNER JOIN ost_ticket_test AS c ON b.`ticket_guid` = c.`ticket_guid`
                     INNER JOIN ost_department_test AS d ON a.dept_guid = d.department_guid
                     
-                    WHERE c.ticket_guid = $ticketid")->row(),
+                    WHERE c.ticket_guid = '$ticketid'")->row(),
 
-            'departmt' => $this->db->query("SELECT * FROM  ost_department_test AS a INNER JOIN ost_user_test AS b ON a.department_guid = b.user_depart INNER JOIN ost_ticket_test AS c ON b.user_guid = c.user_guid WHERE ticket_guid = $ticketid")->row(),
+            'departmt' => $this->db->query("SELECT * FROM  ost_department_test AS a INNER JOIN ost_user_test AS b ON a.department_guid = b.user_depart INNER JOIN ost_ticket_test AS c ON b.user_guid = c.user_guid WHERE ticket_guid = '$ticketid'")->row(),
 
             'enable_avatars' => $this->db->query("SELECT value FROM ost_config_test WHERE id = '93'"),
 
@@ -196,7 +196,7 @@ class Ticket_controller extends CI_Controller {
 
                     if ($_FILES['file']['name'][0] != "") {
 
-                        $thread_id = $this->db->query("SELECT thread_entry_guid FROM ost_thread_entry_test WHERE created = now() ")->row('thread_entry_guid');
+                        $thread_id = $this->db->query("SELECT thread_entry_guid as id FROM ost_thread_entry_test WHERE created = (SELECT max(created) FROM ost_thread_entry_test)")->row('id');
 
                         $filename = $thread_id.'_'.$_FILES['file']['name'][$i];
 
@@ -482,9 +482,9 @@ class Ticket_controller extends CI_Controller {
             'result' => $this->db->query("SELECT * FROM  ost_ticket_test AS a
                 INNER JOIN ost_help_topic_test AS b ON b.topic_guid = a.topic_guid
                 INNER JOIN ost_ticket_status_test AS c ON c.status_guid = a.status_guid
-                WHERE a.ticket_guid = $ticketid"),
+                WHERE a.ticket_guid = '$ticketid'"),
 
-            'thread' => $this->db->query("SELECT * FROM  ost_thread_entry_test WHERE ticket_guid = $ticketid"),
+            'thread' => $this->db->query("SELECT * FROM  ost_thread_entry_test WHERE ticket_guid = '$ticketid' GROUP BY created"),
             
             'user' => $this->db->query("SELECT * FROM ost_user_test INNER JOIN ost_ticket_test ON ost_user_test.user_guid = ost_ticket_test.user_guid WHERE ticket_guid = '$ticketid'"),
         );
@@ -520,11 +520,11 @@ class Ticket_controller extends CI_Controller {
 
             $data = array(
 
-                'cinfo' => $this->db->query("SELECT * FROM  ost_ticket_test WHERE ticket_guid = $ticketid"),
+                'cinfo' => $this->db->query("SELECT * FROM  ost_ticket_test WHERE ticket_guid = '$ticketid'"),
 
-                'inventory' => $this->db->query("SELECT * FROM  ost_list_items_test AS a INNER JOIN ost_help_topic_test AS b ON a.topic_guid = b.topic_guid INNER JOIN ost_ticket_test AS c ON b.topic_guid = c.topic_guid WHERE c.ticket_guid = $ticketid"),
+                'inventory' => $this->db->query("SELECT * FROM  ost_list_items_test AS a INNER JOIN ost_help_topic_test AS b ON a.topic_guid = b.topic_guid INNER JOIN ost_ticket_test AS c ON b.topic_guid = c.topic_guid WHERE c.ticket_guid = '$ticketid'"),
 
-                'subt' => $this->db->query("SELECT * FROM  ost_list_items_test INNER JOIN ost_ticket_test ON ost_list_items_test.list_item_guid = ost_ticket_test.subtopic_guid WHERE ticket_guid = $ticketid"),
+                'subt' => $this->db->query("SELECT * FROM  ost_list_items_test INNER JOIN ost_ticket_test ON ost_list_items_test.list_item_guid = ost_ticket_test.subtopic_guid WHERE ticket_guid = '$ticketid'"),
             );
 
             $browser_id = $_SERVER["HTTP_USER_AGENT"];
