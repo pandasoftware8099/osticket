@@ -570,8 +570,8 @@ class admin_settings_controller extends CI_Controller {
 
     public function task_update()
     {   
-        $ticket_number_format = $this->input->post('task_number_format');
-        $ticket_sequence_guid = $this->input->post('task_sequence_guid');
+        $ticket_number_format = $this->input->post('ticket_number_format');
+        $ticket_sequence_guid = $this->input->post('ticket_sequence_guid');
         $task_alert_active = $this->input->post('task_alert_active');
         $task_alert_admin = $this->input->post('task_alert_admin');
         $task_alert_dept_manager = $this->input->post('task_alert_dept_manager');

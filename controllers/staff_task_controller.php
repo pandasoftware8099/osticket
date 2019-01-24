@@ -299,13 +299,13 @@ class staff_task_controller extends CI_Controller {
 
             if($task_alert_dept_members == '1')
             {
-                $dept_members_email = $this->db->query("SELECT b.email FROM ost_staff_test a WHERE a.dept_guid = '$deparment'")
+                $dept_members_email = $this->db->query("SELECT a.email FROM ost_staff_test a WHERE a.dept_guid = '$deparment'");
                 
                 foreach($dept_members_email->result() as $value1)
                 {
                     if (!in_array($value1->email, $alluseremail))
                     {
-                        array_push($alluseremail, $value->email);
+                        array_push($alluseremail, $value1->email);
                     }
                 }
             }
@@ -315,22 +315,18 @@ class staff_task_controller extends CI_Controller {
         {
             $this->load->library('email');
 
-            $user_name = $this->db->query("SELECT user_name FROM ost_user_test WHERE user_email = '$value'")->row('user_name');
-            $emailinfo = $this->db->query("SELECT * FROM ost_user_test AS a
-                INNER JOIN ost_ticket_test AS b ON a.user_guid = b.user_guid
-                INNER JOIN ost_help_topic_test AS c ON b.topic_guid = c.topic_guid
-                INNER JOIN ost_list_items_test AS d ON b.subtopic_guid = d.list_item_guid
-                WHERE ticket_guid = '$result'");
+            $username = $this->db->query("SELECT CONCAT(a.firstname,' ',a.lastname) AS username, b.name FROM ost_staff_test a INNER JOIN ost_department_test b ON b.department_guid = a.dept_guid WHERE email = '$value'");
+            $poster = $this->db->query("SELECT CONCAT(a.firstname,' ',a.lastname) AS username FROM ost_staff_test a WHERE staff_guid = '$poster_id'")->row('username');
+            $task = $this->db->query("SELECT * FROM ost_task_test ORDER BY task_created DESC LIMIT 1");
+            $department = $this->db->query("SELECT a.name FROM ost_department_test a INNER JOIN ost_task_test b ON a.department_guid = b.dept_guid WHERE task_guid = '".$task->row('task_guid')."'")->row('name');
+            $description = $this->db->query("SELECT body FROM ost_thread_entry_test WHERE task_guid = '".$task->row('task_guid')."' AND type = 'S'")->row('body');
+            
             $default_template_id = $this->db->query("SELECT * FROM ost_config_test WHERE id = '87'")->row('value');
 
             $data = array(
-                'body' => $this->db->query("SELECT REPLACE(REPLACE(subject, '%subject%', '".$emailinfo->row('value')."'), '%number%', '".$emailinfo->row('number')."') AS email_subject, 
-                    REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(body, '%user_name%', '$user_name'), '%login%', '$login'), '%number%', '".$emailinfo->row('number')."'), '%topic%', '".$emailinfo->row('topic')."'), '%subtopic%', '".$emailinfo->row('value')."') AS email
-                    FROM ost_email_template_test WHERE code_name = 'ticket.notice' AND tpl_guid = '$default_template_id'"),
-                'ticketsign' => $this->db->query("SELECT a.*, b.*, a.signature AS staffsign, b.signature AS deptsign FROM ost_staff_test AS a
-                    INNER JOIN ost_department_test AS b ON a.dept_guid = b.department_guid
-                    WHERE staff_guid = '$poster_id'"),
-                'signature' => $signature,
+                'body' => $this->db->query("SELECT REPLACE(subject, '%number%', '".$task->row('number')."') AS email_subject, 
+                    REPLACE(REPLACE(REPLACE(REPLACE(body, '%user_name%', '".$username->row('username')."'), '%department%', '$department'), '%number%', '".$task->row('number')."'), '%description%', '$description') AS email
+                    FROM ost_email_template_test WHERE code_name = 'task.alert' AND tpl_guid = '$default_template_id'"),
                 'template' => $this->db->query("SELECT * FROM ost_company_test"),
             );
 
@@ -394,9 +390,19 @@ class staff_task_controller extends CI_Controller {
 
             $posterfname = $this->db->query("SELECT firstname FROM ost_staff_test WHERE staff_guid = '$poster_id'")->row('firstname');
             $posterlname = $this->db->query("SELECT lastname FROM ost_staff_test WHERE staff_guid = '$poster_id'")->row('lastname');
+            $task_assignment_alert_active = $this->db->query("SELECT value FROM ost_config_test WHERE id = '151'")->row('value');
+            $task_assignment_alert_staff = $this->db->query("SELECT value FROM ost_config_test WHERE id = '152'")->row('value');
+            $task_assignment_alert_team_lead = $this->db->query("SELECT value FROM ost_config_test WHERE id = '153'")->row('value');
+            $task_assignment_alert_team_members = $this->db->query("SELECT value FROM ost_config_test WHERE id = '154'")->row('value');
+            $task_transfer_alert_active = $this->db->query("SELECT value FROM ost_config_test WHERE id = '155'")->row('value');
+            $task_transfer_alert_assigned = $this->db->query("SELECT value FROM ost_config_test WHERE id = '156'")->row('value');
+            $task_transfer_alert_dept_manager = $this->db->query("SELECT value FROM ost_config_test WHERE id = '157'")->row('value');
+            $task_transfer_alert_dept_members = $this->db->query("SELECT value FROM ost_config_test WHERE id = '158'")->row('value');
+            
 
             foreach ($check as $value) {
                 $number = $this->db->query("SELECT task_guid FROM osticket.ost_task_test WHERE task_guid = '$value'")->row('task_guid');
+                $alluseremail = array();
 
                 if ($status != "" ){
 
@@ -429,11 +435,77 @@ class staff_task_controller extends CI_Controller {
                 }
                 else if ($depart != "" ){
                     $this->db->query("UPDATE ost_task_test SET dept_guid = '$depart', task_updated = NOW() WHERE task_guid = '$value' ");
+
+                    if($task_transfer_alert_active == '1')
+                    {
+                        if($task_transfer_alert_assigned == '1')
+                        {
+                            $assigned = $this->db->query("SELECT staff_guid, team_guid FROM ost_task_test WHERE task_guid = $value");
+                            if($assigned->row('staff_guid') != '0' || $assigned->row('team_guid') != '0')
+                            {
+                                if($assigned->row('staff_guid') != '0')
+                                {
+                                    $assigned_email = $this->db->query("SELECT email FROM ost_staff_test WHERE staff_guid = '".$assigned->row('staff_guid')."'")->row('email');
+                                    if (!in_array($assigned_email, $alluseremail))
+                                    {
+                                        array_push($alluseremail, $assigned_email);
+                                    }
+                                }
+                                else if($assigned->row('team_guid') != '0')
+                                {
+                                    $assigned_teamlead_email = $this->db->query("SELECT a.email FROM ost_staff_test a INNER JOIN ost_team_test b ON b.lead_guid = a.staff_guid WHERE team_guid = '".$assigned->row('team_guid')."'")->row('email');
+                                    if (!in_array($assigned_teamlead_email, $alluseremail))
+                                    {
+                                        array_push($alluseremail, $assigned_teamlead_email);
+                                    }
+                                    $assigned_teammem_emails = $this->db->query("SELECT a.email FROM ost_staff_test a INNER JOIN ost_team_member_test b ON b.staff_guid = a.staff_guid WHERE team_guid = '".$assigned->row('team_guid')."'");
+                                    foreach($assigned_teammem_emails->result() as $email)
+                                    {
+                                        if (!in_array($email->email, $alluseremail))
+                                        {
+                                            array_push($alluseremail, $email->email);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        if($task_transfer_alert_dept_manager == '1')
+                        {
+                            $dept_manager_email = $this->db->query("SELECT a.email FROM ost_staff_test a INNER JOIN ost_department_test b ON b.manager_guid = a.staff_guid WHERE b.department_guid = '$depart'")->row('email');
+                            if (!in_array($dept_manager_email, $alluseremail))
+                            {
+                                array_push($alluseremail, $dept_manager_email);
+                            }
+                        }
+                        if($task_transfer_alert_dept_members == '1')
+                        {
+                            $dept_members_email = $this->db->query("SELECT a.email FROM ost_staff_test a WHERE b.department_guid = '$depart'");
+                            foreach($dept_members_email->result() as $email)
+                            {
+                                if (!in_array($email->email, $alluseremail))
+                                {
+                                    array_push($alluseremail, $email->email);
+                                }
+                            }
+                        }
+                    }
                     echo "<script> alert('$number Successfully change department');</script>";
                 }
                 else if ($assignto{0} == 'a'){
                     $staff_guid = substr($assignto, 1);
                     $team_guid = '0';
+
+                    if($task_assignment_alert_active == '1')
+                    {
+                        if($task_assignment_alert_staff == '1')
+                        {
+                            $staff_email = $this->db->query("SELECT email FROM ost_staff_test WHERE staff_guid = '$staff_guid'")->row('email');
+                            if (!in_array($staff_email, $alluseremail))
+                            {
+                                array_push($alluseremail, $staff_email);
+                            }
+                        }
+                    }
 
                     $this->db->query("UPDATE ost_task_test SET staff_guid = '$staff_guid' , team_guid = '$team_guid', task_updated = NOW() WHERE task_guid = '$value' ");
                     echo "<script> alert('$number Successfully assign to agent');</script>";
@@ -442,6 +514,29 @@ class staff_task_controller extends CI_Controller {
                 else if ($assignto{0} == 't'){
                     $team_guid = substr($assignto, 1);
                     $staff_guid = '0';
+
+                    if($task_assignment_alert_active == '1')
+                    {
+                        if($task_assignment_alert_team_lead == '1')
+                        {
+                            $team_lead_email = $this->db->query("SELECT a.email FROM ost_staff_test a INNER JOIN ost_team_test b ON b.lead_guid = a.staff_guid WHERE b.team_guid = '$team_guid'")->row('email');
+                            if (!in_array($team_lead_email, $alluseremail))
+                            {
+                                array_push($alluseremail, $team_lead_email);
+                            }
+                        }
+                        if($task_assignment_alert_team_members == '1')
+                        {
+                            $team_members_email = $this->db->query("SELECT a.email FROM ost_staff_test a INNER JOIN ost_team_member_test b ON b.staff_guid = a.staff_guid WHERE b.team_guid = '$team_guid'");
+                            foreach($team_members_email->result() as $value2)
+                            {
+                                if (!in_array($value2->email, $alluseremail))
+                                {
+                                    array_push($alluseremail, $value2->email);
+                                }
+                            }
+                        }
+                    }
 
                     $this->db->query("UPDATE ost_task_test SET staff_guid = '$staff_guid' , team_guid = '$team_guid', task_updated = NOW() WHERE task_guid = '$value' ");
                     echo "<script> alert('$number Successfully assign to team');</script>";
@@ -459,7 +554,57 @@ class staff_task_controller extends CI_Controller {
                     if ($note != "")
                         $this->db->query("INSERT INTO ost_thread_entry_test ( thread_entry_guid, task_guid, staff_guid, type, poster, body, ip_address, created, updated, class, avatar ) VALUES (REPLACE(UPPER(UUID()),'-',''), '$value', '$poster_id', 'N','$posterfname $posterlname', '$note', '$ipaddress', now(), now(), 'note', 'left')");
                 }
+
+                foreach ($alluseremail as $value1)
+                {
+                    $this->load->library('email');
+                    $username = $this->db->query("SELECT CONCAT(a.firstname,' ',a.lastname) AS username, b.name FROM ost_staff_test a INNER JOIN ost_department_test b ON b.department_guid = a.dept_guid WHERE email = '$value1'");
+                    $poster = $this->db->query("SELECT CONCAT(a.firstname,' ',a.lastname) AS username FROM ost_staff_test a WHERE staff_guid = '$poster_id'")->row('username');
+                    $task = $this->db->query("SELECT * FROM ost_task_test WHERE task_guid = '$value'");
+                    
+                    
+                    $default_template_id = $this->db->query("SELECT * FROM ost_config_test WHERE id = '87'")->row('value');
+                    if($depart != '')
+                    {
+                        $department = $this->db->query("SELECT name FROM ost_department_test WHERE department_guid = '$depart'")->row('name');
+                        $data = array(
+                            'body' => $this->db->query("SELECT REPLACE(REPLACE(subject, '%number%', '".$task->row('number')."'), '%department%', '".$department."') AS email_subject, 
+                                REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(body, '%user_name%', '".$username->row('username')."'), '%assigner%', '$poster'), '%number%', '".$task->row('number')."'), '%department%', '".$department."'), '%comment%', '".$notearr['transfernote']."') AS email
+                                FROM ost_email_template_test WHERE code_name = 'task.transfer.alert' AND tpl_guid = '$default_template_id'"),
+                            'template' => $this->db->query("SELECT * FROM ost_company_test"),
+                        );
+                    }
+                    else
+                    {
+                        $data = array(
+                            'body' => $this->db->query("SELECT REPLACE(subject, '%number%', '".$task->row('number')."') AS email_subject, 
+                                REPLACE(REPLACE(REPLACE(REPLACE(body, '%user_name%', '".$username->row('username')."'), '%assigner%', '$poster'), '%number%', '".$task->row('number')."'), '%comment%', '".$notearr['assignnote']."') AS email
+                                FROM ost_email_template_test WHERE code_name = 'task.assignment.alert' AND tpl_guid = '$default_template_id'"),
+                            'template' => $this->db->query("SELECT * FROM ost_company_test"),
+                        );
+                    }
+                    $default_email = $this->db->query("SELECT value FROM ost_config_test WHERE id='83'")->row('value');
+                    $sender_email = $this->db->query("SELECT * FROM ost_email_test WHERE email_guid='$default_email'")->row();
+                    $config = array(
+        
+                        'smtp_user' => $sender_email->userid,
+                        'smtp_pass' => $sender_email->userpass,
+                        'smtp_host' => $sender_email->smtp_host,
+                        'smtp_port' => $sender_email->smtp_port,
+                        
+                    );
+                    $bodyContent = $this->load->view('email_template', $data, TRUE);
+                    $this->email->initialize($config);
+                    $this->email->from($sender_email->userid); 
+                    $this->email->reply_to($sender_email->userid);    // Optional, an account where a human being reads.
+                    $this->email->to($value1);
+                    $this->email->subject($data['body']->row('email_subject'));
+                    $this->email->message($bodyContent);
+                    $this->email->send();
+                }
+
             }
+
 
             if ($direct == 'task')
             {
@@ -577,6 +722,8 @@ class staff_task_controller extends CI_Controller {
 
             $posterfname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = $poster_id")->row('firstname');
             $posterlname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = $poster_id")->row('lastname');
+            $task_activity_alert_active = $this->db->query("SELECT value FROM ost_config_test WHERE id='147'")->row('value');
+            $alluseremail = array();
 
             $sql = $this->db->query("INSERT INTO osticket.ost_thread_entry_test ( thread_entry_guid, task_guid, staff_guid, type, poster, body, ip_address, created, updated, class, avatar )
             VALUES (REPLACE(UPPER(UUID()),'-',''), '$taskid' ,'$poster_id', 'S' ,'$posterfname $posterlname', '$description', '$ipaddress', now(), now(), 'response', 'left')");
@@ -616,6 +763,109 @@ class staff_task_controller extends CI_Controller {
 
                 }
 
+                if($task_activity_alert_active == '1')
+                {
+                    $task_activity_alert_laststaff = $this->db->query("SELECT value FROM ost_config_test WHERE id='148'")->row('value');
+                    $task_activity_alert_assigned = $this->db->query("SELECT value FROM ost_config_test WHERE id='149'")->row('value');
+                    $task_activity_alert_dept_manager = $this->db->query("SELECT value FROM ost_config_test WHERE id='150'")->row('value');
+
+                    if($task_activity_alert_laststaff == '1')
+                    {
+                        $thread_ids = $this->db->query("SELECT * FROM ost_thread_entry_test WHERE type ='S' and task_guid = '$taskid';");
+                        if($thread_ids->num_rows() > 1)
+                        {
+                            $thread_id = $this->db->query("SELECT * FROM ost_thread_entry_test WHERE type = 'S' and task_guid = '$taskid' ORDER BY created DESC LIMIT 1,1;");
+
+                            if($thread_id->row('staff_guid') == '0')
+                            {
+                                $last_res_email = $this->db->query("SELECT user_email FROM ost_user_test WHERE user_guid = '".$thread_id->row('user_guid')."'")->row('user_email');
+                            }
+                            else
+                            {
+                                $last_res_email = $this->db->query("SELECT email FROM ost_staff_test WHERE staff_guid = '".$thread_id->row('staff_guid')."'")->row('email');
+                            }
+
+                            if (!in_array($last_res_email, $alluseremail))
+                            {
+                                array_push($alluseremail, $last_res_email);
+                            }
+                        }
+                    }
+
+                    if($task_activity_alert_assigned == '1')
+                    {
+                        $task = $this->db->query("SELECT * FROM ost_task_test a WHERE task_guid = '$taskid'");
+                        if($task->row('staff_guid') != '0' || $task->row('team_guid') != '0')
+                        {
+                            if($task->row('staff_guid') != '0')
+                            {
+                                $assigned_email = $this->db->query("SELECT email FROM ost_staff_test WHERE staff_guid = '".$task->row('staff_guid')."'")->row('email');
+                                if (!in_array($assigned_email, $alluseremail))
+                                {
+                                    array_push($alluseremail, $assigned_email);
+                                }
+                            }
+                            else if($task->row('team_guid') != '0')
+                            {
+                                $assigned_emails = $this->db->query("SELECT email FROM ost_staff_test a INNER JOIN ost_team_member_test b ON b.staff_guid = a.staff_guid WHERE b.team_guid = '".$task->row('team_guid')."'");
+                                foreach($assigned_emails->result() as $value)
+                                {
+                                    if (!in_array($value->email, $alluseremail))
+                                    {
+                                        array_push($alluseremail, $value->email);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if($task_activity_alert_dept_manager == '1')
+                    {
+                        $dept_manager_email = $this->db->query("SELECT c.email FROM ost_staff_test c INNER JOIN ost_department_test a ON c.staff_guid=a.`manager_guid` INNER JOIN ost_task_test b ON a.department_guid= b.`dept_guid` WHERE task_guid = '$taskid'")->row('email');
+                        if (!in_array($dept_manager_email, $alluseremail))
+                        {
+                            array_push($alluseremail, $dept_manager_email);
+                        }
+                    }
+                }
+
+                    
+                foreach ($alluseremail as $value)
+                {
+                    $this->load->library('email');
+
+                    $username = $this->db->query("SELECT CONCAT(a.firstname,' ',a.lastname) AS username, b.name FROM ost_staff_test a INNER JOIN ost_department_test b ON b.department_guid = a.dept_guid WHERE email = '$value'");
+                    $number = $this->db->query("SELECT number FROM ost_task_test WHERE task_guid = '$taskid'")->row('number');
+                    $description = $this->db->query("SELECT body FROM ost_thread_entry_test WHERE task_guid = '".$taskid."' AND type = 'S' ORDER BY created DESC LIMIT 1")->row('body');
+                    
+                    $default_template_id = $this->db->query("SELECT * FROM ost_config_test WHERE id = '87'")->row('value');
+
+                    $data = array(
+                        'body' => $this->db->query("SELECT REPLACE(subject, '%number%', '".$number."') AS email_subject, 
+                            REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(body, '%user_name%', '".$username->row('username')."'), '%Department%', '".$username->row('name')."'), '%number%', '".$number."'), '%creator%', '$posterfname$posterlname'), '%message%', '$description') AS email
+                            FROM ost_email_template_test WHERE code_name = 'task.activity.alert' AND tpl_guid = '$default_template_id'"),
+                        'template' => $this->db->query("SELECT * FROM ost_company_test"),
+                    );
+
+                    $default_email = $this->db->query("SELECT value FROM ost_config_test WHERE id='83'")->row('value');
+                    $sender_email = $this->db->query("SELECT * FROM ost_email_test WHERE email_guid='$default_email'")->row();
+                    $config = array(
+        
+                        'smtp_user' => $sender_email->userid,
+                        'smtp_pass' => $sender_email->userpass,
+                        'smtp_host' => $sender_email->smtp_host,
+                        'smtp_port' => $sender_email->smtp_port,
+                        
+                    );
+                    $bodyContent = $this->load->view('email_template', $data, TRUE);
+                    $this->email->initialize($config);
+                    $this->email->from($sender_email->userid); 
+                    $this->email->reply_to($sender_email->userid);    // Optional, an account where a human being reads.
+                    $this->email->to($value);
+                    $this->email->subject($data['body']->row('email_subject'));
+                    $this->email->message($bodyContent);
+                    $this->email->send();
+                }
+
                 redirect('staff_task_controller/taskinfo?id='.$taskid);
             }
 
@@ -651,11 +901,12 @@ class staff_task_controller extends CI_Controller {
             $statusid = $this->input->post('taskstatus');
             $poster_id = $_SESSION['staffid'];
             $ipaddress = $_SERVER['REMOTE_ADDR'];
+            $task_activity_alert_active = $this->db->query("SELECT value FROM ost_config_test WHERE id='147'")->row('value');
+            $alluseremail = array();
 
             $posterfname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = $poster_id")->row('firstname');
             $posterlname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = $poster_id")->row('lastname');
 
-            print_r($_FILES['file']['name']);die;
 
             $this->db->query("INSERT INTO osticket.ost_thread_entry_test ( thread_entry_guid, task_guid , staff_guid , type, poster , body , ip_address, created, updated, class, avatar )
             VALUES (REPLACE(UPPER(UUID()),'-',''), '$taskid' ,'$poster_id', 'N' ,'$posterfname $posterlname', '$note', '$ipaddress', now(), now(), 'note', 'left')");
@@ -691,6 +942,109 @@ class staff_task_controller extends CI_Controller {
 
                     }
                 }
+
+                if($task_activity_alert_active == '1')
+                {
+                    $task_activity_alert_laststaff = $this->db->query("SELECT value FROM ost_config_test WHERE id='148'")->row('value');
+                    $task_activity_alert_assigned = $this->db->query("SELECT value FROM ost_config_test WHERE id='149'")->row('value');
+                    $task_activity_alert_dept_manager = $this->db->query("SELECT value FROM ost_config_test WHERE id='150'")->row('value');
+
+                    if($task_activity_alert_laststaff == '1')
+                    {
+                        $thread_ids = $this->db->query("SELECT * FROM ost_thread_entry_test WHERE type ='N' and task_guid = '$taskid';");
+                        if($thread_ids->num_rows() > 1)
+                        {
+                            $thread_id = $this->db->query("SELECT * FROM ost_thread_entry_test WHERE type = 'N' and task_guid = '$taskid' ORDER BY created DESC LIMIT 1,1;");
+
+                            if($thread_id->row('staff_guid') == '0')
+                            {
+                                $last_res_email = $this->db->query("SELECT user_email FROM ost_user_test WHERE user_guid = '".$thread_id->row('user_guid')."'")->row('user_email');
+                            }
+                            else
+                            {
+                                $last_res_email = $this->db->query("SELECT email FROM ost_staff_test WHERE staff_guid = '".$thread_id->row('staff_guid')."'")->row('email');
+                            }
+
+                            if (!in_array($last_res_email, $alluseremail))
+                            {
+                                array_push($alluseremail, $last_res_email);
+                            }
+                        }
+                    }
+
+                    if($task_activity_alert_assigned == '1')
+                    {
+                        $task = $this->db->query("SELECT * FROM ost_task_test a WHERE task_guid = '$taskid'");
+                        if($task->row('staff_guid') != '0' || $task->row('team_guid') != '0')
+                        {
+                            if($task->row('staff_guid') != '0')
+                            {
+                                $assigned_email = $this->db->query("SELECT email FROM ost_staff_test WHERE staff_guid = '".$task->row('staff_guid')."'")->row('email');
+                                if (!in_array($assigned_email, $alluseremail))
+                                {
+                                    array_push($alluseremail, $assigned_email);
+                                }
+                            }
+                            else if($task->row('team_guid') != '0')
+                            {
+                                $assigned_emails = $this->db->query("SELECT email FROM ost_staff_test a INNER JOIN ost_team_member_test b ON b.staff_guid = a.staff_guid WHERE b.team_guid = '".$task->row('team_guid')."'");
+                                foreach($assigned_emails->result() as $value)
+                                {
+                                    if (!in_array($value->email, $alluseremail))
+                                    {
+                                        array_push($alluseremail, $value->email);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if($task_activity_alert_dept_manager == '1')
+                    {
+                        $dept_manager_email = $this->db->query("SELECT c.email FROM ost_staff_test c INNER JOIN ost_department_test a ON c.staff_guid=a.`manager_guid` INNER JOIN ost_task_test b ON a.department_guid= b.`dept_guid` WHERE task_guid = '$taskid'")->row('email');
+                        if (!in_array($dept_manager_email, $alluseremail))
+                        {
+                            array_push($alluseremail, $dept_manager_email);
+                        }
+                    }
+                }
+
+                    
+                foreach ($alluseremail as $value)
+                {
+                    $this->load->library('email');
+
+                    $username = $this->db->query("SELECT CONCAT(a.firstname,' ',a.lastname) AS username, b.name FROM ost_staff_test a INNER JOIN ost_department_test b ON b.department_guid = a.dept_guid WHERE email = '$value'");
+                    $number = $this->db->query("SELECT number FROM ost_task_test WHERE task_guid = '$taskid'")->row('number');
+                    $description = $this->db->query("SELECT body FROM ost_thread_entry_test WHERE task_guid = '".$taskid."' AND type = 'N' ORDER BY created DESC LIMIT 1")->row('body');
+                    
+                    $default_template_id = $this->db->query("SELECT * FROM ost_config_test WHERE id = '87'")->row('value');
+
+                    $data = array(
+                        'body' => $this->db->query("SELECT REPLACE(subject, '%number%', '".$number."') AS email_subject, 
+                            REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(body, '%user_name%', '".$username->row('username')."'), '%Department%', '".$username->row('name')."'), '%number%', '".$number."'), '%creator%', '$posterfname$posterlname'), '%message%', '$description') AS email
+                            FROM ost_email_template_test WHERE code_name = 'task.activity.alert' AND tpl_guid = '$default_template_id'"),
+                        'template' => $this->db->query("SELECT * FROM ost_company_test"),
+                    );
+
+                    $default_email = $this->db->query("SELECT value FROM ost_config_test WHERE id='83'")->row('value');
+                    $sender_email = $this->db->query("SELECT * FROM ost_email_test WHERE email_guid='$default_email'")->row();
+                    $config = array(
+        
+                        'smtp_user' => $sender_email->userid,
+                        'smtp_pass' => $sender_email->userpass,
+                        'smtp_host' => $sender_email->smtp_host,
+                        'smtp_port' => $sender_email->smtp_port,
+                        
+                    );
+                    $bodyContent = $this->load->view('email_template', $data, TRUE);
+                    $this->email->initialize($config);
+                    $this->email->from($sender_email->userid); 
+                    $this->email->reply_to($sender_email->userid);    // Optional, an account where a human being reads.
+                    $this->email->to($value);
+                    $this->email->subject($data['body']->row('email_subject'));
+                    $this->email->message($bodyContent);
+                    $this->email->send();
+                }
             }
             redirect('staff_task_controller/taskinfo?id='.$taskid);
         }
@@ -717,6 +1071,15 @@ class staff_task_controller extends CI_Controller {
             $task_status = $this->db->query("SELECT task_status FROM ost_task_test WHERE task_guid = '$taskid' ")->row('task_status');
             $posterfname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = $poster_id")->row('firstname');
             $posterlname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = $poster_id")->row('lastname');
+             $task_assignment_alert_active = $this->db->query("SELECT value FROM ost_config_test WHERE id = '151'")->row('value');
+            $task_assignment_alert_staff = $this->db->query("SELECT value FROM ost_config_test WHERE id = '152'")->row('value');
+            $task_assignment_alert_team_lead = $this->db->query("SELECT value FROM ost_config_test WHERE id = '153'")->row('value');
+            $task_assignment_alert_team_members = $this->db->query("SELECT value FROM ost_config_test WHERE id = '154'")->row('value');
+            $task_transfer_alert_active = $this->db->query("SELECT value FROM ost_config_test WHERE id = '155'")->row('value');
+            $task_transfer_alert_assigned = $this->db->query("SELECT value FROM ost_config_test WHERE id = '156'")->row('value');
+            $task_transfer_alert_dept_manager = $this->db->query("SELECT value FROM ost_config_test WHERE id = '157'")->row('value');
+            $task_transfer_alert_dept_members = $this->db->query("SELECT value FROM ost_config_test WHERE id = '158'")->row('value');
+            $alluseremail = array();
 
             if ($status != "" ){
                 $this->db->query("UPDATE ost_task_test SET task_status = '$status', task_updated = NOW() WHERE task_guid = '$taskid' ");
@@ -741,8 +1104,61 @@ class staff_task_controller extends CI_Controller {
                 $departmentname = $this->db->query("SELECT name FROM ost_department_test WHERE department_guid = '$depart'")->row('name');
 
                 $description = '<b>'.$posterfname.''.$posterlname.'</b> transfered this ticket to <strong>'.$departmentname. '</strong>';
-                
 
+                if($task_transfer_alert_active == '1')
+                {
+                    if($task_transfer_alert_assigned == '1')
+                    {
+                        $assigned = $this->db->query("SELECT staff_guid, team_guid FROM ost_task_test WHERE task_guid = $taskid");
+                        if($assigned->row('staff_guid') != '0' || $assigned->row('team_guid') != '0')
+                        {
+                            if($assigned->row('staff_guid') != '0')
+                            {
+                                $assigned_email = $this->db->query("SELECT email FROM ost_staff_test WHERE staff_guid = '".$assigned->row('staff_guid')."'")->row('email');
+                                if (!in_array($assigned_email, $alluseremail))
+                                {
+                                    array_push($alluseremail, $assigned_email);
+                                }
+                            }
+                            else if($assigned->row('team_guid') != '0')
+                            {
+                                $assigned_teamlead_email = $this->db->query("SELECT a.email FROM ost_staff_test a INNER JOIN ost_team_test b ON b.lead_guid = a.staff_guid WHERE team_guid = '".$assigned->row('team_guid')."'")->row('email');
+                                if (!in_array($assigned_teamlead_email, $alluseremail))
+                                {
+                                    array_push($alluseremail, $assigned_teamlead_email);
+                                }
+                                $assigned_teammem_emails = $this->db->query("SELECT a.email FROM ost_staff_test a INNER JOIN ost_team_member_test b ON b.staff_guid = a.staff_guid WHERE team_guid = '".$assigned->row('team_guid')."'");
+                                foreach($assigned_teammem_emails->result() as $email)
+                                {
+                                    if (!in_array($email->email, $alluseremail))
+                                    {
+                                        array_push($alluseremail, $email->email);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if($task_transfer_alert_dept_manager == '1')
+                    {
+                        $dept_manager_email = $this->db->query("SELECT a.email FROM ost_staff_test a INNER JOIN ost_department_test b ON b.manager_guid = a.staff_guid WHERE b.department_guid = '$depart'")->row('email');
+                        if (!in_array($dept_manager_email, $alluseremail))
+                        {
+                            array_push($alluseremail, $dept_manager_email);
+                        }
+                    }
+                    if($task_transfer_alert_dept_members == '1')
+                    {
+                        $dept_members_email = $this->db->query("SELECT a.email FROM ost_staff_test a WHERE b.department_guid = '$depart'");
+                        foreach($dept_members_email->result() as $email)
+                        {
+                            if (!in_array($email->email, $alluseremail))
+                            {
+                                array_push($alluseremail, $email->email);
+                            }
+                        }
+                    }
+                }
+                
                 $this->db->query("INSERT INTO osticket.ost_thread_entry_test ( thread_entry_guid, task_guid , staff_guid , type, poster , body , ip_address, created, updated, class, avatar )
                             VALUES (REPLACE(UPPER(UUID()),'-',''), '$taskid' ,'$poster_id', 'E' ,'$posterfname $posterlname', '$description', '$ipaddress', now(), now(), 'share-alt', 'left')");
 
@@ -757,6 +1173,18 @@ class staff_task_controller extends CI_Controller {
                 $assignstafffname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = '$staff_guid'")->row('firstname');
                 $assignstafflname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = '$staff_guid'")->row('lastname');
                 $description = '<b>'.$posterfname.''.$posterlname.'</b> assigned this ticket to <strong>'.$assignstafffname. ''.$assignstafflname. '</strong>';
+
+                if($task_assignment_alert_active == '1')
+                {
+                    if($task_assignment_alert_staff == '1')
+                    {
+                        $staff_email = $this->db->query("SELECT email FROM ost_staff_test WHERE staff_guid = '$staff_guid'")->row('email');
+                        if (!in_array($staff_email, $alluseremail))
+                        {
+                            array_push($alluseremail, $staff_email);
+                        }
+                    }
+                }
                 
 
                 $this->db->query("INSERT INTO osticket.ost_thread_entry_test ( thread_entry_guid, task_guid , staff_guid , type, poster , body , ip_address, created, updated, class, avatar )
@@ -773,6 +1201,29 @@ class staff_task_controller extends CI_Controller {
 
                 $assignteamname = $this->db->query("SELECT name FROM ost_team_test WHERE team_guid = '$team_guid' ")->row('name');
                 $description = '<b>'.$posterfname.''.$posterlname.'</b> assigned this ticket to <strong>'.$assignteamname. '</strong>';
+
+                if($task_assignment_alert_active == '1')
+                {
+                    if($task_assignment_alert_team_lead == '1')
+                    {
+                        $team_lead_email = $this->db->query("SELECT a.email FROM ost_staff_test a INNER JOIN ost_team_test b ON b.lead_guid = a.staff_guid WHERE b.team_guid = '$team_guid'")->row('email');
+                        if (!in_array($team_lead_email, $alluseremail))
+                        {
+                            array_push($alluseremail, $team_lead_email);
+                        }
+                    }
+                    if($task_assignment_alert_team_members == '1')
+                    {
+                        $team_members_email = $this->db->query("SELECT a.email FROM ost_staff_test a INNER JOIN ost_team_member_test b ON b.staff_guid = a.staff_guid WHERE b.team_guid = '$team_guid'");
+                        foreach($team_members_email->result() as $value2)
+                        {
+                            if (!in_array($value2->email, $alluseremail))
+                            {
+                                array_push($alluseremail, $value2->email);
+                            }
+                        }
+                    }
+                }
 
                 $this->db->query("INSERT INTO osticket.ost_thread_entry_test ( thread_entry_guid, task_guid , staff_guid , type, poster , body , ip_address, created, updated, class, avatar )
                 VALUES (REPLACE(UPPER(UUID()),'-',''), '$taskid' ,'$poster_id', 'E' ,'$posterfname $posterlname', '$description', '$ipaddress', now(), now(), 'hand-right', 'left')");
@@ -818,6 +1269,54 @@ class staff_task_controller extends CI_Controller {
             foreach ($notearr as $note) {
                 if ($note != "")
                     $this->db->query("INSERT INTO ost_thread_entry_test (thread_entry_guid, task_guid, staff_guid, type, poster, body, ip_address, created, updated, class, avatar ) VALUES (REPLACE(UPPER(UUID()),'-',''), '$taskid', '$poster_id', 'N','$posterfname $posterlname', '$note', '$ipaddress', now(), now(), 'note', 'left')");
+            }
+
+            foreach ($alluseremail as $value1)
+            {
+                $this->load->library('email');
+                $username = $this->db->query("SELECT CONCAT(a.firstname,' ',a.lastname) AS username, b.name FROM ost_staff_test a INNER JOIN ost_department_test b ON b.department_guid = a.dept_guid WHERE email = '$value1'");
+                $poster = $this->db->query("SELECT CONCAT(a.firstname,' ',a.lastname) AS username FROM ost_staff_test a WHERE staff_guid = '$poster_id'")->row('username');
+                $task = $this->db->query("SELECT * FROM ost_task_test WHERE task_guid = '$taskid'");
+                
+                
+                $default_template_id = $this->db->query("SELECT * FROM ost_config_test WHERE id = '87'")->row('value');
+                if($depart != '')
+                {
+                    $department = $this->db->query("SELECT name FROM ost_department_test WHERE department_guid = '$depart'")->row('name');
+                    $data = array(
+                        'body' => $this->db->query("SELECT REPLACE(REPLACE(subject, '%number%', '".$task->row('number')."'), '%department%', '".$department."') AS email_subject, 
+                            REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(body, '%user_name%', '".$username->row('username')."'), '%assigner%', '$poster'), '%number%', '".$task->row('number')."'), '%department%', '".$department."'), '%comment%', '".$notearr['transfernote']."') AS email
+                            FROM ost_email_template_test WHERE code_name = 'task.transfer.alert' AND tpl_guid = '$default_template_id'"),
+                        'template' => $this->db->query("SELECT * FROM ost_company_test"),
+                    );
+                }
+                else
+                {
+                    $data = array(
+                        'body' => $this->db->query("SELECT REPLACE(subject, '%number%', '".$task->row('number')."') AS email_subject, 
+                            REPLACE(REPLACE(REPLACE(REPLACE(body, '%user_name%', '".$username->row('username')."'), '%assigner%', '$poster'), '%number%', '".$task->row('number')."'), '%comment%', '".$notearr['assignnote']."') AS email
+                            FROM ost_email_template_test WHERE code_name = 'task.assignment.alert' AND tpl_guid = '$default_template_id'"),
+                        'template' => $this->db->query("SELECT * FROM ost_company_test"),
+                    );
+                }
+                $default_email = $this->db->query("SELECT value FROM ost_config_test WHERE id='83'")->row('value');
+                $sender_email = $this->db->query("SELECT * FROM ost_email_test WHERE email_guid='$default_email'")->row();
+                $config = array(
+    
+                    'smtp_user' => $sender_email->userid,
+                    'smtp_pass' => $sender_email->userpass,
+                    'smtp_host' => $sender_email->smtp_host,
+                    'smtp_port' => $sender_email->smtp_port,
+                    
+                );
+                $bodyContent = $this->load->view('email_template', $data, TRUE);
+                $this->email->initialize($config);
+                $this->email->from($sender_email->userid); 
+                $this->email->reply_to($sender_email->userid);    // Optional, an account where a human being reads.
+                $this->email->to($value1);
+                $this->email->subject($data['body']->row('email_subject'));
+                $this->email->message($bodyContent);
+                $this->email->send();
             }
 
             redirect('staff_task_controller/taskinfo?id='.$taskid);
