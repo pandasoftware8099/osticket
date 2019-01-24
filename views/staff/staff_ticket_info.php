@@ -238,7 +238,7 @@ function myFunction() {
                                         </li>
                                         <?php if($value1->editor != ''){ ?>
                                         <li>
-                                            <a id="view" class="confirm" data-toggle="modal" data-target="#viewh" href="#"><i class="icon-copy"></i> View History</a>
+                                            <a id="view" class="confirm" data-toggle="modal" data-editor="<?php echo $value1->editor?>" data-last_body="<?php echo $value1->last_body?>" data-target="#viewh" href="#"><i class="icon-copy"></i> View History </a>
                                         </li>
                                     <?php } ?>
                                     </ul>
@@ -249,87 +249,6 @@ function myFunction() {
                                     <?php } ?>
                                 </span>
                             </div>
-
-        <script type="text/javascript">
-            $(document).on("click", ".open-edit", function () {
-                 $(".modal-body #threadguid").val($(this).data('guid'));
-                 $("#threadbody").summernote("code", $(this).data('body1'));
-            });
-             
-        </script>
-
-        <div class="modal fade" id="more-modal" style="display: none;">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">×</span></button>
-                <h3>Edit Thread Entry </h3>
-              </div>
-              <div class="modal-body">
-                <form method="post" action="<?php echo site_url('staff_ticket_controller/editorupdate')?>">
-               <div class="box">
-                            <div class="box-header">
-                                <!-- tools box -->
-                                <div class="pull-right box-tools"></div>
-                            <!-- /. tools -->
-                            </div>
-                            <!-- /.box-header -->
-                            <div class="box-body pad">
-                                <input  type="hidden" value="" id="threadguid" name="threadguid">
-                                <textarea class="textarea" id="threadbody" name="threadbody" style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"></textarea>
-                            </div>
-                        </div>
-              </div>
-              
-              <div class="modal-footer">
-              <p class="full-width">
-                <span class="buttons pull-right">
-                    <input type="submit" value="Save" class="confirm">
-                </span>
-                </form>
-              </p>
-
-              </div>
-            </div>
-            <!-- /.modal-content -->
-          </div>
-          <!-- /.modal-dialog -->
-        </div>
-
-        <div class="modal fade" id="viewh" style="display: none;">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">×</span></button>
-                <h3>Original Thread Entry</h3>
-              </div>
-              <div class="modal-body">
-                <div class="accordian">
-                    <dt class="active">
-                    <i class ="icon-copy"></i>
-                    <?php $editor = $this->db->query("SELECT editor FROM ost_thread_entry_test WHERE thread_entry_guid = '$value1->thread_entry_guid'")->row('editor');
-                    echo '<em>Edited by '.$editor.'</em>';
-                    ?>
-                    </dt>
-                    <dd style="background-color: transparent;">
-                        <div class="title truncate" style="background-color: transparent;min-height: 50px;font-size: 1.5em;"><?php echo $value1->last_body?></div>
-                    </dd>
-                </div>
-              </div>
-              <div class="modal-footer">
-              <p class="full-width">
-                <span class="buttons pull-right">
-                    <input type="button" value="Done" class="close">
-                </span>
-              </p>
-              </div>
-            </div>
-            <!-- /.modal-content -->
-          </div>
-          <!-- /.modal-dialog -->
-        </div>
 
                             <?php if ($value1->staff_guid == '0') { ?>
                                 <b><?php echo $value1->poster;?></b>
@@ -1783,6 +1702,95 @@ $(function() {
 </div>
   <!-- change ticket owner popup modal -->
 </div>
+
+<script type="text/javascript">
+            $(document).on("click", ".open-edit", function () {
+                 $(".modal-body #threadguid").val($(this).data('guid'));
+                 $("#threadbody").summernote("code", $(this).data('body1'));
+            });
+
+             $(document).on("click", "#view", function () {
+                 var lastbody = $(this).data('last_body');
+                 var editor = "Edited By " + $(this).data('editor');
+                 $(".modal-body").find('em').text(editor);
+                 $(".modal-body").find('div #lastbody').html(lastbody);
+            });
+             
+</script>
+
+        <form method="post" action="<?php echo site_url('staff_ticket_controller/editorupdate')?>">
+        <div class="modal fade" id="more-modal" style="display: none;">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">×</span></button>
+                <h3>Edit Thread Entry</h3>
+              </div>
+              <div class="modal-body">
+                
+               <div class="box">
+                            <div class="box-header">
+                                <!-- tools box -->
+                                <div class="pull-right box-tools"></div>
+                            <!-- /. tools -->
+                            </div>
+                            <!-- /.box-header -->
+                            <div class="box-body pad">
+                                <input  type="hidden" value="" id="threadguid" name="threadguid">
+                                <textarea class="textarea" id="threadbody" name="threadbody" style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"></textarea>
+                            </div>
+                        </div>
+              </div>
+              
+              <div class="modal-footer">
+              <p class="full-width">
+                <span class="buttons pull-right">
+                    <input type="submit" value="Save" class="confirm">
+                </span>
+                
+              </p>
+
+              </div>
+            </div>
+            <!-- /.modal-content -->
+          </div>
+          <!-- /.modal-dialog -->
+        </div>
+        </form>
+
+        <div class="modal fade" id="viewh" style="display: none;">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">×</span></button>
+                <h3>Original Thread Entry</h3>
+              </div>
+              <div class="modal-body">
+                <div class="accordian">
+                    <dt class="active">
+                    <i class ="icon-copy"></i>
+                    <input  type="hidden" value="" id="threadguid" name="threadguid">
+                    <em></em>
+                    </dt>
+                    <dd style="background-color: transparent;">
+                        <div class="title truncate" id="lastbody" style="background-color: transparent;min-height: 50px;font-size: 1.5em;"></div>
+                    </dd>
+                </div>
+              </div>
+              <div class="modal-footer">
+              <p class="full-width">
+                <span class="buttons pull-right">
+                    <input type="button" value="Done" class="close">
+                </span>
+              </p>
+              </div>
+            </div>
+            <!-- /.modal-content -->
+          </div>
+          <!-- /.modal-dialog -->
+        </div>
 
 <script type="text/javascript">
     var checked=false;

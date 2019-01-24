@@ -73,7 +73,7 @@
                 <input type="checkbox" name="task_alert_dept_members" <?php echo $task_alert_dept_members == 1?"checked":"";?> value="1">
                 Department Members            </td>
         </tr>
-        <tr><th><em><b>New Activity Alert</b> :
+        <tr><th><em><b>New Message Alert</b> :
             </em></th></tr>
         <tr>
             <td><em><b>Status:</b></em> &nbsp;

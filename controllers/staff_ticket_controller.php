@@ -634,6 +634,7 @@ class staff_ticket_controller extends CI_Controller {
            redirect('user_controller/superlogin');
         }
     }
+
 public function ticketinfo()
 {      
     if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
@@ -1457,7 +1458,7 @@ public function deleteticketusernote()
                                     array_push($alluseremail, $assigned_email);
                                 }
                             }
-                            else
+                            else if($ticket->row('team_guid') != '0')
                             {
                                 $assigned_emails = $this->db->query("SELECT email FROM ost_staff_test a INNER JOIN ost_team_member_test b ON b.staff_guid = a.staff_guid WHERE b.team_guid = '".$ticket->row('team_guid')."'");
                                 foreach($assigned_emails->result() as $value)
@@ -1518,10 +1519,6 @@ public function deleteticketusernote()
                             'body' => $this->db->query("SELECT REPLACE(subject, '%number%', '".$emailinfo->row('number')."') AS email_subject, 
                                 REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(body, '%user_name%', '".$username->row('username')."'), '%creator%', '$posterfname$posterlname'), '%number%', '".$emailinfo->row('number')."'), '%department%', '".$username->row('name')."'), '%topic%', '".$topicinfo->row('topic')."'), '%subtopic%', '".$topicinfo->row('value')."') AS email
                                 FROM ost_email_template_test WHERE code_name = 'message.alert' AND tpl_guid = '$default_template_id'"),
-                            'signature' => $signature,
-                            'ticketsign' => $this->db->query("SELECT a.*, b.*, a.signature AS staffsign, b.signature AS deptsign FROM ost_staff_test AS a
-                                INNER JOIN ost_department_test AS b ON a.dept_guid = b.department_guid
-                                WHERE staff_guid = '$poster_id'"),
                             'template' => $this->db->query("SELECT * FROM ost_company_test"),
                         );
                         $default_email = $this->db->query("SELECT value FROM ost_config_test WHERE id='83'")->row('value');
@@ -1599,6 +1596,9 @@ public function deleteticketusernote()
             $statusid = $this->input->post('note_status_guid');
             $poster_id = $_SESSION['staffid'];
             $ipaddress = $_SERVER['REMOTE_ADDR'];
+            $message_alert_active = $this->db->query("SELECT value FROM ost_config_test WHERE id='43'")->row('value');
+            $alluseremail = array();
+            $email = $this->db->query("SELECT b.user_email, b.user_name FROM ost_ticket_test a INNER JOIN ost_user_test b ON a.user_guid = b.user_guid WHERE ticket_guid = '$ticketid'");
             $posterfname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = $poster_id")->row('firstname');
             $posterlname = $this->db->query("SELECT * FROM ost_staff_test WHERE staff_guid = $poster_id")->row('lastname');
             $ticketinfo = $this->db->query("SELECT assigned_to, ticket_updated, ticket_updated_by_id, ticket_updated_by_role FROM ost_ticket_test WHERE ticket_guid = '$ticketid'");
@@ -1632,6 +1632,128 @@ public function deleteticketusernote()
                         echo "<script> alert('Message successfully sent.');</script>"; 
                     }
                 }
+
+                if($message_alert_active == '1')
+                {
+                    $message_alert_laststaff = $this->db->query("SELECT value FROM ost_config_test WHERE id='44'")->row('value');
+                    $message_alert_assigned = $this->db->query("SELECT value FROM ost_config_test WHERE id='45'")->row('value');
+                    $message_alert_dept_manager = $this->db->query("SELECT value FROM ost_config_test WHERE id='46'")->row('value');
+                    $message_alert_acct_manager = $this->db->query("SELECT value FROM ost_config_test WHERE id='101'")->row('value');
+                    if($message_alert_laststaff == '1')
+                    {
+                        $thread_ids = $this->db->query("SELECT * FROM ost_thread_entry_test WHERE type ='N' and ticket_guid = '$ticketid';");
+                        if($thread_ids->num_rows() > 1)
+                        {
+                            $thread_id = $this->db->query("SELECT * FROM ost_thread_entry_test WHERE type = 'N' and ticket_guid = '$ticketid' ORDER BY created DESC LIMIT 1,1;");
+                            if($thread_id->row('staff_guid') == '0')
+                            {
+                                $last_res_email = $this->db->query("SELECT user_email FROM ost_user_test WHERE user_guid = '".$thread_id->row('user_guid')."'")->row('user_email');
+                            }
+                            else
+                            {
+                                $last_res_email = $this->db->query("SELECT email FROM ost_staff_test WHERE staff_guid = '".$thread_id->row('staff_guid')."'")->row('email');
+                            }
+                            if (!in_array($last_res_email, $alluseremail))
+                            {
+                                array_push($alluseremail, $last_res_email);
+                            }
+                        }
+                    }
+                    if($message_alert_assigned == '1')
+                    {
+                        $ticket = $this->db->query("SELECT * FROM ost_ticket_test a WHERE ticket_guid = '$ticketid'");
+                        if($ticket->row('assigned_to') != '' || $ticket->row('team_guid') != '')
+                        {
+                            if($ticket->row('assigned_to') != '0')
+                            {
+                                $assigned_email = $this->db->query("SELECT email FROM ost_staff_test WHERE staff_guid = '".$ticket->row('assigned_to')."'")->row('email');
+                                if (!in_array($assigned_email, $alluseremail))
+                                {
+                                    array_push($alluseremail, $assigned_email);
+                                }
+                            }
+                            else if($ticket->row('team_guid') != '0')
+                            {
+                                $assigned_emails = $this->db->query("SELECT email FROM ost_staff_test a INNER JOIN ost_team_member_test b ON b.staff_guid = a.staff_guid WHERE b.team_guid = '".$ticket->row('team_guid')."'");
+                                foreach($assigned_emails->result() as $value)
+                                {
+                                    if (!in_array($value->email, $alluseremail))
+                                    {
+                                        array_push($alluseremail, $value->email);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if($message_alert_dept_manager == '1')
+                    {
+                        $dept_manager_email = $this->db->query("SELECT c.email FROM ost_staff_test c INNER JOIN ost_department_test a ON c.staff_guid=a.`manager_guid` INNER JOIN ost_ticket_test b ON a.name= b.`department` WHERE ticket_guid = '$ticketid'")->row('email');
+                        if (!in_array($dept_manager_email, $alluseremail))
+                        {
+                            array_push($alluseremail, $dept_manager_email);
+                        }
+                    }
+                    if($message_alert_acct_manager == '1')
+                    {
+                        $acct_manager = $this->db->query("SELECT b.manager FROM ost_user_test a INNER JOIN ost_organization_test b ON b.organization_guid = a.user_org_guid WHERE a.user_email = '".$email->row('user_email')."' ")->row('manager');
+                        if($acct_manager != '')
+                        {  
+                            if ($acct_manager{0} == 'a')
+                            {
+                                $staff_guid = substr($acct_manager, 1);
+                                $acct_manager_email = $this->db->query("SELECT email FROM ost_staff_test WHERE staff_guid = '$staff_guid'")->result();
+                            }
+                            else if ($acct_manager{0} == 't')
+                            {
+                                $team_guid = substr($acct_manager, 1);
+                                $acct_manager_email = $this->db->query("SELECT a.email FROM ost_staff_test a INNER JOIN ost_team_member_test b ON b.staff_guid = a.staff_guid INNER JOIN ost_team_test c ON b.`team_guid` = c.`team_guid` WHERE c.team_guid = '$team_guid' ")->result();
+                            }
+                            foreach($acct_manager_email as $value)
+                            {
+                                if (!in_array($value->email, $alluseremail))
+                                {
+                                    array_push($alluseremail, $value->email);
+                                }
+                            }   
+                        }
+                    }
+                }
+                foreach ($alluseremail as $value)
+                    {
+                        $this->load->library('email');
+                        $username = $this->db->query("SELECT CONCAT(a.firstname,' ',a.lastname) AS username, b.name FROM ost_staff_test a INNER JOIN ost_department_test b ON b.department_guid = a.dept_guid WHERE email = '$value'");
+                        $emailinfo = $this->db->query("SELECT * FROM ost_ticket_test WHERE ticket_guid = '$ticketid'");
+                        $topicinfo = $this->db->query("SELECT * FROM ost_ticket_test b
+                        INNER JOIN ost_help_topic_test AS c ON b.topic_guid = c.topic_guid
+                        INNER JOIN ost_list_items_test AS d ON b.subtopic_guid = d.list_item_guid
+                        WHERE ticket_guid = '$ticketid'");
+                        $default_template_id = $this->db->query("SELECT * FROM ost_config_test WHERE id = '87'")->row('value');
+                        $login = 'http://[::1]/helpme/index.php/user_controller/login';
+                        $data = array(
+                            'body' => $this->db->query("SELECT REPLACE(subject, '%number%', '".$emailinfo->row('number')."') AS email_subject, 
+                                REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(body, '%user_name%', '".$username->row('username')."'), '%creator%', '$posterfname$posterlname'), '%number%', '".$emailinfo->row('number')."'), '%department%', '".$username->row('name')."'), '%topic%', '".$topicinfo->row('topic')."'), '%subtopic%', '".$topicinfo->row('value')."') AS email
+                                FROM ost_email_template_test WHERE code_name = 'message.alert' AND tpl_guid = '$default_template_id'"),
+                            'template' => $this->db->query("SELECT * FROM ost_company_test"),
+                        );
+                        $default_email = $this->db->query("SELECT value FROM ost_config_test WHERE id='83'")->row('value');
+                        $sender_email = $this->db->query("SELECT * FROM ost_email_test WHERE email_guid='$default_email'")->row();
+                        $config = array(
+            
+                            'smtp_user' => $sender_email->userid,
+                            'smtp_pass' => $sender_email->userpass,
+                            'smtp_host' => $sender_email->smtp_host,
+                            'smtp_port' => $sender_email->smtp_port,
+                            
+                        );
+                        $bodyContent = $this->load->view('email_template', $data, TRUE);
+                        $this->email->initialize($config);
+                        $this->email->from($sender_email->userid); 
+                        $this->email->reply_to($sender_email->userid);    // Optional, an account where a human being reads.
+                        $this->email->to($value);
+                        $this->email->subject($data['body']->row('email_subject'));
+                        $this->email->message($bodyContent);
+                        $this->email->send();
+                    }
             }
             else
             {
@@ -1768,7 +1890,7 @@ public function deleteticketusernote()
                                             {
                                                 array_push($alluseremail, $assigned_teamlead_email);
                                             }
-                                            $assigned_teammem_emails = $this->db->query("SELECT a.email FROM ost_staff_test a INNER JOIN ost_team_member_test b ON b.staff_guid = a.staff_guid WHERE team_guid = '".$assigned->row('assigned_to')."'");
+                                            $assigned_teammem_emails = $this->db->query("SELECT a.email FROM ost_staff_test a INNER JOIN ost_team_member_test b ON b.staff_guid = a.staff_guid WHERE team_guid = '".$assigned->row('team_guid')."'");
                                             foreach($assigned_teammem_emails->result() as $email)
                                             {
                                                 if (!in_array($email->email, $alluseremail))
@@ -2131,8 +2253,8 @@ public function deleteticketusernote()
                         if($depart != '')
                         {
                             $data = array(
-                                'body' => $this->db->query("SELECT REPLACE(REPLACE(subject, '%number%', '".$emailinfo->row('number')."'), '%department%', '".$username->row('name')."') AS email_subject, 
-                                    REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(body, '%user_name%', '".$username->row('username')."'), '%assigner%', '$poster'), '%number%', '".$emailinfo->row('number')."'), '%department%', '".$username->row('name')."'), '%comment%', '".$notearr['transfernote']."') AS email
+                                'body' => $this->db->query("SELECT REPLACE(REPLACE(subject, '%number%', '".$emailinfo->row('number')."'), '%department%', '".$depart."') AS email_subject, 
+                                    REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(body, '%user_name%', '".$username->row('username')."'), '%assigner%', '$poster'), '%number%', '".$emailinfo->row('number')."'), '%department%', '".$depart."'), '%comment%', '".$notearr['transfernote']."') AS email
                                     FROM ost_email_template_test WHERE code_name = 'transfer.alert' AND tpl_guid = '$default_template_id'"),
                                 'ticketsign' => $this->db->query("SELECT a.*, b.*, a.signature AS staffsign, b.signature AS deptsign FROM ost_staff_test AS a
                                     INNER JOIN ost_department_test AS b ON a.dept_guid = b.department_guid
