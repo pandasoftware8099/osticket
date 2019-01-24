@@ -255,7 +255,6 @@ function myFunction() {
                  $(".modal-body #threadguid").val($(this).data('guid'));
                  $("#threadbody").summernote("code", $(this).data('body1'));
             });
-
              
         </script>
 
@@ -380,7 +379,6 @@ function myFunction() {
         <script type="text/javascript">
             $(function() {
                 var container = 'ticketThread';
-
                 // Set inline image urls.
                     $('#'+container).data('imageUrls', []);
                 // Trigger thread processing.
@@ -633,7 +631,6 @@ function myFunction() {
                           <?php echo $task->firstname;?> 
                           <?php echo $task->lastname;?>
                         <?php }
-
                         if ($task->taskstaff == '0')
                         { ?>
                           <?php echo $task->teamname;?>
@@ -941,7 +938,6 @@ $(function() {
             }
         });
     });
-
     // Post Reply or Note action buttons.
     $('a.post-response').click(function (e) {
         var $r = $('ul.tabs_1 > li > a'+$(this).attr('href')+'-tab');
@@ -953,19 +949,15 @@ $(function() {
             // Make the target response tab active.
             if (!$r.hasClass('active'))
                 $r.trigger('click');
-
             // Scroll to the response section.
             var $stop = $(document).height();
             var $s = $('div#response_options');
             if ($s.length)
                 $stop = $s.offset().top-125
-
             $('html, body').animate({scrollTop: $stop}, 'fast');
         }
-
         return false;
     });
-
 });
 </script>
         <link rel="stylesheet" type="text/css" href="/helpdesk/css/filedrop.css">
@@ -1858,7 +1850,6 @@ $(function() {
 <script type="text/javascript">
     $(document).ready(function () {
         $('#checkBtn').click(function() {
-
           $("#status_guid").attr('required', true);
           $("#departmentid").attr('required', false);
           $("#assignto").attr('required', false);
@@ -1867,11 +1858,8 @@ $(function() {
           $("#departmentid").attr('name', true);
           $("#assignto").attr('name', true);
           $("#deleteticket").attr('name', true);
-
         });
-
         $('#assign').click(function() {
-
           $("#status_guid").attr('required', false);
           $("#departmentid").attr('required', false);
           $("#departmentid").attr('name', true);
@@ -1880,12 +1868,8 @@ $(function() {
           $("#assignto").attr('name', 'assignto');
           $("#deleteticket").attr('required', false);
           $("#deleteticket").attr('name', true);
-
         });
-
-
         $('#tickets-transfer').click(function() {
-
           $("#status_guid").attr('required', false);
           $("#assignto").attr('required', false);
           $("#departmentid").attr('required', true);
@@ -1894,11 +1878,8 @@ $(function() {
           $("#departmentid").attr('name', 'departmentid');
           $("#assignto").attr('name', true);
           $("#deleteticket").attr('name', true);
-
         });
-
         $('#tickets-delete').click(function() {
-
           $("#status_guid").attr('required', false);
           $("#assignto").attr('required', false);
           $("#departmentid").attr('required', false);
@@ -1907,7 +1888,6 @@ $(function() {
           $("#departmentid").attr('name', true);
           $("#assignto").attr('name', true);
           $("#deleteticket").attr('name', 'deleteticket');
-
         });
     });
 </script>
@@ -1917,12 +1897,10 @@ $(function() {
     $(document).ready(function () {
         $('#tastatus').click(function() {
           checked = $("input[type=checkbox]:checked").length;
-
           if(!checked) {
             alert("You must check at least one ticket.");
             return false;
           }
-
           $("#sta").attr('required', true);
           $("#dep").attr('required', false);
           $("#ass").attr('required', false);
@@ -1931,17 +1909,13 @@ $(function() {
           $("#dep").attr('name', true);
           $("#ass").attr('name', true);
           $("#del").attr('name', true);
-
         });
-
         $('#taassign').click(function() {
           checked = $("input[type=checkbox]:checked").length;
-
           if(!checked) {
             alert("You must check at least one ticket.");
             return false;
           }
-
           $("#sta").attr('required', false);
           $("#dep").attr('required', false);
           $("#dep").attr('name', true);
@@ -1950,18 +1924,13 @@ $(function() {
           $("#ass").attr('name', 'assignto');
           $("#del").attr('required', false);
           $("#del").attr('name', true);
-
         });
-
-
         $('#tatransfer').click(function() {
           checked = $("input[type=checkbox]:checked").length;
-
           if(!checked) {
             alert("You must check at least one ticket.");
             return false;
           }
-
           $("#sta").attr('required', false);
           $("#ass").attr('required', false);
           $("#dep").attr('required', true);
@@ -1970,17 +1939,13 @@ $(function() {
           $("#dep").attr('name', 'departmentid');
           $("#ass").attr('name', true);
           $("#del").attr('name', true);
-
         });
-
         $('#tadelete').click(function() {
           checked = $("input[type=checkbox]:checked").length;
-
           if(!checked) {
             alert("You must check at least one ticket.");
             return false;
           }
-
           $("#sta").attr('required', false);
           $("#ass").attr('required', false);
           $("#dep").attr('required', false);
@@ -1989,7 +1954,6 @@ $(function() {
           $("#dep").attr('name', true);
           $("#ass").attr('name', true);
           $("#del").attr('name', 'delete');
-
         });
     });
 </script>
@@ -2000,22 +1964,18 @@ $(function() {
     var newuser = document.getElementById("new-user-add");
     var userprofile = document.getElementById("user-profile");
     var userform = document.getElementById("user-form");
-
     function adduser() {
         ticketuser.style.display = "none";
         newuser.style.display = "block";
     }
-
     function reroll() {
         ticketuser.style.display = "block";
         newuser.style.display = "none";
     }
-
     function updateuser() {
         userprofile.style.display = "none";
         userform.style.display = "block";
     }
-
     function userinfo() {
         userprofile.style.display = "block";
         userform.style.display = "none";
@@ -2025,9 +1985,7 @@ $(function() {
 <!-- ajax search -->
 <script>
 $(document).ready(function(){
-
  load_data();
-
  function load_data(query)
  {
   $.ajax({
@@ -2039,14 +1997,11 @@ $(document).ready(function(){
    }
   })
  }
-
  $('#search_text').keyup(function(){
   var search = $(this).val();
   if(search != '')
   {
    load_data(search);
-
-
   }
   else
   {
@@ -2066,7 +2021,6 @@ function formatBytes(a,b){
         f=Math.floor(Math.log(a)/Math.log(c));
     return parseFloat((a/Math.pow(c,f)).toFixed(d))+" "+e[f];
 }
-
 $(document).on('change', '.file', function(){
     if(this.files.length><?php echo $max_files;?>)
     {
@@ -2093,7 +2047,6 @@ $("#cannedResp").on("change", function() {
     var $select = $(this).children("option:selected").val();
     $("#ticket-response").summernote("pasteHTML", $select)
 });
-
 </script>
 
 
@@ -2115,5 +2068,3 @@ $("#cannedResp").on("change", function() {
 <script type="text/javascript">
     getConfig().resolve({"lock_time":3600,"html_thread":true,"date_format":"Y-MM-dd","lang":"en_US","short_lang":"en","has_rtl":false,"lang_flag":"us","primary_lang_flag":"us","primary_language":"en-US","secondary_languages":[],"page_size":25});
 </script>
-
-

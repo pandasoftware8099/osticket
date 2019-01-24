@@ -157,6 +157,8 @@ class staff_task_controller extends CI_Controller {
         $number_random_digit = $this->db->query("SELECT * FROM ost_config_test WHERE id = '72'")->row('value');
         $task_seq_id = $this->db->query("SELECT value FROM ost_config_test WHERE id='73'")->row('value');
         $checkstring = str_repeat("_", $number_random_digit);
+        $task_alert_active = $this->db->query("SELECT value FROM ost_config_test WHERE id='143'")->row('value');
+        $alluseremail = array();
 
         if($task_seq_id == '0')
         {
@@ -266,6 +268,92 @@ class staff_task_controller extends CI_Controller {
                 echo "<script> alert('$i File(s) and message succesfully sent.');</script>";
             else
                 echo "<script> alert('Task succesfully created.');</script>"; 
+        }
+
+        if($task_alert_active == '1')
+        {
+            $task_alert_admin = $this->db->query("SELECT value FROM ost_config_test WHERE id='144'")->row('value');
+            $task_alert_dept_manager = $this->db->query("SELECT value FROM ost_config_test WHERE id='145'")->row('value');
+            $task_alert_dept_members = $this->db->query("SELECT value FROM ost_config_test WHERE id='146'")->row('value');
+
+            if($task_alert_admin == '1')
+            {
+                $admin_email = $this->db->query("SELECT value FROM ost_config_test WHERE id = '1' ")->row('value');
+
+                if (!in_array($admin_email, $alluseremail))
+                {
+                    array_push($alluseremail, $admin_email);
+                }
+            }
+
+            if($task_alert_dept_manager == '1')
+            {
+                $dept_manager_email = $this->db->query("SELECT a.email FROM ost_staff_test a INNER JOIN ost_department_test b ON b.manager_guid = a.staff_guid WHERE b.department_guid = '$deparment' ")->row('email');
+
+                if (!in_array($dept_manager_email, $alluseremail))
+                {
+                    array_push($alluseremail, $dept_manager_email);
+                }
+                
+            }
+
+            if($task_alert_dept_members == '1')
+            {
+                $dept_members_email = $this->db->query("SELECT b.email FROM ost_staff_test a WHERE a.dept_guid = '$deparment'")
+                
+                foreach($dept_members_email->result() as $value1)
+                {
+                    if (!in_array($value1->email, $alluseremail))
+                    {
+                        array_push($alluseremail, $value->email);
+                    }
+                }
+            }
+        }
+
+        foreach ($alluseremail as $value)
+        {
+            $this->load->library('email');
+
+            $user_name = $this->db->query("SELECT user_name FROM ost_user_test WHERE user_email = '$value'")->row('user_name');
+            $emailinfo = $this->db->query("SELECT * FROM ost_user_test AS a
+                INNER JOIN ost_ticket_test AS b ON a.user_guid = b.user_guid
+                INNER JOIN ost_help_topic_test AS c ON b.topic_guid = c.topic_guid
+                INNER JOIN ost_list_items_test AS d ON b.subtopic_guid = d.list_item_guid
+                WHERE ticket_guid = '$result'");
+            $default_template_id = $this->db->query("SELECT * FROM ost_config_test WHERE id = '87'")->row('value');
+
+            $data = array(
+                'body' => $this->db->query("SELECT REPLACE(REPLACE(subject, '%subject%', '".$emailinfo->row('value')."'), '%number%', '".$emailinfo->row('number')."') AS email_subject, 
+                    REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(body, '%user_name%', '$user_name'), '%login%', '$login'), '%number%', '".$emailinfo->row('number')."'), '%topic%', '".$emailinfo->row('topic')."'), '%subtopic%', '".$emailinfo->row('value')."') AS email
+                    FROM ost_email_template_test WHERE code_name = 'ticket.notice' AND tpl_guid = '$default_template_id'"),
+                'ticketsign' => $this->db->query("SELECT a.*, b.*, a.signature AS staffsign, b.signature AS deptsign FROM ost_staff_test AS a
+                    INNER JOIN ost_department_test AS b ON a.dept_guid = b.department_guid
+                    WHERE staff_guid = '$poster_id'"),
+                'signature' => $signature,
+                'template' => $this->db->query("SELECT * FROM ost_company_test"),
+            );
+
+            $default_email = $this->db->query("SELECT value FROM ost_config_test WHERE id='83'")->row('value');
+            $sender_email = $this->db->query("SELECT * FROM ost_email_test WHERE email_guid='$default_email'")->row();
+
+            $config = array(
+
+                'smtp_user' => $sender_email->userid,
+                'smtp_pass' => $sender_email->userpass,
+                'smtp_host' => $sender_email->smtp_host,
+                'smtp_port' => $sender_email->smtp_port,
+                
+            );
+            $bodyContent = $this->load->view('email_template', $data, TRUE);
+
+            $this->email->initialize($config);
+            $this->email->from($sender_email->userid); 
+            $this->email->reply_to($sender_email->userid);    // Optional, an account where a human being reads.
+            $this->email->to($value);
+            $this->email->subject($data['body']->row('email_subject'));
+            $this->email->message($bodyContent);
+            $this->email->send();
         }
 
         if ($direct == 'ticket')
