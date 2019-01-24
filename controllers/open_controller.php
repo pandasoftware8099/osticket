@@ -89,7 +89,8 @@ class Open_controller extends CI_Controller {
 
                         if ($_FILES['file']['name'][0] != "") {
 
-                            $thread_id = $this->db->query("SELECT thread_entry_guid FROM ost_thread_entry_test WHERE created = now() ")->row('thread_entry_guid');
+                            $thread_id = $this->db->query("SELECT thread_entry_guid as id FROM ost_thread_entry_test WHERE created = (SELECT max(created) FROM ost_thread_entry_test)")->row('id');
+
 
                             $filename = $thread_id.'_'.$_FILES['file']['name'][$i];
 

@@ -250,7 +250,7 @@ class staff_task_controller extends CI_Controller {
             // Looping all files
             for($i=0;$i<$countfiles;$i++)
             {
-                $thread_id = $this->db->query("SELECT thread_entry_guid FROM ost_thread_entry_test WHERE created = now() ")->row('thread_entry_guid');
+                $thread_id = $this->db->query("SELECT thread_entry_guid as id FROM ost_thread_entry_test WHERE created = (SELECT max(created) FROM ost_thread_entry_test)")->row('id');
 
                 $filename = $thread_id.'_'.$_FILES['file']['name'][$i];
 
@@ -592,7 +592,7 @@ class staff_task_controller extends CI_Controller {
                 // Looping all files
                 for($i=0;$i<$countfiles;$i++){
 
-                    $thread_id = $this->db->query("SELECT thread_entry_guid FROM ost_thread_entry_test WHERE created = now() ")->row('thread_entry_guid');
+                    $thread_id = $this->db->query("SELECT thread_entry_guid as id FROM ost_thread_entry_test WHERE created = (SELECT max(created) FROM ost_thread_entry_test)")->row('id');
 
                     $filename = $thread_id.'_'.$_FILES['file']['name'][$i];
 
@@ -672,7 +672,7 @@ class staff_task_controller extends CI_Controller {
 
                     if ($_FILES['file']['name'][0] != "") {
 
-                        $thread_id = $this->db->query("SELECT thread_entry_guid FROM ost_thread_entry_test WHERE created = now() ")->row('thread_entry_guid');
+                        $thread_id = $this->db->query("SELECT thread_entry_guid as id FROM ost_thread_entry_test WHERE created = (SELECT max(created) FROM ost_thread_entry_test)")->row('id');
 
                         $filename = $thread_id.'_'.$_FILES['file']['name'][$i];
 
@@ -854,7 +854,7 @@ class staff_task_controller extends CI_Controller {
                     LEFT JOIN ost_team_test AS c ON a.team_guid = c.team_guid
                     WHERE task_guid = '$taskid' "),
 
-                'thread' => $this->db->query("SELECT * FROM  ost_thread_entry_test WHERE task_guid = '$taskid' "),
+                'thread' => $this->db->query("SELECT * FROM  ost_thread_entry_test WHERE task_guid = '$taskid' GROUP BY created"),
             );
 
             $browser_id = $_SERVER["HTTP_USER_AGENT"];

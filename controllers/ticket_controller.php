@@ -117,7 +117,7 @@ class Ticket_controller extends CI_Controller {
                 WHERE ticket_guid = $ticketid"),
 
             'thread' => $this->db->query("SELECT * FROM  ost_thread_entry_test 
-                WHERE ticket_guid = $ticketid AND type != 'N'"),
+                WHERE ticket_guid = $ticketid AND type != 'N' GROUP BY created"),
             
             'user' => $this->db->query("SELECT * FROM ost_user_test INNER JOIN ost_ticket_test ON ost_user_test.user_guid = ost_ticket_test.user_guid WHERE ticket_guid = '$ticketid'"),
 
@@ -196,7 +196,7 @@ class Ticket_controller extends CI_Controller {
 
                     if ($_FILES['file']['name'][0] != "") {
 
-                        $thread_id = $this->db->query("SELECT thread_entry_guid FROM ost_thread_entry_test WHERE created = now() ")->row('thread_entry_guid');
+                        $thread_id = $this->db->query("SELECT thread_entry_guid as id FROM ost_thread_entry_test WHERE created = (SELECT max(created) FROM ost_thread_entry_test)")->row('id');
 
                         $filename = $thread_id.'_'.$_FILES['file']['name'][$i];
 
@@ -484,7 +484,7 @@ class Ticket_controller extends CI_Controller {
                 INNER JOIN ost_ticket_status_test AS c ON c.status_guid = a.status_guid
                 WHERE a.ticket_guid = $ticketid"),
 
-            'thread' => $this->db->query("SELECT * FROM  ost_thread_entry_test WHERE ticket_guid = $ticketid"),
+            'thread' => $this->db->query("SELECT * FROM  ost_thread_entry_test WHERE ticket_guid = $ticketid GROUP BY created"),
             
             'user' => $this->db->query("SELECT * FROM ost_user_test INNER JOIN ost_ticket_test ON ost_user_test.user_guid = ost_ticket_test.user_guid WHERE ticket_guid = '$ticketid'"),
         );
