@@ -278,6 +278,13 @@ class admin_emails_controller extends CI_Controller {
             $mail_encryption = 'NONE';
         }
 
+        else{
+
+            $mail_protocol = 'NONE';
+            $mail_encryption = 'NONE';
+
+        }
+
 
         $this->db->query("
         UPDATE ost_email_test SET 
