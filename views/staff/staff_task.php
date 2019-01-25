@@ -162,11 +162,11 @@
 <?php } ?>
 
 <?php if ($transferallow != 0 ) { ?>
-<span class="action-button" id="tickets-transfer" data-placement="bottom" data-toggle="modal" data-target="#transfer"><i class="icon-share"></i></span>
+<span class="action-button" id="tickets-transfer" data-placement="bottom" data-toggle="modal" data-target="#transfer" title="Transfer"><i class="icon-share"></i></span>
 <?php } ?>
 
 <?php if ($deleteallow != 0 ) { ?>
-<span class="red button action-button" id="tickets-delete" data-placement="bottom" data-toggle="modal" data-target="#delete"><i class="icon-trash"></i></span>
+<span class="red button action-button" id="tickets-delete" data-placement="bottom" data-toggle="modal" data-target="#delete" title="Delete"><i class="icon-trash"></i></span>
 <?php } ?>
 
 <?php } ?>

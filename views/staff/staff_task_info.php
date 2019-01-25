@@ -21,7 +21,7 @@
             <span id="task-edit" class="action-button pull-right" data-toggle="modal" data-target="#edit"><a data-placement="bottom" data-toggle="tooltip" title="" data-original-title="Edit"><i class="icon-edit"></i></a></span>
           
            <?php foreach ($task->result() as $value) { ?> 
-                <a class="action-button pull-right" href="<?php echo site_url('staff_task_controller/printpreviewstafftask');?>?id=<?php echo $value->task_guid;?>" id="ticket-print"><i class="icon-print"></i></a>
+                <a class="action-button pull-right" href="<?php echo site_url('staff_task_controller/printpreviewstafftask');?>?id=<?php echo $value->task_guid;?>" id="ticket-print"><i class="icon-print" title="Print"></i></a>
             
             <?php } ?>
                         
@@ -37,7 +37,7 @@
             <?php } ?>
 
             <?php if ($transferallow != 0 ) { ?>
-            <span class="action-button" id="tickets-transfer" data-placement="bottom" data-toggle="modal" data-target="#transfer">
+            <span class="action-button" id="tickets-transfer" data-placement="bottom" data-toggle="modal" data-target="#transfer" title="Transfer">
              <a class="tickets-action"  title="" href="#tickets/mass/transfer" data-original-title="Transfer"><i class="icon-share"></i></a>
             </span>
             <?php } ?>

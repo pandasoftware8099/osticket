@@ -63,7 +63,7 @@
                                                             echo 'checked';}?>>
                 Verify email address domain    </div>
 </div>
-<div class="section-break" style="margin-bottom:10px;">
+<!-- <div class="section-break" style="margin-bottom:10px;">
     <em><strong>Incoming Emails:</strong>&nbsp;</em>
 </div>
 <div class="form-group">
@@ -97,7 +97,7 @@
         <input type="checkbox" name="accept_unregistered_email" value="1" <?php if($accept_unregistered==1){
                                                             echo 'checked';}?>>
             Accept email from unknown Users</div>
-</div>
+</div> -->
 <div class="section-break" style="margin-bottom:10px;">
     <em><strong>Outgoing Email</strong>: Default email only applies to outgoing emails without SMTP setting.</em>
 </div>
