@@ -687,7 +687,7 @@ class staff_user_controller extends CI_Controller {
             $org_guid = $this->db->query("SELECT * FROM ost_user_test WHERE user_guid = '$user_guid'")->row('user_org_guid');
             if ($org_guid != "")
             {
-                $orgphone = $this->db->query("SELECT * FROM ost_organization__cdata_test WHERE org_guid = $org_guid")->row('phone');
+                $orgphone = $this->db->query("SELECT * FROM ost_organization__cdata_test WHERE org_guid = '$org_guid'")->row('phone');
                 $splitarr = explode('X', $orgphone);
 
                 if (count($splitarr) == "2")
@@ -725,6 +725,8 @@ class staff_user_controller extends CI_Controller {
                     WHERE a.user_guid = '$user_guid'"),
                 'phone' => $phone,
                 'phoneext' => $phoneext,
+                'editorgallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = '$staffid' AND permissions LIKE '%org.edit%'")->num_rows(),
+                'addorgallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = '$staffid' AND permissions LIKE '%org.create%'")->num_rows(),
                 'edituserallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = '$staffid' AND permissions LIKE '%user.edit%'")->num_rows(),
                 'deleteallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = '$staffid' AND permissions LIKE '%user.delete%'")->num_rows(),
                 'activeallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = '$staffid' AND permissions LIKE '%user.manage%'")->num_rows(),
@@ -1199,7 +1201,7 @@ class staff_user_controller extends CI_Controller {
                 $createorg = $this->db->query("INSERT INTO ost_organization_test (organization_guid, name, autoassignment, ticketsharing, status, created, updated )
                 VALUES ( REPLACE(UPPER(UUID()),'-',''), '$org_name', '0', '0', '8', now(), now() )");
 
-                $org_guid = $this->db->query("SELECT * FROM ost_organization_test WHERE name = '$org_name'")->row('id');
+                $org_guid = $this->db->query("SELECT * FROM ost_organization_test WHERE name = '$org_name'")->row('organization_guid');
 
                 $orgdata = $this->db->query("INSERT INTO ost_organization__cdata_test ( org_guid, address, phone, website, notes )
                 VALUES ( '$org_guid', '$org_address', '$org_ph', '$org_web', '$org_notes' )");
@@ -1231,7 +1233,7 @@ class staff_user_controller extends CI_Controller {
            $staffid = $_SESSION["staffid"];
             $org_guid = $_REQUEST['id'];
 
-            $orgphone = $this->db->query("SELECT * FROM ost_organization__cdata_test WHERE org_guid = $org_guid")->row('phone');
+            $orgphone = $this->db->query("SELECT * FROM ost_organization__cdata_test WHERE org_guid = '$org_guid'")->row('phone');
             $splitarr = explode('X', $orgphone);
 
             if (count($splitarr) == "2")
@@ -1249,14 +1251,14 @@ class staff_user_controller extends CI_Controller {
                 'orgresult' => $this->db->query("SELECT a.*, b.*, c.*, b.notes AS orgnote, c.notes AS staffnote, a.created AS orgcreated, a.updated AS orgupdated FROM ost_organization_test AS a
                     INNER JOIN ost_organization__cdata_test AS b ON a.organization_guid = b.org_guid
                     LEFT JOIN ost_staff_test AS c ON c.staff_guid = b.orgnote_poster
-                    WHERE organization_guid = $org_guid"),
+                    WHERE organization_guid = '$org_guid'"),
                 'userinfo' => $this->db->query("SELECT * FROM ost_user_test
-                    WHERE user_org_guid = $org_guid"),
+                    WHERE user_org_guid = '$org_guid'"),
                 'tinfo' => $this->db->query("SELECT * FROM ost_user_test AS a
                     INNER JOIN ost_ticket_test AS b ON a.user_guid = b.user_guid
                     INNER JOIN ost_ticket_status_test AS c ON b.status_guid = c.status_guid
                     INNER JOIN ost_help_topic_test AS d ON b.topic_guid = d.topic_guid
-                    WHERE a.user_org_guid = $org_guid"),
+                    WHERE a.user_org_guid = '$org_guid'"),
                 'orgstaff' => $this->db->query("SELECT * FROM ost_staff_test"),
                 'orgteam' => $this->db->query("SELECT * FROM ost_team_test"),
                 'phone' => $phone,
@@ -1576,7 +1578,7 @@ class staff_user_controller extends CI_Controller {
             {
                 $output .= '
                 <div style="border-bottom: 1px groove;">
-                    <b><a href ="userinfo_assignorg?oid='.$row->id.'&id='.'$user_guid'.'">
+                    <b><a href ="userinfo_assignorg?oid='.$row->organization_guid.'&id='.$user_guid.'">
                         '.$row->name.'
                     </a></b><br>
                 </div>

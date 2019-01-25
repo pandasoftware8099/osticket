@@ -324,15 +324,6 @@ function myFunction() {
 
                     <form id="reply" class="tab_content_1 spellcheck exclusive save" data-lock-object-id="ticket/13" data-lock-id="" action="<?php echo site_url('staff_ticket_controller/staffupdate')?>?id=<?php echo $_REQUEST['id'];?>" name="reply" method="post" enctype="multipart/form-data">
                         <div class="form-group">
-                            <label for="inputEmail3" class="col-sm-2 control-label">To</label>
-                            <div class="col-sm-10">
-                                <select id="emailreply" name="emailreply" class="form-control">
-                                    <option value="1" selected="selected"></option>
-                                    <option value="0">— Do Not Email Reply —</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group">
                             <label class="col-sm-2 control-label">Response</label>
                             <div class="col-sm-10">
 

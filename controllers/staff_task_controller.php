@@ -440,7 +440,7 @@ class staff_task_controller extends CI_Controller {
                     {
                         if($task_transfer_alert_assigned == '1')
                         {
-                            $assigned = $this->db->query("SELECT staff_guid, team_guid FROM ost_task_test WHERE task_guid = $value");
+                            $assigned = $this->db->query("SELECT staff_guid, team_guid FROM ost_task_test WHERE task_guid = '$value'");
                             if($assigned->row('staff_guid') != '0' || $assigned->row('team_guid') != '0')
                             {
                                 if($assigned->row('staff_guid') != '0')
@@ -479,7 +479,7 @@ class staff_task_controller extends CI_Controller {
                         }
                         if($task_transfer_alert_dept_members == '1')
                         {
-                            $dept_members_email = $this->db->query("SELECT a.email FROM ost_staff_test a WHERE b.department_guid = '$depart'");
+                            $dept_members_email = $this->db->query("SELECT a.email FROM ost_staff_test a WHERE a.dept_guid = '$depart'");
                             foreach($dept_members_email->result() as $email)
                             {
                                 if (!in_array($email->email, $alluseremail))
@@ -1109,7 +1109,7 @@ class staff_task_controller extends CI_Controller {
                 {
                     if($task_transfer_alert_assigned == '1')
                     {
-                        $assigned = $this->db->query("SELECT staff_guid, team_guid FROM ost_task_test WHERE task_guid = $taskid");
+                        $assigned = $this->db->query("SELECT staff_guid, team_guid FROM ost_task_test WHERE task_guid = '$taskid'");
                         if($assigned->row('staff_guid') != '0' || $assigned->row('team_guid') != '0')
                         {
                             if($assigned->row('staff_guid') != '0')
@@ -1148,7 +1148,7 @@ class staff_task_controller extends CI_Controller {
                     }
                     if($task_transfer_alert_dept_members == '1')
                     {
-                        $dept_members_email = $this->db->query("SELECT a.email FROM ost_staff_test a WHERE b.department_guid = '$depart'");
+                        $dept_members_email = $this->db->query("SELECT a.email FROM ost_staff_test a WHERE a.dept_guid = '$depart'");
                         foreach($dept_members_email->result() as $email)
                         {
                             if (!in_array($email->email, $alluseremail))
