@@ -28,7 +28,58 @@ class staff_dashboard_controller extends CI_Controller {
             
             'depart' => $this->db->query("SELECT * FROM  ost_department_test ORDER BY name"),
             'topic' => $this->db->query("SELECT * FROM  ost_help_topic_test ORDER BY topic"),
-            'staff' => $this->db->query("SELECT * FROM  ost_staff_test ORDER BY firstname"),      
+            'staff' => $this->db->query("SELECT * FROM  ost_staff_test ORDER BY firstname"), 
+            'open' => $this->db->query("SELECT * FROM ost_ticket_test WHERE status_guid = 1")->num_rows(), 
+            'resolved' => $this->db->query("SELECT * FROM ost_ticket_test WHERE status_guid = 2")->num_rows(),
+            'closed' => $this->db->query("SELECT * FROM ost_ticket_test WHERE status_guid = 3")->num_rows(),
+            'overdue' => $this->db->query("SELECT * FROM ost_ticket_test WHERE NOW() >duedate")->num_rows(),
+            'assign' => $this->db->query("SELECT * FROM ost_ticket_test WHERE status_guid = 7 or  status_guid = 8")->num_rows(),
+            
+
+            'ticketcreated_graph' => $this->db->query("
+
+                
+                SELECT COUNT(*) FROM ost_ticket_test WHERE YEAR(created_at) = YEAR(CURRENT_DATE - INTERVAL 11 MONTH)
+                            AND MONTH(created_at) = MONTH(CURRENT_DATE - INTERVAL 11 MONTH)
+                            UNION ALL
+                SELECT COUNT(*) FROM ost_ticket_test WHERE YEAR(created_at) = YEAR(CURRENT_DATE - INTERVAL 10 MONTH)
+                            AND MONTH(created_at) = MONTH(CURRENT_DATE - INTERVAL 10 MONTH)
+                            UNION ALL
+                SELECT COUNT(*) FROM ost_ticket_test WHERE YEAR(created_at) = YEAR(CURRENT_DATE - INTERVAL 9 MONTH)
+                            AND MONTH(created_at) = MONTH(CURRENT_DATE - INTERVAL 9 MONTH)
+                            UNION ALL
+                SELECT COUNT(*) FROM ost_ticket_test WHERE YEAR(created_at) = YEAR(CURRENT_DATE - INTERVAL 8 MONTH)
+                            AND MONTH(created_at) = MONTH(CURRENT_DATE - INTERVAL 8 MONTH)
+                            UNION ALL
+                SELECT COUNT(*) FROM ost_ticket_test WHERE YEAR(created_at) = YEAR(CURRENT_DATE - INTERVAL 7 MONTH)
+                            AND MONTH(created_at) = MONTH(CURRENT_DATE - INTERVAL 7 MONTH)
+                            UNION ALL
+                SELECT COUNT(*) FROM ost_ticket_test WHERE YEAR(created_at) = YEAR(CURRENT_DATE - INTERVAL 6 MONTH)
+                            AND MONTH(created_at) = MONTH(CURRENT_DATE - INTERVAL 6 MONTH)
+                            UNION ALL
+                SELECT COUNT(*) FROM ost_ticket_test WHERE YEAR(created_at) = YEAR(CURRENT_DATE - INTERVAL 5 MONTH)
+                            AND MONTH(created_at) = MONTH(CURRENT_DATE - INTERVAL 5 MONTH)
+                            UNION ALL
+                SELECT COUNT(*) FROM ost_ticket_test WHERE YEAR(created_at) = YEAR(CURRENT_DATE - INTERVAL 4 MONTH)
+                            AND MONTH(created_at) = MONTH(CURRENT_DATE - INTERVAL 4 MONTH)
+                            UNION ALL
+                SELECT COUNT(*) FROM ost_ticket_test WHERE YEAR(created_at) = YEAR(CURRENT_DATE - INTERVAL 3 MONTH)
+                            AND MONTH(created_at) = MONTH(CURRENT_DATE - INTERVAL 3 MONTH)
+                            UNION ALL
+                SELECT COUNT(*) FROM ost_ticket_test WHERE YEAR(created_at) = YEAR(CURRENT_DATE - INTERVAL 2 MONTH)
+                            AND MONTH(created_at) = MONTH(CURRENT_DATE - INTERVAL 2 MONTH)
+                            UNION ALL
+                SELECT COUNT(*) FROM ost_ticket_test WHERE YEAR(created_at) = YEAR(CURRENT_DATE - INTERVAL 1 MONTH)
+                            AND MONTH(created_at) = MONTH(CURRENT_DATE - INTERVAL 1 MONTH)
+                            UNION ALL
+                SELECT COUNT(*) AS ticket_created_count FROM ost_ticket_test WHERE YEAR(created_at) = YEAR(CURRENT_DATE - INTERVAL 0 MONTH)
+                            AND MONTH(created_at) = MONTH(CURRENT_DATE - INTERVAL 0 MONTH)
+                            
+
+
+                "),
+
+            'openticket_count' => $this->db->query("SELECT * FROM ost_ticket_test WHERE status_guid = '1' ")->num_rows(),
         );
 
         $browser_id = $_SERVER["HTTP_USER_AGENT"];
