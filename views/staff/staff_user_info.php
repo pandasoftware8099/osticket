@@ -864,11 +864,15 @@ $(function() {
                 
                 <div id="org-profile" style="display:block;margin:5px;">
                     <i class="icon-group icon-4x pull-left icon-border"></i>
+                    <?php if($editorgallow != 0){ ?>
                         <a class="action-button pull-right user-action" style="overflow:inherit" data-toggle="modal" data-target="#useraddorg-modal"><i class="icon-user"></i>
                         Change</a>
                     <a class="action-button pull-right" href="<?php echo site_url('staff_user_controller/org_info');?>?id=<?php echo $org->organization_guid;?>"><i class="icon-share"></i>
                         Manage</a>
                         <div><b><a data-toggle="modal" data-target="#updateorg-modal"><i class="icon-edit"></i>&nbsp;<?php echo $org->name;?></a></b></div>
+                    <?php } else { ?>
+                        <div><b>&nbsp;<?php echo $org->name;?></a></b></div>
+                    <?php } ?>
                     <table style="margin-top: 1em;">
                     <tbody><tr><td colspan="2" style="border-bottom: 1px dotted black"><strong>Organization Information</strong></td></tr>
                     <tr style="vertical-align:top"><td style="width:30%;border-bottom: 1px dotted #ccc">Address:</td>
@@ -993,6 +997,15 @@ $(function() {
 
                 <p id="msg_info"><i class="icon-info-sign"></i>&nbsp; Search existing organizations or add a new one.</p>
 
+                <div style="margin-bottom:10px;">
+                    <input type="text" class="search-input" style="width:100%;" placeholder="Search by organization name" type="text" name="search_text" id="search_text" autofocus="" autocorrect="off" autocomplete="off">
+                    <form method="post" class="org" action="">
+                    <div id="result" style="overflow: hidden;"></div>
+                    </form>
+
+                </div>
+
+                <?php if($addorgallow != 0) { ?>
                 <div id="new-org-form" style="display:block;">
                     <form method="post" class="org" action="<?php echo site_url('staff_user_controller/userinfo_createorg?id=').$_REQUEST['id']?>">
                         <div class="col-lg-12">
@@ -1050,6 +1063,7 @@ $(function() {
                             </div><table width="100%" class="fixed">
                         
                             </table>
+                        <?php } ?>
 
                         <br><div class="modal-footer">
                         <p class="full-width">

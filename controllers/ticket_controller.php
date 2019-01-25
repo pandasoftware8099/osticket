@@ -562,7 +562,7 @@ class Ticket_controller extends CI_Controller {
             $sub_inventory = $this->input->post('subinventory');
             $userid = $_SESSION['userid'];
 
-            $this->db->query("UPDATE ost_ticket_test SET subtopic_guid = '$sub_inventory', company_name = '$company_name', issue_summary = '$issue_summary', phone_no = '$phone_no', phone_no_ext = '$phone_no_ext', ticket_updated = now(), ticket_updated_by_id = '$userid', ticket_updated_by_role = 'user' WHERE ticket_guid = '$ticketid'");
+            $this->db->query("UPDATE ost_ticket_test SET subtopic_guid = '$sub_inventory', contact = '$company_name', issue_summary = '$issue_summary', phone_no = '$phone_no', phone_no_ext = '$phone_no_ext', ticket_updated = now(), ticket_updated_by_id = '$userid', ticket_updated_by_role = 'user' WHERE ticket_guid = '$ticketid'");
 
             redirect('ticket_controller/info?id='.$ticketid);
         }

@@ -126,14 +126,14 @@ $(function() {
 <form action="<?php echo site_url('staff_user_controller/org_infodeleteuser?id=').$_REQUEST['id']?>" method="POST" name="users" id="users">
 <div class="pull-right flush-right" style="margin-bottom:10px;">
 
-    <?php if ($adduserallow != 0 ) { ?>
+    
     <a data-toggle="modal" data-target="#add-user-modal" class="green button action-button add-user"><i class="icon-plus"></i> Add User</a>
     
 
     <a data-toggle="modal" data-target="#import-modal" class="button action-button add-user">
         <i class="icon-cloud-upload icon-large"></i>
     Import</a>
-    <?php } ?>
+    
 
     <?php if ($deleteuserallow != 0 ) { ?>
     <a id="remove" data-toggle="modal" data-target="#delete-orguser-modal" class="button action-button add-user" href="#tickets/mass/transfer">
@@ -600,7 +600,6 @@ $(function() {
                     <input type="text" class="search-input" style="width:100%;" placeholder="Search by name or email" type="text" name="search_text" id="search_text" autofocus="" autocorrect="off" autocomplete="off">
                     <form method="post" class="org" action="">
                     <div id="result" style="overflow: hidden;"></div>
-
                     </form>
 
                 </div>
@@ -622,7 +621,7 @@ $(function() {
                              </p>
                         </form>
                     </div>
-
+                    <?php if ($adduserallow != 0 ) { ?>
                     <div id="new-user-form" style="display:block;">
                         <form action="<?php echo site_url('staff_user_controller/org_infoadduser?id=').$_REQUEST['id']?>" method="post" class="user">
                             <div class="col-lg-12">
@@ -692,6 +691,7 @@ $(function() {
                     </div>
                 </div>
             </div>
+        <?php } ?>
                 <table width="100%" class="fixed"></table>
               <br><div class="modal-footer">
  

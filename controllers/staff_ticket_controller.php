@@ -1014,8 +1014,8 @@ public function ticketinfoupdate()
                 if($depart != '')
                 {
                     $data = array(
-                        'body' => $this->db->query("SELECT REPLACE(REPLACE(subject, '%number%', '".$emailinfo->row('number')."'), '%department%', '".$username->row('name')."') AS email_subject, 
-                            REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(body, '%user_name%', '".$username->row('username')."'), '%assigner%', '$poster'), '%number%', '".$emailinfo->row('number')."'), '%department%', '".$username->row('name')."'), '%comment%', '".$notearr['transfernote']."') AS email
+                        'body' => $this->db->query("SELECT REPLACE(REPLACE(subject, '%number%', '".$emailinfo->row('number')."'), '%department%', '".$depart."') AS email_subject, 
+                            REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(body, '%user_name%', '".$username->row('username')."'), '%assigner%', '$poster'), '%number%', '".$emailinfo->row('number')."'), '%department%', '".$depart."'), '%comment%', '".$notearr['transfernote']."') AS email
                             FROM ost_email_template_test WHERE code_name = 'transfer.alert' AND tpl_guid = '$default_template_id'"),
                         'ticketsign' => $this->db->query("SELECT a.*, b.*, a.signature AS staffsign, b.signature AS deptsign FROM ost_staff_test AS a
                             INNER JOIN ost_department_test AS b ON a.dept_guid = b.department_guid
