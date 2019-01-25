@@ -6,39 +6,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="x-pjax-version" content="9ae093d">
     <title>Panda Staff Control Panel</title>
-    <link rel="icon" type="image/png" href="/helpdesk/assets/default/images/logo.png">
-    <link rel="apple-touch-icon" href="/helpdesk/assets/default/images/logo.png">
+    <link rel="icon" type="image/png" href="<?php echo base_url('assets/default/images/logo.png');?>" >
+    
     <!--[if IE]>
     <style type="text/css">
         .tip_shadow { display:block !important; }
     </style>
     <![endif]-->
-    <script src="/helpdesk/js/jquery-1.11.2.min.js?9ae093d"></script>
-    <link type="text/css" rel="stylesheet" href="/helpdesk/assets/bootstrap/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/helpdesk/css/thread.css?9ae093d" media="all">
-    <link rel="stylesheet" href="/helpdesk/scp/css/scp.css?9ae093d" media="all">
-    <link rel="stylesheet" href="/helpdesk/css/redactor.css?9ae093d" media="screen">
-    <link rel="stylesheet" href="/helpdesk/scp/css/typeahead.css?9ae093d" media="screen">
+    <script type="text/javascript" src="<?php echo base_url('js/jquery-1.11.2.min.js?9ae093d');?>"></script>
+    <link type="text/css" rel="stylesheet" href="<?php echo base_url('assets/bootstrap/dist/css/bootstrap.min.css');?>">
+    <link rel="stylesheet" href="<?php echo base_url('css/thread.css?9ae093dd');?>" media="screen">
+    <link rel="stylesheet" href="<?php echo base_url('css/redactor.css?9ae093d');?>" media="screen">
+    <link rel="stylesheet" href="<?php echo base_url('scp/css/scp.css?9ae093d');?>" media="all">
+    <link rel="stylesheet" href="<?php echo base_url('scp/css/typeahead.css?9ae093d');?>" media="screen">  
     <!-- bootstrap datepicker -->
-    <link rel="stylesheet" href="/adminlte/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css">
-    <!-- Bootstrap time Picker -->
-    <link rel="stylesheet" href="/adminlte/plugins/timepicker/bootstrap-timepicker.min.css"> 
-    <link type="text/css" href="/helpdesk/css/ui-lightness/jquery-ui-1.10.3.custom.min.css?9ae093d" rel="stylesheet" media="screen">
-     <link type="text/css" rel="stylesheet" href="/helpdesk/css/font-awesome.min.css?9ae093d">
+    <!-- <link rel="stylesheet" href="/adminlte/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css">
+        <link rel="stylesheet" href="/adminlte/plugins/timepicker/bootstrap-timepicker.min.css"> -->
+    <link type="text/css" href="<?php echo base_url('css/ui-lightness/jquery-ui-1.10.3.custom.min.css?9ae093d');?>" rel="stylesheet" media="screen">
+     <link rel="stylesheet" href="<?php echo base_url('css/font-awesome.min.css?9ae093d');?>" media="screen">
     <!--[if IE 7]>
     <link rel="stylesheet" href="/helpdesk/css/font-awesome-ie7.min.css?9ae093d"/>
     <![endif]-->
-    <link type="text/css" rel="stylesheet" href="/helpdesk/scp/css/dropdown.css?9ae093d">
-    <link type="text/css" rel="stylesheet" href="/helpdesk/css/loadingbar.css?9ae093d">
-    <link type="text/css" rel="stylesheet" href="/helpdesk/css/flags.css?9ae093d">
-    <link type="text/css" rel="stylesheet" href="/helpdesk/css/select2.min.css?9ae093d">
-    <link type="text/css" rel="stylesheet" href="/helpdesk/css/rtl.css?9ae093d">
-    <link type="text/css" rel="stylesheet" href="/helpdesk/scp/css/translatable.css?9ae093d">
+    <link type="text/css" rel="stylesheet" href="<?php echo base_url('scp/css/dropdown.css?9ae093d');?>">
+    <link type="text/css" rel="stylesheet" href="<?php echo base_url('css/loadingbar.css?9ae093d');?>">
+    <link type="text/css" rel="stylesheet" href="<?php echo base_url('css/flags.css?9ae093d');?>">
+    <link type="text/css" rel="stylesheet" href="<?php echo base_url('css/rtl.css?9ae093d');?>">
+    <link type="text/css" rel="stylesheet" href="<?php echo base_url('css/select2.min.css?9ae093d');?>">
+    <link type="text/css" rel="stylesheet" href="<?php echo base_url('scp/css/translatable.css?9ae093d');?>">
     <!-- export data table -->
-    <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
-    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+    <script src="<?php echo base_url('bower_components/datatables.net/js/jquery.dataTables.min.js');?>"></script>
 
-    <script type="text/javascript" src="/helpdesk/assets/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="<?php echo base_url('assets/bootstrap/dist/js/bootstrap.min.js');?>"></script>
     
     <!-- export data table -->
     <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.2/js/dataTables.buttons.min.js"></script>
@@ -54,14 +52,7 @@
     <script src="<?php echo base_url('asset/plugins/bower_components/datetime/bootstrap-datetimepicker.min.js');?>"></script>
 
 
-<link type="text/css" rel="stylesheet" href="https://cdn.datatables.net/buttons/1.5.2/css/buttons.dataTables.min.css">
     
-    
-    <meta name="csrf_token" content="25d9753bd6e94b1089bdde8be8c3cd9c37954141">
-
-<!-- error in console -->
-<!--     <script type="text/javascript" src="js/ticket.js?9ae093d"></script>
-    <script type="text/javascript" src="js/thread.js?9ae093d"></script> -->
     
     <meta name="tip-namespace" content="tickets.queue">
   <!-- DataTables -->
