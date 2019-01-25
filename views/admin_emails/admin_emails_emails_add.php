@@ -61,6 +61,7 @@
                             </span>
         </div>
     </div>
+    <br>
     <div class="form-group" style="overflow:auto;margin-bottom:0px;">
         <label class="col-lg-3 control-label"><i class="help-tip icon-question-sign" href="#auto_response"></i> Auto-Response</label>
         <div class="col-lg-9">
@@ -68,6 +69,7 @@
                 <strong>Disable</strong> for this email            </label>
         </div>
     </div>
+    <br>
     <div class="section-break" style="margin-bottom:10px;">
         <em><i class="help-tip icon-question-sign" href="#login_information"></i> <strong>Email Login Information</strong></em>
     </div>
@@ -86,7 +88,7 @@
                 <br><em></em>
         </div>
     </div>
-    <div class="section-break" style="margin-bottom:10px;">
+    <!-- <div class="section-break" style="margin-bottom:10px;">
         <em><i class="help-tip icon-question-sign" href="#mail_account"></i> <strong>Fetching Email via IMAP or POP</strong>
         &nbsp;<font class="error">&nbsp;</font></em>
     </div>
@@ -144,12 +146,6 @@
     <div class="form-group">
         <label class="col-lg-3 control-label">Fetched Emails</label>
         <div class="col-lg-9">
-            <!-- <label><input type="radio" name="postfetch" value="archive">
-            Move to folder:
-            <input type="text" name="mail_archivefolder" size="20" value=""></label>
-                &nbsp;<font class="error"></font>
-                <i class="help-tip icon-question-sign" href="#fetched_emails"></i>
-            <br> -->
             <label><input type="radio" name="postfetch" value="1">
             Delete emails</label>
             <br>
@@ -157,7 +153,7 @@
             Do nothing <em>(not recommended)</em></label>
           <br><font class="error"></font>
         </div>
-    </div>
+    </div> -->
     <div class="section-break" style="margin-bottom:10px;">
         <em><i class="help-tip icon-question-sign" href="#smtp_settings"></i><strong>Sending Email via SMTP</strong>
         &nbsp;<font class="error">&nbsp;</font></em>
@@ -194,13 +190,13 @@
             <font class="error">&nbsp;</font>
         </div>
     </div>
-    <div class="form-group">
+    <!-- <div class="form-group">
         <label class="col-lg-3 control-label"><i class="help-tip icon-question-sign" href="#header_spoofing"></i> Header Spoofing</label>
         <div class="col-lg-9">
             <label><input type="checkbox" name="smtp_spoofing" value="1">
                 Allow for this email</label>
         </div>
-    </div>
+    </div> -->
     <div class="section-break" style="margin-bottom:10px;">
         <em><strong>Internal Notes</strong>: Be liberal, they're internal &nbsp;<span class="error">&nbsp;</span></em>
     </div>

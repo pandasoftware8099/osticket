@@ -219,7 +219,7 @@ div.dataTables_wrapper div.dataTables_paginate ul.pagination {
             <ul class="dropdown-menu">
                 <li><a class="emailSettings" href="<?php echo site_url('admin_emails_controller/emails_emails')?>" title="Email Addresses" id="nav0">Emails</a></li>
                 <li><a class="email-settings" href="<?php echo site_url('admin_emails_controller/emails_settings')?>" title="" id="nav1">Settings</a></li>
-                <li><a class="emailDiagnostic" href="<?php echo site_url('admin_emails_controller/emails_banlist')?>" title="Banned Emails" id="nav2">Banlist</a></li>
+                <!-- <li><a class="emailDiagnostic" href="<?php echo site_url('admin_emails_controller/emails_banlist')?>" title="Banned Emails" id="nav2">Banlist</a></li> -->
                 <li><a class="emailTemplates" href="<?php echo site_url('admin_emails_controller/emails_templates')?>" title="Email Templates" id="nav3">Templates</a></li>
                 <li><a class="emailDiagnostic" href="<?php echo site_url('admin_emails_controller/emails_diagnostic')?>" title="Email Diagnostic" id="nav4">Diagnostic</a></li>
             </ul>
