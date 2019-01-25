@@ -51,9 +51,9 @@
 
 <?php if ($enable_kb == '1') {  ?>
 
-<div>
+<div class="col-lg-8">
 <br><br>
-
+<div class="thread-body">
 <?php if($feature_kb->num_rows() > '0'  ) { ?>
 
 <h1>Featured Knowledge Base Articles</h1>
@@ -80,7 +80,7 @@
 
 
 <?php } ?>
-    
+</div>   
 </div>
 
 <?php }  ?>
