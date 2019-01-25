@@ -6,32 +6,30 @@
     <meta name="keywords" content="osTicket, Customer support system, support ticket system">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="icon" type="image/png" href="/helpdesk/assets/default/images/logo.png">
-    <link rel="apple-touch-icon" href="/helpdesk/assets/default/images/logo.png">
-
-    <link type="text/css" rel="stylesheet" href="/helpdesk/assets/bootstrap/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/helpdesk/css/osticket.css?9ae093d" media="screen">
-    <link rel="stylesheet" href="/helpdesk/assets/default/css/theme.css?9ae093d" media="screen">
-    <link rel="stylesheet" href="/helpdesk/assets/default/css/print.css?9ae093d" media="print">
-    <link rel="stylesheet" href="/helpdesk/scp/css/typeahead.css?9ae093d" media="screen">   
-    <link type="text/css" href="/helpdesk/css/ui-lightness/jquery-ui-1.10.3.custom.min.css?9ae093d" rel="stylesheet" media="screen">
-    <link rel="stylesheet" href="/helpdesk/css/thread.css?9ae093d" media="screen">
-    <link rel="stylesheet" href="/helpdesk/css/redactor.css?9ae093d" media="screen">
-    <link type="text/css" rel="stylesheet" href="/helpdesk/css/font-awesome.min.css?9ae093d">
-    <link type="text/css" rel="stylesheet" href="/helpdesk/css/flags.css?9ae093d">
-    <link type="text/css" rel="stylesheet" href="/helpdesk/css/rtl.css?9ae093d">
-    <link type="text/css" rel="stylesheet" href="/helpdesk/css/select2.min.css?9ae093d">
-    <script type="text/javascript" src="/helpdesk/js/jquery-1.11.2.min.js?9ae093d"></script>
-    <script type="text/javascript" src="/helpdesk/js/jquery-ui-1.10.3.custom.min.js?9ae093d"></script>
-    <script src="/helpdesk/js/osticket.js?9ae093d"></script>
-    <script type="text/javascript" src="/helpdesk/js/filedrop.field.js?9ae093d"></script>
-    <script src="/helpdesk/scp/js/bootstrap-typeahead.js?9ae093d"></script>
-    <script type="text/javascript" src="/helpdesk/js/redactor.min.js?9ae093d"></script>
-    <script type="text/javascript" src="/helpdesk/js/redactor-plugins.js?9ae093d"></script>
-    <script type="text/javascript" src="/helpdesk/js/redactor-osticket.js?9ae093d"></script>
-    <script type="text/javascript" src="/helpdesk/js/select2.min.js?9ae093d"></script>
-    <script type="text/javascript" src="/helpdesk/js/fabric.min.js?9ae093d"></script>
-    <script type="text/javascript" src="/helpdesk/assets/bootstrap/dist/js/bootstrap.min.js"></script>
+    <link rel="icon" type="image/png" href="<?php echo base_url('assets/default/images/logo.png');?>" >
+    <link type="text/css" rel="stylesheet" href="<?php echo base_url('assets/bootstrap/dist/css/bootstrap.min.css');?>">
+    <link rel="stylesheet" href="<?php echo base_url('assets/default/css/theme.css?9ae093d');?>" media="screen">
+    <link rel="stylesheet" href="<?php echo base_url('assets/default/css/print.css?9ae093d');?>" media="print">
+    <link rel="stylesheet" href="<?php echo base_url('css/osticket.css?9ae093d');?>" media="screen"> 
+    <link type="text/css" href="<?php echo base_url('css/ui-lightness/jquery-ui-1.10.3.custom.min.css?9ae093d');?>" rel="stylesheet" media="screen">
+    <link rel="stylesheet" href="<?php echo base_url('css/thread.css?9ae093dd');?>" media="screen">
+    <link rel="stylesheet" href="<?php echo base_url('css/redactor.css?9ae093d');?>" media="screen">
+    <link rel="stylesheet" href="<?php echo base_url('css/font-awesome.min.css?9ae093d');?>" media="screen">
+    <link type="text/css" rel="stylesheet" href="<?php echo base_url('css/flags.css?9ae093d');?>">
+    <link type="text/css" rel="stylesheet" href="<?php echo base_url('css/rtl.css?9ae093d');?>">
+    <link type="text/css" rel="stylesheet" href="<?php echo base_url('css/select2.min.css?9ae093d');?>">
+    <link rel="stylesheet" href="<?php echo base_url('scp/css/typeahead.css?9ae093d');?>" media="screen">  
+    <script type="text/javascript" src="<?php echo base_url('js/jquery-1.11.2.min.js?9ae093d');?>"></script>
+    <script type="text/javascript" src="<?php echo base_url('js/jquery-ui-1.10.3.custom.min.js?9ae093d');?>"></script>
+    <script type="text/javascript" src="<?php echo base_url('js/osticket.js?9ae093d');?>"></script>
+    <script type="text/javascript" src="<?php echo base_url('js/filedrop.field.js?9ae093d');?>"></script>
+    <script src="<?php echo base_url('scp/js/bootstrap-typeahead.js?9ae093d');?>"></script>
+    <script type="text/javascript" src="<?php echo base_url('js/redactor.min.js?9ae093d');?>"></script>
+    <script type="text/javascript" src="<?php echo base_url('js/redactor-plugins.js?9ae093d');?>"></script>
+    <script type="text/javascript" src="<?php echo base_url('js/redactor-osticket.js?9ae093d');?>"></script>
+    <script type="text/javascript" src="<?php echo base_url('js/select2.min.js?9ae093d');?>"></script>
+    <script type="text/javascript" src="<?php echo base_url('js/fabric.min.js?9ae093d');?>"></script>
+    <script type="text/javascript" src="<?php echo base_url('assets/bootstrap/dist/js/bootstrap.min.js');?>"></script>
 
 <!-- include summernote css/js -->
 <link href="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.11/summernote.css" rel="stylesheet">
