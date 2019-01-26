@@ -52,8 +52,6 @@
     <script src="<?php echo base_url('asset/plugins/bower_components/datetime/bootstrap-datetimepicker.min.js');?>"></script>
 
 
-    
-    
     <meta name="tip-namespace" content="tickets.queue">
   <!-- DataTables -->
   <link rel="stylesheet" href="<?php echo base_url('asset/plugins/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css');?>">
@@ -79,6 +77,10 @@ $(document).ready(function() {
 </script>
 
 <style type="text/css">
+
+.panel {
+    margin-bottom: 0px;
+}
   
 [class^="icon-"], [class*=" icon-"] {
 

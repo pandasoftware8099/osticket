@@ -48,6 +48,10 @@ $(document).ready(function() {
 </script>
 
 <style type="text/css">
+
+.panel {
+    margin-bottom: 0px;
+}
     
 input[type="button"], input[type="reset"], input[type="submit"] {
 
