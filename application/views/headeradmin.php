@@ -69,6 +69,10 @@ $(document).ready(function() {
 </script>
 
 <style type="text/css">
+
+.panel {
+    margin-bottom: 0px;
+}
     
 [class^="icon-"], [class*=" icon-"] {
 
