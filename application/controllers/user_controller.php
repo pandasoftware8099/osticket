@@ -464,8 +464,8 @@ class user_controller extends CI_Controller {
         }
         else
         {   
-            $username1 = $this->input->post('luser');
-            $userpass = $this->input->post('lpasswd');
+            $username1 = addslashes($this->input->post('luser'));
+            $userpass = addslashes($this->input->post('lpasswd'));
             $username = $this->db->query("SELECT user_name FROM osticket.ost_user_test WHERE user_name = '$username1' OR user_email = '$username1'")->row('user_name');
             $userid = $this->db->query("SELECT user_guid FROM osticket.ost_user_test WHERE user_name = '$username' AND user_pas = '$userpass'")->row('user_guid');
             $userdep =  $this->db->query("SELECT user_depart FROM osticket.ost_user_test WHERE user_name = '$username' AND user_pas = '$userpass'")->row('user_depart');
@@ -611,8 +611,8 @@ class user_controller extends CI_Controller {
             }
             else
             {
-                $username1 = $this->input->post('userid');
-                $userpass = $this->input->post('passwd');
+                $username1 = addslashes($this->input->post('userid'));
+                $userpass = addslashes($this->input->post('passwd'));
                 $username = $this->db->query("SELECT username FROM osticket.ost_staff_test WHERE username = '$username1' OR email = '$username1'")->row('username');
                $staffid = $this->db->query("SELECT staff_guid FROM osticket.ost_staff_test WHERE username = '$username' AND passwd = '$userpass'")->row('staff_guid');
                 $pw_expire = $this->db->query("SELECT passwdreset FROM osticket.ost_staff_test WHERE username = '$username' AND passwd = '$userpass'")->row('passwdreset');
