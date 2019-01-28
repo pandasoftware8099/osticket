@@ -146,6 +146,13 @@ div.dataTables_wrapper div.dataTables_paginate ul.pagination {
     padding-right: unset; 
     padding-left: unset; 
 }
+
+.note-editor > .modal > .modal-dialog > .modal-content > .modal-body > .note-group-select-from-files
+{
+
+display: none;
+
+}
 </style>
 
 </head>

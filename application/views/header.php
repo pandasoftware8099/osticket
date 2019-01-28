@@ -69,6 +69,13 @@ input[type="button"], input[type="reset"], input[type="submit"] {
      float: right!important; 
 }
 
+.note-editor > .modal > .modal-dialog > .modal-content > .modal-body > .note-group-select-from-files
+{
+
+display: none;
+
+}
+
 </style>
 
 </head>
@@ -148,7 +155,7 @@ input[type="button"], input[type="reset"], input[type="submit"] {
 
     <?php 
 
-    if ($this->uri->segment(1) == 'welcome' OR $this->uri->segment(1) == 'user_controller' )
+    if ($this->uri->segment(1) == 'welcome' OR $this->uri->segment(1) == 'user_controller' OR $this->uri->segment(1) == '' )
 
     {
 

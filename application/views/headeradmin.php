@@ -127,6 +127,13 @@ div.dataTables_wrapper div.dataTables_paginate ul.pagination {
     -moz-appearance:textfield !important;
 }
 
+.note-editor > .modal > .modal-dialog > .modal-content > .modal-body > .note-group-select-from-files
+{
+
+display: none;
+
+}
+
 </style>
 
 </head>
