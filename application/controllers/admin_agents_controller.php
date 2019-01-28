@@ -1620,7 +1620,7 @@ class admin_agents_controller extends CI_Controller {
                 'sla' => $this->db->query("SELECT * FROM ost_sla_test"),
                 'staff' => $this->db->query("SELECT * FROM ost_staff_test"),
                 'email' => $this->db->query("SELECT * FROM ost_email_test"),
-                'emailtemplate' => $this->db->query("SELECT * FROM ost_email_template_group"),
+                'emailtemplate' => $this->db->query("SELECT * FROM ost_email_template_group_test"),
                 'roles' => $this->db->query("SELECT * FROM ost_role_test"),
                 'primarymember' => $this->db->query("SELECT * FROM ost_staff_test WHERE dept_guid = '$dept_guid' "),
                 'extendedmember' => $this->db->query("SELECT a.staff_guid, a.role_guid, b.firstname, b.lastname  FROM ost_staff_dept_access_test as a INNER JOIN ost_staff_test as b ON a.staff_guid = b.staff_guid WHERE a.dept_guid = '$dept_guid' "),
