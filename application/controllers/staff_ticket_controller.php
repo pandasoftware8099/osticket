@@ -1395,8 +1395,8 @@ public function deleteticketusernote()
                         $this->db->query("UPDATE ost_ticket_test SET assigned_to = '$poster_id' WHERE ticket_guid = '$ticketid'");
                     }
                 }
-                $solve = $this->input->post('solve');
-                $this->db->query("UPDATE ost_ticket_test SET status_guid = '$solve', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_guid = '$ticketid' ");
+                /*$solve = $this->input->post('solve');*/
+                $this->db->query("UPDATE ost_ticket_test SET ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_guid = '$ticketid' ");
                 if(isset($_POST['submit']))
                 {
                     // Count total files
@@ -1609,7 +1609,7 @@ public function deleteticketusernote()
             {
                 $this->db->query("INSERT INTO osticket.ost_thread_entry_test ( thread_entry_guid, ticket_guid , staff_guid , type, poster , title , body , ip_address, created, updated, class, avatar )
                 VALUES (REPLACE(UPPER(UUID()),'-',''), '$ticketid' ,'$poster_id', 'N' ,'$posterfname $posterlname', '$title', '$note', '$ipaddress', now(), now(), 'note', 'left')");
-                $this->db->query("UPDATE ost_ticket_test SET status_guid = '$statusid', ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_guid = '$ticketid' ");
+                $this->db->query("UPDATE ost_ticket_test SET ticket_updated = NOW(), ticket_updated_by_id = '$poster_id', ticket_updated_by_role = 'agent' WHERE ticket_guid = '$ticketid' ");
                 if(isset($_POST['submit']))
                 {
                     // Count total files
