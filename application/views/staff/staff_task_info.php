@@ -316,7 +316,7 @@
 
                </td>
             </tr>
-            <tr>
+            <!-- <tr>
                 <td>
                     <div>Status
                         <span class="faded"> - </span>
@@ -327,7 +327,7 @@
                         &nbsp;<span class="error"></span>
                     </div>
                 </td>
-            </tr>
+            </tr> -->
         </tbody></table>
 
        <p style="text-align:center;">
@@ -374,7 +374,7 @@
                         </td>
                     </tr>
                 
-                    <tr>
+                    <!-- <tr>
                         <td>
                             <div>Status
                                 <span class="faded"> - </span>
@@ -385,7 +385,7 @@
                                 &nbsp;<span class="error"></span>
                             </div>
                         </td>
-                    </tr>
+                    </tr> -->
                 </tbody>
             </table>
 
