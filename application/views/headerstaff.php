@@ -307,7 +307,7 @@ display: none;
                 <a href="#" helpdesk="" scp="" dashboard.php="" class="dropdown-toggle" data-toggle="dropdown">Dashboard <span class="caret"></span>
                 </a>
             <ul class="dropdown-menu">
-                <li><a class="logs" href="<?php echo site_url('staff_dashboard_controller/dashboard')?>" title="" id="nav0">Dashboard</a></li>
+                <li><a class="logs" href="<?php echo site_url('staff_dashboard_controller/dashboard?a=n')?>" title="" id="nav0">Dashboard</a></li>
                 <li><a class="teams" href="<?php echo site_url('staff_dashboard_controller/agent')?>" title="" id="nav1">Agent Directory</a></li>
                 <li><a class="users" href="<?php echo site_url('staff_dashboard_controller/profile')?>" title="" id="nav2">My Profile</a></li>
             </ul>
