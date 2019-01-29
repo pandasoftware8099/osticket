@@ -1,38 +1,37 @@
 <div id="content">
 <script src="<?php echo base_url('asset/dist/js/Chart.js');?>"></script>
 <form method="post" action="dashboard.php">
-<div id="basic_search">
-    <div style="min-height:25px;">
-        <!--<p></p>-->
-            <input type="hidden" name="__CSRFToken__" value="203c8c8ae43c0cf914fe97b76fe5f8932bead146">            <label>
-                Report timeframe:
-                <input type="text" class="dp input-medium search-query hasDatepicker" name="start" placeholder="Last month" value="" id="dp1541037050124"><button type="button" class="ui-datepicker-trigger"><img src="./images/cal.png" alt="..." title="..."></button>
-            </label>
-            <label>
-                period:
-                <select name="period">
-                    <option value="now" selected="selected">
-                        Up to today                    </option>
-                    <option value="+7 days">
-                        One Week                    </option>
-                    <option value="+14 days">
-                        Two Weeks                    </option>
-                    <option value="+1 month">
-                        One Month                    </option>
-                    <option value="+3 months">
-                        One Quarter                    </option>
-                </select>
-            </label>
-            <button class="green button action-button muted" type="submit">
-                Refresh            </button>
-            <i class="help-tip icon-question-sign" href="#report_timeframe"></i>
-    </div>
-</div>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
+
+
+
+
+
 <div class="clear"></div>
 <div style="margin-bottom:20px; padding-top:5px;">
     <div class="pull-left flush-left">
-        <h2><i class="help-tip icon-question-sign" href="#ticket_activity"></i> Ticket Activity</h2>
+        <h2><i class="help-tip icon-question-sign" href="#ticket_activity"></i>
+<?php if ($_REQUEST['a'] == 'y' ) { ?>
+    All 
+<?php } else if ($_REQUEST['a'] == 'n') { ?>
+    Own 
+<?php } ?>
+
+         Ticket Activity</h2>
     </div>
+<?php if ($_REQUEST['a'] == 'y' ) { ?>
+    <div class="pull-right flush-right">
+    <a class="action-button" id="assign" href="<?php echo site_url('staff_dashboard_controller/dashboard?a=n')?>" title="view own statistics"><i class="icon-user"></i>View own statistics</a>
+    </div>
+<?php } else if ($_REQUEST['a'] == 'n') { ?>
+    <div class="pull-right flush-right">
+    <a class="action-button" id="assign" href="<?php echo site_url('staff_dashboard_controller/dashboard?a=y')?>" title="view own statistics"><i class="fa fa-users"></i>View all statistics</a>
+    </div>
+<?php } ?>
+
 </div>
 <div class="clear"></div>
 
