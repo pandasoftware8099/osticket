@@ -117,7 +117,8 @@ class staff_ticket_controller extends CI_Controller {
                     INNER JOIN ost_ticket_status_test AS c  ON c.status_guid = a.status_guid 
                     INNER JOIN ost_user_test AS d  ON a.user_guid = d.user_guid 
                     INNER JOIN ost_ticket_priority_test AS e  ON e.priority_guid = a.priority_guid 
-                    WHERE c.state = 'open' AND assigned_to = '$staff_guid' ORDER BY ticket_guid DESC"), 
+                    WHERE c.state = 'open' AND a.assigned_to = '$staff_guid' OR a.team_guid IN (SELECT team_guid FROM ost_team_member_test WHERE staff_guid = '$staff_guid') ORDER BY ticket_guid DESC"), 
+
                  'editallow' => $this->db->query(" SELECT dept_guid, a.role_guid ,b.`permissions` FROM ost_staff_test AS a INNER JOIN ost_role_test AS b ON a.`role_guid` = b.role_guid WHERE staff_guid = '$staff_guid' AND b.`permissions` LIKE '%ticket.edit%'")->num_rows(),
                 'assignallow' => $this->db->query(" SELECT dept_guid, a.role_guid ,b.`permissions` FROM ost_staff_test AS a INNER JOIN ost_role_test AS b ON a.`role_guid` = b.role_guid WHERE staff_guid = '$staff_guid' AND b.`permissions` LIKE '%ticket.assign%'")->num_rows(),
                 'transferallow' => $this->db->query(" SELECT dept_guid, a.role_guid ,b.`permissions` FROM ost_staff_test AS a INNER JOIN ost_role_test AS b ON a.`role_guid` = b.role_guid WHERE staff_guid = '$staff_guid' AND b.`permissions` LIKE '%ticket.transfer%'")->num_rows(),
