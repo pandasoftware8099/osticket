@@ -223,7 +223,11 @@ var myChart = new Chart(ctx, {
             </tbody>
 
             <tbody>
-                <?php foreach ($topic->result() as $topics) { ?>
+                <?php 
+                $staffid = $_SESSION['staffid'];
+
+                foreach ($topic->result() as $topics) { ?>
+
                 <tr>
                     <th class="flush-left"><?php echo $topics->topic;?></th>
                         <td><?php echo $this->db->query("
@@ -246,7 +250,9 @@ var myChart = new Chart(ctx, {
                         INNER JOIN ost_ticket_status_test AS b ON a.status_guid = b.status_guid 
                         WHERE b.state = 'open' AND reopened != '0' AND a.topic_guid = '".$topics->topic_guid."'")->row('topicreopen');?></td>
                 </tr>
-                <?php }?>
+
+               
+                <?php  }?>
             </tbody>
         </table>
 
