@@ -76,11 +76,12 @@
             
                 <th style="text-align: center;" ><input type="checkbox" name="tids[]" id="tidsall" onclick="checkedAll ();"></th>
                 <th >Number</th>
-                <th >Last Updated</th>
+                <!-- <th >Last Updated</th> -->
                 <th >Subject</th>
                 <th >From</th>
                 <th >Priority</th>
-                <th >Assigned To</th>            
+                <th >Assigned To</th>         
+                <th >Department</th>         
 
             </tr>
     </thead>
@@ -98,7 +99,7 @@
                 <a class="Icon webTicket" title="<?php echo $value->user_email;?>" href="<?php echo site_url('staff_ticket_controller/ticketinfo');?>?id=<?php echo $value->ticket_guid;?>"><?php echo $value->number;?></a>
               </td>
               
-              <td align="center" nowrap=""><?php echo $value->ticket_updated;?></td>
+              <!-- <td align="center" nowrap=""><?php echo $value->ticket_updated;?></td> -->
               
               <td>
                  <a style="text-overflow: ellipsis;overflow: hidden;width: 300px;" title="<?php echo $value->user_email;?>" href="<?php echo site_url('staff_ticket_controller/ticketinfo');?>?id=<?php echo $value->ticket_guid;?>"><?php echo $value->topic;?></a>
@@ -140,6 +141,7 @@
                 <?php } ?>
                 </span>
               </td>
+              <td class="nohover" align="center"><?php echo $value->department;?></td>
             </tr>
           <?php } ?>
     </tbody>
