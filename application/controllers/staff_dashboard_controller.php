@@ -140,9 +140,9 @@ class staff_dashboard_controller extends CI_Controller {
 
         $data = array(
             
-            'depart' => $this->db->query("SELECT * FROM  ost_department_test ORDER BY name"),
+            'depart' => $this->db->query("SELECT * FROM  ost_department_test WHERE department_guid IN (SELECT dept_guid FROM ost_staff_dept_access_test WHERE staff_guid = '$userid' UNION ALL SELECT dept_guid FROM ost_staff_test WHERE staff_guid = '$userid') ORDER BY NAME"),
             'topic' => $this->db->query("SELECT * FROM  ost_help_topic_test ORDER BY topic"),
-            'staff' => $this->db->query("SELECT * FROM  ost_staff_test ORDER BY firstname"), 
+            'staff' => $this->db->query("SELECT * FROM  ost_staff_test WHERE dept_guid IN (SELECT dept_guid FROM ost_staff_dept_access_test WHERE staff_guid = '$userid' UNION ALL SELECT dept_guid FROM ost_staff_test WHERE staff_guid = '$userid') ORDER BY firstname "), 
 
             'open' => $open_ticket, 
             'resolved' => $resolved_ticket,
