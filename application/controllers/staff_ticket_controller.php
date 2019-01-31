@@ -21,7 +21,8 @@ class staff_ticket_controller extends CI_Controller {
         {   
             $userdeptid = $_SESSION['staffdept'];
             $staff_guid = $_SESSION["staffid"];
-            if ($userdeptid == '1') {
+            $defaultdept = $this->db->query("SELECT name, value, department_guid FROM ost_config_test a INNER JOIN ost_department_test b ON a.value = b.department_guid WHERE a.id = '85'");
+            if ($userdeptid == $defaultdept->row('department_guid') ) {
                 $staff_list = $this->db->query("SELECT * FROM ost_staff_test ");
                 $team_list = $this->db->query("SELECT * FROM ost_team_test ");
             } else {
@@ -101,7 +102,8 @@ class staff_ticket_controller extends CI_Controller {
         {
             $staff_guid = $_SESSION['staffid'];
             $userdeptid = $_SESSION['staffdept'];
-            if ($userdeptid == '1') {
+            $defaultdept = $this->db->query("SELECT name, value, department_guid FROM ost_config_test a INNER JOIN ost_department_test b ON a.value = b.department_guid WHERE a.id = '85'");
+            if ($userdeptid == $defaultdept->row('department_guid') ) {
                 $staff_list = $this->db->query("SELECT * FROM ost_staff_test ");
                 $team_list = $this->db->query("SELECT * FROM ost_team_test ");
             } else {
@@ -163,7 +165,8 @@ class staff_ticket_controller extends CI_Controller {
         {
             $staff_guid = $_SESSION['staffid'];
             $userdeptid = $_SESSION['staffdept'];
-            if ($userdeptid == '1') {
+            $defaultdept = $this->db->query("SELECT name, value, department_guid FROM ost_config_test a INNER JOIN ost_department_test b ON a.value = b.department_guid WHERE a.id = '85'");
+            if ($userdeptid == $defaultdept->row('department_guid')) {
                 $staff_list = $this->db->query("SELECT * FROM ost_staff_test ");
                 $team_list = $this->db->query("SELECT * FROM ost_team_test ");
             } else {
@@ -227,7 +230,8 @@ class staff_ticket_controller extends CI_Controller {
         {
             $staff_guid = $_SESSION['staffid'];
             $userdeptid = $_SESSION['staffdept'];
-            if ($userdeptid == '1') {
+            $defaultdept = $this->db->query("SELECT name, value, department_guid FROM ost_config_test a INNER JOIN ost_department_test b ON a.value = b.department_guid WHERE a.id = '85'");
+            if ($userdeptid == $defaultdept->row('department_guid')) {
                 $staff_list = $this->db->query("SELECT * FROM ost_staff_test ");
                 $team_list = $this->db->query("SELECT * FROM ost_team_test ");
             } else {
@@ -292,7 +296,7 @@ class staff_ticket_controller extends CI_Controller {
             $staff_guid = $_SESSION['staffid'];
             $userdeptid = $_SESSION['staffdept'];
             $defaultdept = $this->db->query("SELECT name, value, department_guid FROM ost_config_test a INNER JOIN ost_department_test b ON a.value = b.department_guid WHERE a.id = '85'");
-            if ($userdeptid == '1') {
+            if ($userdeptid == $defaultdept->row('department_guid')) {
                 $staff_list = $this->db->query("SELECT * FROM ost_staff_test ");
                 $team_list = $this->db->query("SELECT * FROM ost_team_test ");
             } else {
@@ -678,7 +682,8 @@ public function ticketinfo()
     if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
     {
             $userdeptid = $_SESSION['staffdept'];
-            if ($userdeptid == '1') {
+            $defaultdept = $this->db->query("SELECT name, value, department_guid FROM ost_config_test a INNER JOIN ost_department_test b ON a.value = b.department_guid WHERE a.id = '85'");
+            if ($userdeptid == $defaultdept->row('department_guid')) {
                 $staff_list = $this->db->query("SELECT * FROM ost_staff_test ");
                 $team_list = $this->db->query("SELECT * FROM ost_team_test ");
             } else {
