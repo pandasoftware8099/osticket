@@ -137,9 +137,11 @@ $.dialog(url, [201], function(xhr, resp) {
                     <i class="icon-copy"></i> View History</a></li>
             </ul>
         </div>
+         <?php if($value1->editor != ''){ ?>
         <span class="textra light">
             <span class="label label-bare" title="Edited on  by Hugh Panda">Edited</span>
         </span>
+        <?php } ?>
         </div>
                             <?php if ($value1->staff_guid == '0') { ?>
                                 <b><?php echo $value1->poster;?></b>

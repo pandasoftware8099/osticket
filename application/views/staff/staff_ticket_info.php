@@ -234,11 +234,11 @@ function myFunction() {
                                 <div id="entry-action-more-<?php echo $value1->thread_entry_guid?>" class="action-dropdown anchor-right" style="left: 683.25px; top: 32px; display: none;">
                                     <ul class="title">
                                         <li>
-                                            <a id="edit" class="open-edit confirm" data-guid="<?php echo $value1->thread_entry_guid?>" data-body1="<?php echo $value1->body?>" data-toggle="modal" data-target="#more-modal" href="#"><i class="icon-pencil"></i> Edit</a>
+                                            <a id="edit" class="open-edit confirm" data-guid="<?php echo $value1->thread_entry_guid?>" data-body1='<?php echo $value1->body?>' data-toggle="modal" data-target="#more-modal" href="#"><i class="icon-pencil"></i> Edit</a>
                                         </li>
                                         <?php if($value1->editor != ''){ ?>
                                         <li>
-                                            <a id="view" class="confirm" data-toggle="modal" data-editor="<?php echo $value1->editor?>" data-last_body="<?php echo $value1->last_body?>" data-target="#viewh" href="#"><i class="icon-copy"></i> View History </a>
+                                            <a id="view" class="confirm" data-toggle="modal" data-editor="<?php echo $value1->editor?>" data-last_body='<?php echo $value1->last_body?>' data-target="#viewh" href="#"><i class="icon-copy"></i> View History </a>
                                         </li>
                                     <?php } ?>
                                     </ul>
