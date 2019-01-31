@@ -121,8 +121,8 @@
       <div class="error"></div>
       <div class="error"></div>
       <label class="checkbox">
-      <input type="checkbox" name="islocked" value="1" <?php echo ($staffinfo->isactive == 0)?"checked":""; ?>>
-        Locked      </label>
+      <input type="checkbox" name="islocked" value="1" <?php echo ($staffinfo->isactive == 1)?"checked":""; ?>>
+        Active      </label>
       <label class="checkbox">
       <input type="checkbox" name="isadmin" value="1" <?php echo ($staffinfo->isadmin == 1)?"checked":""; ?>>
         Administrator      </label>
