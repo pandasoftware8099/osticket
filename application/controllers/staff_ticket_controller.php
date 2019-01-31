@@ -291,13 +291,25 @@ class staff_ticket_controller extends CI_Controller {
             $user_guid = $_REQUEST['id'];
             $staff_guid = $_SESSION['staffid'];
             $userdeptid = $_SESSION['staffdept'];
+            $defaultdept = $this->db->query("SELECT name, value, department_guid FROM ost_config_test a INNER JOIN ost_department_test b ON a.value = b.department_guid WHERE a.id = '85'");
             if ($userdeptid == '1') {
                 $staff_list = $this->db->query("SELECT * FROM ost_staff_test ");
                 $team_list = $this->db->query("SELECT * FROM ost_team_test ");
             } else {
                 $staff_list = $this->db->query("SELECT * FROM ost_staff_test WHERE dept_guid = '$userdeptid' AND isactive = '1' ");
                 $team_list = $this->db->query("SELECT * FROM ost_team_test a LEFT JOIN ost_team_member_test b ON a.`team_guid` = b.`team_guid` WHERE b.`staff_guid` IN (SELECT staff_guid FROM ost_staff_test WHERE dept_guid = '$userdeptid') AND  a.flags = '1' GROUP BY a.team_guid ");
-            }   
+            }
+
+            if ($userdeptid == $defaultdept->row('value'))
+            {
+                $department = $this->db->query("SELECT department_guid, name FROM ost_department_test WHERE name != '".$defaultdept->row('name')."'");
+            }
+            else
+            {
+                $department = $this->db->query("SELECT dept_guid, a.role_guid, permissions ,c.`name`,c.`department_guid` FROM (SELECT dept_guid , role_guid FROM ost_staff_test WHERE staff_guid = '$staff_guid' UNION SELECT dept_guid , role_guid FROM ost_staff_dept_access_test WHERE staff_guid = '$staff_guid' ) a INNER JOIN ost_role_test b ON a.role_guid=b.role_guid INNER JOIN ost_department_test c ON a.dept_guid = c.department_guid WHERE permissions LIKE '%ticket.create%' AND c.name != '".$defaultdept->row('name')."'");
+            }  
+
+
             $default_topic = $this->db->query("SELECT value FROM ost_config_test WHERE id ='102'");
             $manager = $this->db->query("SELECT * FROM ost_organization_test AS a
                 LEFT JOIN ost_user_test AS b ON a.organization_guid = b.user_org_guid WHERE b.user_guid = '$user_guid'")->row('manager');
@@ -329,7 +341,8 @@ class staff_ticket_controller extends CI_Controller {
                         LEFT JOIN ost_team_test AS d ON b.manager = '$teamid'
                         WHERE user_guid = '$user_guid'"),
                     'stafftopic' => $this->db->query("SELECT * FROM ost_help_topic_test WHERE isactive = 1 ORDER BY topic"),
-                    'staffdepart' => $this->db->query("SELECT dept_guid, a.role_guid, b.permissions ,c.`name`,c.`department_guid` FROM (SELECT dept_guid , role_guid FROM ost_staff_test WHERE staff_guid = '$staff_guid' UNION SELECT dept_guid , role_guid FROM ost_staff_dept_access_test WHERE staff_guid = '$staff_guid' ) a INNER JOIN ost_role_test b ON a.role_guid=b.role_guid INNER JOIN ost_department_test c ON a.dept_guid = c.department_guid WHERE permissions LIKE '%ticket.create%' "),
+                    'default_depart'=> $defaultdept,
+                    'staffdepart' => $department,
                     'priority' => $this->db->query("SELECT * FROM ost_ticket_priority_test"),
                     'sla' => $this->db->query("SELECT * FROM ost_sla_test WHERE isactive = 1 ORDER BY sla_guid"),
                     'defaultslaid' => $this->db->query("SELECT * FROM ost_config_test WHERE id ='86'"),
@@ -348,7 +361,8 @@ class staff_ticket_controller extends CI_Controller {
             {
                 $data = array(
                     'stafftopic' => $this->db->query("SELECT * FROM ost_help_topic_test WHERE isactive = 1 ORDER BY topic"),
-                    'staffdepart' => $this->db->query("SELECT dept_guid, a.role_guid, b.permissions ,c.`name`,c.`department_guid` FROM (SELECT dept_guid , role_guid FROM ost_staff_test WHERE staff_guid = '$staff_guid' UNION SELECT dept_guid , role_guid FROM ost_staff_dept_access_test WHERE staff_guid = '$staff_guid' ) a INNER JOIN ost_role_test b ON a.role_guid=b.role_guid INNER JOIN ost_department_test c ON a.dept_guid = c.department_guid WHERE permissions LIKE '%ticket.create%' "),
+                    'default_depart'=> $defaultdept,
+                    'staffdepart' => $department,
                     'priority' => $this->db->query("SELECT * FROM ost_ticket_priority_test"),
                     'sla' => $this->db->query("SELECT * FROM ost_sla_test WHERE isactive = 1 ORDER BY sla_guid"),
                     'defaultslaid' => $this->db->query("SELECT * FROM ost_config_test WHERE id ='86'"),

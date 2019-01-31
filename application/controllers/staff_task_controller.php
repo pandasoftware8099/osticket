@@ -36,7 +36,7 @@ class staff_task_controller extends CI_Controller {
 
             if ($userdeptid == $defaultdept->row('value'))
             {
-                $department = $this->db->query("SELECT name FROM ost_department_test WHERE name != '".$defaultdept->row('name')."'");
+                $department = $this->db->query("SELECT department_guid, name FROM ost_department_test WHERE name != '".$defaultdept->row('name')."'");
             }
             else
             {
@@ -114,7 +114,7 @@ class staff_task_controller extends CI_Controller {
 
             if ($userdeptid == $defaultdept->row('value'))
             {
-                $department = $this->db->query("SELECT name FROM ost_department_test WHERE name != '".$defaultdept->row('name')."'");
+                $department = $this->db->query("SELECT department_guid, name FROM ost_department_test WHERE name != '".$defaultdept->row('name')."'");
             }
             else
             {
