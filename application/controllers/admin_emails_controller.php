@@ -163,9 +163,16 @@ class admin_emails_controller extends CI_Controller {
             $mail_encryption = 'SSL';
         }
 
-        else {
+        else if ($mail_proto == 'POP' ) {
             $mail_protocol = 'POP';
             $mail_encryption = 'NONE';
+        }
+
+        else{
+
+            $mail_protocol = 'NONE';
+            $mail_encryption = 'NONE';
+
         }
 
         if($priority_guid == '0'){
@@ -758,7 +765,7 @@ class admin_emails_controller extends CI_Controller {
     {      
         if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
         {   
-            $template_id = $_REQUEST['id'];
+            $template_id = $_REQUEST['code_name'];
             $default_template_id = $this->db->query("SELECT * FROM ost_config_test WHERE id = '87'")->row('value');
 
             $data = array(
