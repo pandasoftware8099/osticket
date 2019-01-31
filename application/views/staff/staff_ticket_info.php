@@ -402,13 +402,13 @@ function myFunction() {
                                 </script>
                             </div>
                         </div>
-                        <div class="form-group">
+                        <!-- <div class="form-group">
                             <label class="col-sm-2 control-label">Solved</label>
                             <div class="col-sm-10">
                                 <input type="radio" name="solve" value="2" checked="">Solved&nbsp;
                                 <input type="radio" name="solve" value="1">Not
                             </div>
-                        </div>
+                        </div> -->
                         <p style="text-align:center;">
                             <input class="save pending" type="submit" name="submit" value="Post Reply">
                             <input class="" type="reset" value="Reset">
@@ -453,7 +453,7 @@ function myFunction() {
                                 <span class="error">&nbsp;</span>
                             </div>
                         </div>
-                        <div class="col-sm-12">
+                        <!-- <div class="col-sm-12">
                             <label for="inputEmail3" class="col-sm-2 control-label">
                                 Ticket Status</label>
                             <div class="col-sm-10">
@@ -466,7 +466,7 @@ function myFunction() {
                                 </select>
                                 <span class="error"></span>
                             </div>
-                        </div>
+                        </div> -->
                         <div class="col-lg-12" style="padding:10px;"></div>
                             <p style="text-align:center;">
                                 <input class="save pending" name="submit" type="submit" value="Post Note">

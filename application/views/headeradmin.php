@@ -127,6 +127,13 @@ div.dataTables_wrapper div.dataTables_paginate ul.pagination {
     -moz-appearance:textfield !important;
 }
 
+.note-editor > .modal > .modal-dialog > .modal-content > .modal-body > .note-group-select-from-files
+{
+
+display: none;
+
+}
+
 </style>
 
 </head>
@@ -183,16 +190,83 @@ div.dataTables_wrapper div.dataTables_paginate ul.pagination {
         <span class="icon-bar"></span>                        
       </button>
     </div>
+
+
+    <?php 
+
+    if ($this->uri->segment(1) == 'admin_dashboard_controller')
+
+    {
+
+        $dashboard = 'active';
+        $settings = 'inactive';
+        $manage = 'inactive';
+        $emails = 'inactive';
+        $agents = 'inactive';
+
+    }
+
+    else if ($this->uri->segment(1) == 'admin_settings_controller')
+
+    {
+
+        $dashboard = 'inactive';
+        $settings = 'active';
+        $manage = 'inactive';
+        $emails = 'inactive';
+        $agents = 'inactive';
+
+    }
+
+    else if ($this->uri->segment(1) == 'admin_manage_controller')
+
+    {
+
+        $dashboard = 'inactive';
+        $settings = 'inactive';
+        $manage = 'active';
+        $emails = 'inactive';
+        $agents = 'inactive';
+
+    }
+
+    else if ($this->uri->segment(1) == 'admin_emails_controller')
+
+    {
+
+        $dashboard = 'inactive';
+        $settings = 'inactive';
+        $manage = 'inactive';
+        $emails = 'active';
+        $agents = 'inactive';
+
+    }
+
+    else if ($this->uri->segment(1) == 'admin_agents_controller')
+
+    {
+
+        $dashboard = 'inactive';
+        $settings = 'inactive';
+        $manage = 'inactive';
+        $emails = 'inactive';
+        $agents = 'active';
+
+    }
+
+    ?>
+
+
     <div class="collapse navbar-collapse" id="myNavbar">
         <ul class="nav navbar-nav">
-            <li class="inactive  dropdown"><a href="#" helpdesk="" scp="" logs.php="" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Dashboard <span class="caret"></span></a>
+            <li class="<?php echo $dashboard ?>  dropdown"><a href="#" helpdesk="" scp="" logs.php="" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Dashboard <span class="caret"></span></a>
             <ul class="dropdown-menu">
                 <li><a class="logs" href="/helpdesk/scp/logs.php" title="" id="nav0">System Logs</a></li>
                 <li><a class="preferences" href="<?php echo site_url('admin_dashboard_controller/agents_dashboard')?>" title="" id="nav1">Information</a></li>
             </ul>
             </li>
 
-            <li class="inactive  dropdown"><a href="#" helpdesk="" scp="" settings.php="" class="dropdown-toggle" data-toggle="dropdown">Settings <span class="caret"></span></a>
+            <li class="<?php echo $settings ?>  dropdown"><a href="#" helpdesk="" scp="" settings.php="" class="dropdown-toggle" data-toggle="dropdown">Settings <span class="caret"></span></a>
             <ul class="dropdown-menu">
                 <li><a class="pages" href="<?php echo site_url('admin_settings_controller/settings_company')?>" title="" id="subnav0">Company</a></li>
                 <li><a class="preferences active" href="<?php echo site_url('admin_settings_controller/main')?>" title="" id="subnav1">System</a></li>
@@ -204,7 +278,7 @@ div.dataTables_wrapper div.dataTables_paginate ul.pagination {
             </ul>
             </li>
 
-            <li class="inactive  dropdown"><a href="#" helpdesk="" scp="" helptopics.php="" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Manage <span class="caret"></span></a>
+            <li class="<?php echo $manage ?>  dropdown"><a href="#" helpdesk="" scp="" helptopics.php="" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Manage <span class="caret"></span></a>
             <ul class="dropdown-menu">
                 <li><a class="helpTopics" href="<?php echo site_url('admin_manage_controller/manage_helptopics')?>" title="" id="nav0">Help Topics</a></li>
                 <li><a class="lists" href="<?php echo site_url('admin_manage_controller/manage_subtopics')?>" title="" id="nav6">Subtopics</a></li>
@@ -217,7 +291,7 @@ div.dataTables_wrapper div.dataTables_paginate ul.pagination {
             </ul>
             </li>
 
-            <li class="inactive  dropdown"><a href="#" helpdesk="" scp="" emails.php="" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Emails <span class="caret"></span></a>
+            <li class="<?php echo $emails ?>  dropdown"><a href="#" helpdesk="" scp="" emails.php="" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Emails <span class="caret"></span></a>
             <ul class="dropdown-menu">
                 <li><a class="emailSettings" href="<?php echo site_url('admin_emails_controller/emails_emails')?>" title="Email Addresses" id="nav0">Emails</a></li>
                 <li><a class="email-settings" href="<?php echo site_url('admin_emails_controller/emails_settings')?>" title="" id="nav1">Settings</a></li>
@@ -227,7 +301,7 @@ div.dataTables_wrapper div.dataTables_paginate ul.pagination {
             </ul>
             </li>
 
-            <li class="inactive  dropdown"><a href="#" helpdesk="" scp="" staff.php="" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">Agents <span class="caret"></span></a>
+            <li class="<?php echo $agents ?>   dropdown"><a href="#" helpdesk="" scp="" staff.php="" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">Agents <span class="caret"></span></a>
             <ul class="dropdown-menu">
                 <li><a class="users" href="<?php echo site_url('admin_agents_controller/agents_agents')?>" title="" id="nav0">Agents</a></li>
                 <li><a class="teams" href="<?php echo site_url('admin_agents_controller/agents_teams')?>" title="" id="nav1">Teams</a></li>

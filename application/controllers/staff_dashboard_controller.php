@@ -24,21 +24,12 @@ class staff_dashboard_controller extends CI_Controller {
         {
 
         $userid = $_SESSION["staffid"];    
-        $data = array(
-            
-            'depart' => $this->db->query("SELECT * FROM  ost_department_test ORDER BY name"),
-            'topic' => $this->db->query("SELECT * FROM  ost_help_topic_test ORDER BY topic"),
-            'staff' => $this->db->query("SELECT * FROM  ost_staff_test ORDER BY firstname"), 
-            'open' => $this->db->query("SELECT * FROM ost_ticket_test WHERE status_guid = 1")->num_rows(), 
-            'resolved' => $this->db->query("SELECT * FROM ost_ticket_test WHERE status_guid = 2")->num_rows(),
-            'closed' => $this->db->query("SELECT * FROM ost_ticket_test WHERE status_guid = 3")->num_rows(),
-            'overdue' => $this->db->query("SELECT * FROM ost_ticket_test WHERE NOW() >duedate")->num_rows(),
-            'assign' => $this->db->query("SELECT * FROM ost_ticket_test WHERE status_guid = 7 or  status_guid = 8")->num_rows(),
-            
+        $Allticket = $_REQUEST['a'];
 
-            'ticketcreated_graph' => $this->db->query("
+        if ( $Allticket == 'y' ) {
 
-                
+            $ticketcreated_graph = $this->db->query("
+               
                 SELECT COUNT(*) FROM ost_ticket_test WHERE YEAR(created_at) = YEAR(CURRENT_DATE - INTERVAL 11 MONTH)
                             AND MONTH(created_at) = MONTH(CURRENT_DATE - INTERVAL 11 MONTH)
                             UNION ALL
@@ -77,7 +68,90 @@ class staff_dashboard_controller extends CI_Controller {
                             
 
 
-                "),
+                ");
+            } else{
+
+                $ticketcreated_graph = $this->db->query("
+               
+                SELECT COUNT(*) FROM ost_ticket_test WHERE YEAR(created_at) = YEAR(CURRENT_DATE - INTERVAL 11 MONTH)
+                            AND MONTH(created_at) = MONTH(CURRENT_DATE - INTERVAL 11 MONTH) AND assigned_to = '$userid'
+                            UNION ALL
+                SELECT COUNT(*) FROM ost_ticket_test WHERE YEAR(created_at) = YEAR(CURRENT_DATE - INTERVAL 10 MONTH)
+                            AND MONTH(created_at) = MONTH(CURRENT_DATE - INTERVAL 10 MONTH) AND assigned_to = '$userid'
+                            UNION ALL
+                SELECT COUNT(*) FROM ost_ticket_test WHERE YEAR(created_at) = YEAR(CURRENT_DATE - INTERVAL 9 MONTH)
+                            AND MONTH(created_at) = MONTH(CURRENT_DATE - INTERVAL 9 MONTH) AND assigned_to = '$userid'
+                            UNION ALL
+                SELECT COUNT(*) FROM ost_ticket_test WHERE YEAR(created_at) = YEAR(CURRENT_DATE - INTERVAL 8 MONTH)
+                            AND MONTH(created_at) = MONTH(CURRENT_DATE - INTERVAL 8 MONTH) AND assigned_to = '$userid'
+                            UNION ALL
+                SELECT COUNT(*) FROM ost_ticket_test WHERE YEAR(created_at) = YEAR(CURRENT_DATE - INTERVAL 7 MONTH)
+                            AND MONTH(created_at) = MONTH(CURRENT_DATE - INTERVAL 7 MONTH) AND assigned_to = '$userid'
+                            UNION ALL
+                SELECT COUNT(*) FROM ost_ticket_test WHERE YEAR(created_at) = YEAR(CURRENT_DATE - INTERVAL 6 MONTH)
+                            AND MONTH(created_at) = MONTH(CURRENT_DATE - INTERVAL 6 MONTH) AND assigned_to = '$userid'
+                            UNION ALL
+                SELECT COUNT(*) FROM ost_ticket_test WHERE YEAR(created_at) = YEAR(CURRENT_DATE - INTERVAL 5 MONTH)
+                            AND MONTH(created_at) = MONTH(CURRENT_DATE - INTERVAL 5 MONTH) AND assigned_to = '$userid'
+                            UNION ALL
+                SELECT COUNT(*) FROM ost_ticket_test WHERE YEAR(created_at) = YEAR(CURRENT_DATE - INTERVAL 4 MONTH)
+                            AND MONTH(created_at) = MONTH(CURRENT_DATE - INTERVAL 4 MONTH) AND assigned_to = '$userid'
+                            UNION ALL
+                SELECT COUNT(*) FROM ost_ticket_test WHERE YEAR(created_at) = YEAR(CURRENT_DATE - INTERVAL 3 MONTH)
+                            AND MONTH(created_at) = MONTH(CURRENT_DATE - INTERVAL 3 MONTH) AND assigned_to = '$userid'
+                            UNION ALL
+                SELECT COUNT(*) FROM ost_ticket_test WHERE YEAR(created_at) = YEAR(CURRENT_DATE - INTERVAL 2 MONTH)
+                            AND MONTH(created_at) = MONTH(CURRENT_DATE - INTERVAL 2 MONTH) AND assigned_to = '$userid'
+                            UNION ALL
+                SELECT COUNT(*) FROM ost_ticket_test WHERE YEAR(created_at) = YEAR(CURRENT_DATE - INTERVAL 1 MONTH)
+                            AND MONTH(created_at) = MONTH(CURRENT_DATE - INTERVAL 1 MONTH) AND assigned_to = '$userid'
+                            UNION ALL
+                SELECT COUNT(*) AS ticket_created_count FROM ost_ticket_test WHERE YEAR(created_at) = YEAR(CURRENT_DATE - INTERVAL 0 MONTH)
+                            AND MONTH(created_at) = MONTH(CURRENT_DATE - INTERVAL 0 MONTH) AND assigned_to = '$userid'
+                            
+
+
+                ");
+
+
+
+            }
+
+             if ( $Allticket == 'y' ) {
+
+            $open_ticket = $this->db->query("SELECT * FROM ost_ticket_test WHERE status_guid = 1")->num_rows();
+            $resolved_ticket = $this->db->query("SELECT * FROM ost_ticket_test WHERE status_guid = 2")->num_rows();
+            $closed_ticket = $this->db->query("SELECT * FROM ost_ticket_test WHERE status_guid = 3")->num_rows();
+            $overdue_ticket = $this->db->query("SELECT * FROM ost_ticket_test WHERE NOW() >duedate")->num_rows();
+            $assign_ticket = $this->db->query("SELECT * FROM ost_ticket_test WHERE status_guid = 7")->num_rows();
+            }
+
+            else {
+
+            $open_ticket = $this->db->query("SELECT * FROM ost_ticket_test WHERE status_guid = 1 AND assigned_to = '$userid'")->num_rows();
+            $resolved_ticket = $this->db->query("SELECT * FROM ost_ticket_test WHERE status_guid = 2 AND assigned_to = '$userid'")->num_rows();
+            $closed_ticket = $this->db->query("SELECT * FROM ost_ticket_test WHERE status_guid = 3 AND assigned_to = '$userid'")->num_rows();
+            $overdue_ticket = $this->db->query("SELECT * FROM ost_ticket_test WHERE NOW() >duedate AND assigned_to = '$userid'")->num_rows();
+            $assign_ticket = $this->db->query("SELECT * FROM ost_ticket_test WHERE status_guid = 7 AND assigned_to = '$userid'")->num_rows();
+
+            }
+
+        
+
+        $data = array(
+            
+            'depart' => $this->db->query("SELECT * FROM  ost_department_test WHERE department_guid IN (SELECT dept_guid FROM ost_staff_dept_access_test WHERE staff_guid = '$userid' UNION ALL SELECT dept_guid FROM ost_staff_test WHERE staff_guid = '$userid') ORDER BY NAME"),
+            'topic' => $this->db->query("SELECT * FROM  ost_help_topic_test ORDER BY topic"),
+            'staff' => $this->db->query("SELECT * FROM  ost_staff_test WHERE dept_guid IN (SELECT dept_guid FROM ost_staff_dept_access_test WHERE staff_guid = '$userid' UNION ALL SELECT dept_guid FROM ost_staff_test WHERE staff_guid = '$userid') ORDER BY firstname "), 
+
+            'open' => $open_ticket, 
+            'resolved' => $resolved_ticket,
+            'closed' => $closed_ticket,
+            'overdue' => $overdue_ticket,
+            'assign' => $assign_ticket,
+            
+
+            'ticketcreated_graph' => $ticketcreated_graph,
 
             'openticket_count' => $this->db->query("SELECT * FROM ost_ticket_test WHERE status_guid = '1' ")->num_rows(),
         );

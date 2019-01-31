@@ -19,7 +19,7 @@ $user_banner = $this->db->query("SELECT REPLACE(name, '%company_name%', '$compan
         <input class="btn" type="submit" value="Sign In">
     </p>
     <?php if(isset($_SESSION['loginsecond2'])){?>
-            <a id="forgotpw" href="<?php echo site_url('user_controller/user_forgot_pw') ?>" style="font-size: 15px;float:right;">Forgot Your Password?</a>
+            <a id="forgotpw" href="<?php echo site_url('user_controller/user_forgot_pw') ?>" >Forgot Your Password?</a>
             <?php } ?>
     </div>
     <div class="col-lg-6" style="padding: 15px;vertical-align:top">

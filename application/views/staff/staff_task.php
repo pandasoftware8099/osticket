@@ -78,7 +78,9 @@
                       </label>
 
                       <select class="form-control" name="departmentid" id="_3b16f40dc83394b4" data-placeholder="Select" required="true">
+
                         <option value="">— Select —</option>
+                        <option value="<?php echo $default_depart->row('department_guid');?>"><?php echo $default_depart->row('name');?></option>
                         <?php foreach ($department->result() as $departmentt) { ?>
                           <option value="<?php echo $departmentt->department_guid;?>"><?php echo $departmentt->name;?></option>
                         <?php } ?>
@@ -501,6 +503,7 @@ $(function() {
                     </div><div>
                   <select class="form-control" name="departmentid" id="departmentid" data-placeholder="Select">
                     <option value="">— Select —</option>
+                    <option value="<?php echo $default_depart->row('department_guid');?>"><?php echo $default_depart->row('name');?></option>
                     <?php foreach ($department->result() as $department) { ?>
                       <option value="<?php echo $department->department_guid;?>"><?php echo $department->name;?></option>
                     <?php } ?>

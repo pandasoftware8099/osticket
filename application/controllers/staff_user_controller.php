@@ -23,9 +23,10 @@ class staff_user_controller extends CI_Controller {
         {
 
            $staffid = $_SESSION["staffid"];    
+           $staffdept = $_SESSION["staffdept"];  
             $data = array(
                 'result' => $this->db->query("SELECT * FROM  ost_user_test 
-                    LEFT JOIN ost_user_status_test ON ost_user_test.status = ost_user_status_test.user_status_guid"), 
+                    LEFT JOIN ost_user_status_test ON ost_user_test.status = ost_user_status_test.user_status_guid WHERE user_depart = '$staffdept'"), 
 
 
                 'adduserallow' => $this->db->query(" SELECT * FROM ost_staff_test WHERE staff_guid = '$staffid' AND permissions LIKE '%user.add%'")->num_rows(),
@@ -1444,7 +1445,7 @@ class staff_user_controller extends CI_Controller {
             $domain = addslashes($this->input->post('domain'));
             $user = $this->db->query("SELECT * FROM ost_user_test");
 
-            $this->db->query("UPDATE ost_user_test SET user_primary = '0', user_updated_at = now() WHERE user_org_guid = $org_guid");
+            $this->db->query("UPDATE ost_user_test SET user_primary = '0', user_updated_at = now() WHERE user_org_guid = '$org_guid'");
 
             if ($contacts != "") {
                 foreach($contacts as $contact)
@@ -1454,7 +1455,7 @@ class staff_user_controller extends CI_Controller {
 
                 for($i=0; $i<count($contacts); $i++)
                 {
-                    $this->db->query("UPDATE ost_user_test SET user_primary = '1' WHERE user_guid = $contacts[$i]");
+                    $this->db->query("UPDATE ost_user_test SET user_primary = '1' WHERE user_guid = '$contacts[$i]'");
                 }
             }
 

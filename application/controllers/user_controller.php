@@ -464,8 +464,8 @@ class user_controller extends CI_Controller {
         }
         else
         {   
-            $username1 = $this->input->post('luser');
-            $userpass = $this->input->post('lpasswd');
+            $username1 = addslashes($this->input->post('luser'));
+            $userpass = addslashes($this->input->post('lpasswd'));
             $username = $this->db->query("SELECT user_name FROM osticket.ost_user_test WHERE user_name = '$username1' OR user_email = '$username1'")->row('user_name');
             $userid = $this->db->query("SELECT user_guid FROM osticket.ost_user_test WHERE user_name = '$username' AND user_pas = '$userpass'")->row('user_guid');
             $userdep =  $this->db->query("SELECT user_depart FROM osticket.ost_user_test WHERE user_name = '$username' AND user_pas = '$userpass'")->row('user_depart');
@@ -611,20 +611,26 @@ class user_controller extends CI_Controller {
             }
             else
             {
-                $username1 = $this->input->post('userid');
-                $userpass = $this->input->post('passwd');
+                $username1 = addslashes($this->input->post('userid'));
+                $userpass = addslashes($this->input->post('passwd'));
                 $username = $this->db->query("SELECT username FROM osticket.ost_staff_test WHERE username = '$username1' OR email = '$username1'")->row('username');
-               $staffid = $this->db->query("SELECT staff_guid FROM osticket.ost_staff_test WHERE username = '$username' AND passwd = '$userpass'")->row('staff_guid');
+                $staffid = $this->db->query("SELECT staff_guid FROM osticket.ost_staff_test WHERE username = '$username' AND passwd = '$userpass'")->row('staff_guid');
                 $pw_expire = $this->db->query("SELECT passwdreset FROM osticket.ost_staff_test WHERE username = '$username' AND passwd = '$userpass'")->row('passwdreset');
                 $staffemail = $this->db->query("SELECT email FROM osticket.ost_staff_test WHERE username = '$username' AND passwd = '$userpass'")->row('email');
                 $staffdept = $this->db->query("SELECT dept_guid FROM osticket.ost_staff_test WHERE username = '$username' AND passwd = '$userpass'")->row('dept_guid');
                 $change_passwd = $this->db->query("SELECT change_passwd FROM osticket.ost_staff_test WHERE username = '$username' AND passwd = '$userpass'")->row('change_passwd');
+                $isactive = $this->db->query("SELECT isactive FROM osticket.ost_staff_test WHERE username = '$username' AND passwd = '$userpass'")->row('isactive');
                 $auto_refresh_rate = $this->db->query("SELECT auto_refresh_rate FROM osticket.ost_staff_test WHERE username = '$username' AND passwd = '$userpass'")->row('auto_refresh_rate');
                 $default_signature_type = $this->db->query("SELECT default_signature_type FROM osticket.ost_staff_test WHERE username = '$username' AND passwd = '$userpass'")->row('default_signature_type');
 
                 $result  = $this->User_model->super_login_data($username, $userpass);
 
-                if($result > 0)
+                if ($isactive == '0') {
+                    echo "<script> alert('Your account is deactive, please contact admin of the site.');</script>";
+                    echo "<script> document.location='" . base_url() . "/index.php/user_controller/superlogin' </script>";
+                }
+
+                else if($result > 0)
                 {
 
                     if(isset($_SESSION['loginsecond']))

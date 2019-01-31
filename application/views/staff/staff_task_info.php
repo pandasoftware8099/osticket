@@ -316,7 +316,7 @@
 
                </td>
             </tr>
-            <tr>
+            <!-- <tr>
                 <td>
                     <div>Status
                         <span class="faded"> - </span>
@@ -327,7 +327,7 @@
                         &nbsp;<span class="error"></span>
                     </div>
                 </td>
-            </tr>
+            </tr> -->
         </tbody></table>
 
        <p style="text-align:center;">
@@ -374,7 +374,7 @@
                         </td>
                     </tr>
                 
-                    <tr>
+                    <!-- <tr>
                         <td>
                             <div>Status
                                 <span class="faded"> - </span>
@@ -385,7 +385,7 @@
                                 &nbsp;<span class="error"></span>
                             </div>
                         </td>
-                    </tr>
+                    </tr> -->
                 </tbody>
             </table>
 
@@ -466,7 +466,7 @@ $(function() {
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">×</span></button>
                 <?php foreach ($task->result() as $number) { ?>
-                <h3 class="drag-handle">Close Task #<?php echo $number->task_guid?></h3>
+                <h3 class="drag-handle">Close Task #<?php echo $number->number?></h3>
                 <?php }?>
               </div>
 
@@ -517,7 +517,7 @@ $(function() {
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">×</span></button>
                 <?php foreach ($task->result() as $number) { ?>
-                <h3 class="drag-handle">Reopen Task #<?php echo $number->task_guid?></h3>
+                <h3 class="drag-handle">Reopen Task #<?php echo $number->number?></h3>
                 <?php }?>
               </div>
 
@@ -568,7 +568,7 @@ $(function() {
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">×</span></button>
                 <?php foreach ($task->result() as $number) { ?>
-                <h3 class="drag-handle">Task #<?php echo $number->task_guid?>: Assign to Agent/Team</h3>
+                <h3 class="drag-handle">Task #<?php echo $number->number?>: Assign to Agent/Team</h3>
                 <?php }?>
             </div>
 
@@ -666,7 +666,7 @@ $(function() {
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">×</span></button>
                 <?php foreach ($task->result() as $number) { ?>
-                <h3 class="drag-handle">Task #<?php echo $number->task_guid?>: Transfer</h3>
+                <h3 class="drag-handle">Task #<?php echo $number->number?>: Transfer</h3>
                 <?php }?>
               </div>
               <div class="modal-body">
@@ -686,8 +686,10 @@ $(function() {
             </label>
           </div>
                   </div><div>
+
                 <select class="form-control" name="departmentid" id="departmentid" data-placeholder="Select">
                   <option value="">— Select —</option>
+                  <option value="<?php echo $default_depart->row('department_guid');?>"><?php echo $default_depart->row('name');?></option>
                   <?php foreach ($department->result() as $department) { ?>
                     <option value="<?php echo $department->department_guid;?>" <?php echo $department->department_guid == $task->row('taskdept')?"selected":""; ?>><?php echo $department->name;?></option>
                   <?php } ?>
@@ -758,7 +760,7 @@ $(function() {
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">×</span></button>
                 <?php foreach ($task->result() as $number) { ?>
-                    <h3 class="drag-handle">Edit Task #<?php echo $number->task_guid;?></h3>
+                    <h3 class="drag-handle">Edit Task #<?php echo $number->number;?></h3>
                 <?php }?>
             </div>
 
@@ -827,7 +829,7 @@ $(function() {
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">×</span></button>
                 <?php foreach ($task->result() as $number) { ?>
-                    <h3 class="drag-handle">Task #<?php echo $number->task_guid?>: Delete</h3>
+                    <h3 class="drag-handle">Task #<?php echo $number->number?>: Delete</h3>
                 <?php }?>
               </div>
               <div class="modal-body">

@@ -23,10 +23,25 @@ class staff_task_controller extends CI_Controller {
         if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
         {
 
-        $staff_guid = $_SESSION["staffid"];    
+        $staff_guid = $_SESSION['staffid'];
         $userdeptid = $_SESSION['staffdept'];
-        
-    
+        $defaultdept = $this->db->query("SELECT name, value, department_guid FROM ost_config_test a INNER JOIN ost_department_test b ON a.value = b.department_guid WHERE a.id = '85'");
+            if ($userdeptid == $defaultdept->row('department_guid') ) {
+                $staff_list = $this->db->query("SELECT * FROM ost_staff_test ");
+                $team_list = $this->db->query("SELECT * FROM ost_team_test ");
+            } else {
+                $staff_list = $this->db->query("SELECT * FROM ost_staff_test WHERE dept_guid = '$userdeptid' AND isactive = '1' ");
+                $team_list = $this->db->query("SELECT * FROM ost_team_test a LEFT JOIN ost_team_member_test b ON a.`team_guid` = b.`team_guid` WHERE b.`staff_guid` IN (SELECT staff_guid FROM ost_staff_test WHERE dept_guid = '$userdeptid') AND  a.flags = '1' GROUP BY a.team_guid ");
+            } 
+
+            if ($userdeptid == $defaultdept->row('value'))
+            {
+                $department = $this->db->query("SELECT department_guid, name FROM ost_department_test WHERE name != '".$defaultdept->row('name')."'");
+            }
+            else
+            {
+                $department = $this->db->query("SELECT dept_guid, a.role_guid, permissions ,c.`name`,c.`department_guid` FROM (SELECT dept_guid , role_guid FROM ost_staff_test WHERE staff_guid = '$staff_guid' UNION SELECT dept_guid , role_guid FROM ost_staff_dept_access_test WHERE staff_guid = '$staff_guid' ) a INNER JOIN ost_role_test b ON a.role_guid=b.role_guid INNER JOIN ost_department_test c ON a.dept_guid = c.department_guid WHERE permissions LIKE '%task.transfer%' AND c.name != '".$defaultdept->row('name')."'");
+            }
 
         $data = array(
             
@@ -42,11 +57,13 @@ class staff_task_controller extends CI_Controller {
 
             'deleteallow' => $this->db->query(" SELECT dept_guid, a.role_guid ,b.`permissions` FROM ost_staff_test AS a INNER JOIN ost_role_test AS b ON a.`role_guid` = b.role_guid WHERE staff_guid = '$staff_guid' AND b.`permissions` LIKE '%task.delete%'")->num_rows(),
 
-            'department' => $this->db->query("SELECT dept_guid, a.role_guid, b.permissions ,c.`name`,c.`department_guid` FROM (SELECT dept_guid , role_guid FROM ost_staff_test WHERE staff_guid = '$staff_guid' UNION SELECT dept_guid , role_guid FROM ost_staff_dept_access_test WHERE staff_guid = '$staff_guid' ) a INNER JOIN ost_role_test b ON a.role_guid=b.role_guid INNER JOIN ost_department_test c ON a.dept_guid = c.department_guid WHERE permissions LIKE '%task.transfer%' "), 
+            'default_depart' => $defaultdept,
 
-            'staff' => $this->db->query("SELECT * FROM  ost_staff_test"),
+            'department' => $department, 
 
-            'team' => $this->db->query("SELECT * FROM  ost_team_test"),
+            'staff' => $staff_list,
+
+            'team' => $team_list,
 
             'max_page_size' => $this->db->query("SELECT value FROM ost_config_test WHERE id = '21'")->row('value'),
 
@@ -84,8 +101,25 @@ class staff_task_controller extends CI_Controller {
         if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
         {
 
-        $staff_guid = $_SESSION["staffid"]; 
-        $userdeptid = $_SESSION['staffdept'];   
+        $staff_guid = $_SESSION['staffid'];
+        $userdeptid = $_SESSION['staffdept'];
+        $defaultdept = $this->db->query("SELECT name, value, department_guid FROM ost_config_test a INNER JOIN ost_department_test b ON a.value = b.department_guid WHERE a.id = '85'");
+            if ($userdeptid == $defaultdept->row('department_guid')) {
+                $staff_list = $this->db->query("SELECT * FROM ost_staff_test ");
+                $team_list = $this->db->query("SELECT * FROM ost_team_test ");
+            } else {
+                $staff_list = $this->db->query("SELECT * FROM ost_staff_test WHERE dept_guid = '$userdeptid' AND isactive = '1' ");
+                $team_list = $this->db->query("SELECT * FROM ost_team_test a LEFT JOIN ost_team_member_test b ON a.`team_guid` = b.`team_guid` WHERE b.`staff_guid` IN (SELECT staff_guid FROM ost_staff_test WHERE dept_guid = '$userdeptid') AND  a.flags = '1' GROUP BY a.team_guid ");
+            } 
+
+            if ($userdeptid == $defaultdept->row('value'))
+            {
+                $department = $this->db->query("SELECT department_guid, name FROM ost_department_test WHERE name != '".$defaultdept->row('name')."'");
+            }
+            else
+            {
+                $department = $this->db->query("SELECT dept_guid, a.role_guid, permissions ,c.`name`,c.`department_guid` FROM (SELECT dept_guid , role_guid FROM ost_staff_test WHERE staff_guid = '$staff_guid' UNION SELECT dept_guid , role_guid FROM ost_staff_dept_access_test WHERE staff_guid = '$staff_guid' ) a INNER JOIN ost_role_test b ON a.role_guid=b.role_guid INNER JOIN ost_department_test c ON a.dept_guid = c.department_guid WHERE permissions LIKE '%task.transfer%' AND c.name != '".$defaultdept->row('name')."'");
+            }  
 
         $data = array(
             'result' => $this->db->query("SELECT * FROM  ost_task_test 
@@ -100,11 +134,13 @@ class staff_task_controller extends CI_Controller {
 
             'deleteallow' => $this->db->query(" SELECT dept_guid, a.role_guid ,b.`permissions` FROM ost_staff_test AS a INNER JOIN ost_role_test AS b ON a.`role_guid` = b.role_guid WHERE staff_guid = '$staff_guid' AND b.`permissions` LIKE '%task.delete%'")->num_rows(),
 
-            'department' => $this->db->query("SELECT dept_guid, a.role_guid, b.permissions ,c.`name`,c.`department_guid` FROM (SELECT dept_guid , role_guid FROM ost_staff_test WHERE staff_guid = '$staff_guid' UNION SELECT dept_guid , role_guid FROM ost_staff_dept_access_test WHERE staff_guid = '$staff_guid' ) a INNER JOIN ost_role_test b ON a.role_guid=b.role_guid INNER JOIN ost_department_test c ON a.dept_guid = c.department_guid WHERE permissions LIKE '%task.transfer%' "), 
+            'department' => $department,
 
-            'staff' => $this->db->query("SELECT * FROM  ost_staff_test"), 
+            'default_depart'=> $defaultdept,
 
-            'team' => $this->db->query("SELECT * FROM  ost_team_test"),
+            'staff' => $staff_list, 
+
+            'team' => $team_list,
 
             'max_page_size' => $this->db->query("SELECT value FROM ost_config_test WHERE id = '21'")->row('value'),
         );
@@ -638,7 +674,25 @@ class staff_task_controller extends CI_Controller {
         {
 
         $task_guid = $_REQUEST["id"];
-       $staffid = $_SESSION["staffid"];
+        $staffid = $_SESSION["staffid"];
+        $userdeptid = $_SESSION['staffdept'];
+        $defaultdept = $this->db->query("SELECT name, value, department_guid FROM ost_config_test a INNER JOIN ost_department_test b ON a.value = b.department_guid WHERE a.id = '85'");
+            if ($userdeptid == $defaultdept->row('value') ) {
+                $staff_list = $this->db->query("SELECT * FROM ost_staff_test ");
+                $team_list = $this->db->query("SELECT * FROM ost_team_test ");
+            } else {
+                $staff_list = $this->db->query("SELECT * FROM ost_staff_test WHERE dept_guid = '$userdeptid' AND isactive = '1' ");
+                $team_list = $this->db->query("SELECT * FROM ost_team_test a LEFT JOIN ost_team_member_test b ON a.`team_guid` = b.`team_guid` WHERE b.`staff_guid` IN (SELECT staff_guid FROM ost_staff_test WHERE dept_guid = '$userdeptid') AND  a.flags = '1' GROUP BY a.team_guid ");
+            }  
+
+            if ($userdeptid == $defaultdept->row('value'))
+            {
+                $department = $this->db->query("SELECT name FROM ost_department_test WHERE name != '".$defaultdept->row('name')."'");
+            }
+            else
+            {
+                $department = $this->db->query("SELECT dept_guid, a.role_guid, permissions ,c.`name`,c.`department_guid` FROM (SELECT dept_guid , role_guid FROM ost_staff_test WHERE staff_guid = '$staffid' UNION SELECT dept_guid , role_guid FROM ost_staff_dept_access_test WHERE staff_guid = '$staffid' ) a INNER JOIN ost_role_test b ON a.role_guid=b.role_guid INNER JOIN ost_department_test c ON a.dept_guid = c.department_guid WHERE permissions LIKE '%task.transfer%' AND c.name != '".$defaultdept->row('name')."'");
+            }
 
         $data = array(
 
@@ -671,11 +725,13 @@ class staff_task_controller extends CI_Controller {
                     
                     WHERE b.task_guid = '$task_guid' ")->row(),
 
-            'department' => $this->db->query("SELECT * FROM  ost_department_test"), 
+            'department' => $department, 
 
-            'staff' => $this->db->query("SELECT * FROM  ost_staff_test"),
+            'staff' => $staff_list,
             
-            'team' => $this->db->query("SELECT * FROM  ost_team_test"), 
+            'team' => $team_list, 
+
+            'default_depart' => $defaultdept,
 
             'taskthread' => $this->db->query("SELECT * FROM ost_thread_entry_test
                 WHERE task_guid = '$task_guid' GROUP BY created "),

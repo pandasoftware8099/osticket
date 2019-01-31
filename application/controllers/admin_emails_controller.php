@@ -163,9 +163,16 @@ class admin_emails_controller extends CI_Controller {
             $mail_encryption = 'SSL';
         }
 
-        else {
+        else if ($mail_proto == 'POP' ) {
             $mail_protocol = 'POP';
             $mail_encryption = 'NONE';
+        }
+
+        else{
+
+            $mail_protocol = 'NONE';
+            $mail_encryption = 'NONE';
+
         }
 
         if($priority_guid == '0'){
@@ -177,7 +184,7 @@ class admin_emails_controller extends CI_Controller {
         }
 
         if($topic_guid = '0'){
-            $topid_id = $default_help;
+            $topic_guid = $default_help;
         }
 
         $email_guid = $this->db->query("SELECT REPLACE(UPPER(UUID()),'-','') AS guid")->row('guid');
@@ -259,6 +266,10 @@ class admin_emails_controller extends CI_Controller {
         $smtp_spoofing = $this->input->post('smtp_spoofing');
         $notes = $this->input->post('notes');
 
+        $default_dept = $this->db->query("SELECT value FROM ost_config_test WHERE id='85'")->row('value');
+        $default_prio = $this->db->query("SELECT value FROM ost_config_test WHERE id='9'")->row('value');
+        $default_help = $this->db->query("SELECT value FROM ost_config_test WHERE id='102'")->row('value');
+
         if ($mail_proto == 'IMAP/SSL') {
             $mail_protocol = 'IMAP';
             $mail_encryption = 'SSL';
@@ -283,6 +294,20 @@ class admin_emails_controller extends CI_Controller {
             $mail_protocol = 'NONE';
             $mail_encryption = 'NONE';
 
+        }
+
+        
+
+        if($priority_guid == '0'){
+            $priority_guid = $default_prio;
+        }
+
+        if($dept_guid == '0'){
+            $dept_guid = $default_dept;
+        }
+
+        if($topic_guid = '0'){
+            $topic_guid = $default_help;
         }
 
 
@@ -740,7 +765,7 @@ class admin_emails_controller extends CI_Controller {
     {      
         if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
         {   
-            $template_id = $_REQUEST['id'];
+            $template_id = $_REQUEST['code_name'];
             $default_template_id = $this->db->query("SELECT * FROM ost_config_test WHERE id = '87'")->row('value');
 
             $data = array(

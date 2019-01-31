@@ -165,6 +165,7 @@
           <div class="col-sm-10">
             <select name="deptId" class="form-control" required>
                 <option value="" selected="">— Select Department—</option>
+                <option value="<?php echo $default_depart->row('name')?>"><?php echo $default_depart->row('name')?></option>
                 <?php foreach ($staffdepart->result() as $depart) { ?>   
                 <option value="<?php echo $depart->department_guid?>"><?php echo $depart->name?></option>
                 <?php }?>
