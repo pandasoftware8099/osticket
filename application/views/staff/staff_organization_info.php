@@ -11,32 +11,6 @@
         <?php } ?>
 
     </div>
-    <script type="text/javascript">
-$(function() {
-
-    $(document).off('.tickets');
-    $(document).on('click.tickets', 'a.add-user', function(e) {
-        e.preventDefault();
-        var $form = $('form#tickets');
-        var count = checkbox_checker($form, 1);
-        if (count) {
-            var tids = $('.ckb:checked', $form).map(function() {
-                    return this.value;
-                }).get();
-            var url = 'ajax.php/'
-            +$(this).attr('href').substr(1)
-            +'?count='+count
-            +'&tids='+tids.join(',')
-            +'&_uid='+new Date().getTime();
-            console.log(tids);
-            $.dialog(url, [201], function (xhr) {
-                $.pjax.reload('#pjax-container');
-             });
-        }
-        return false;
-    });
-});
-</script>
 
 <div class="col-lg-6" style="padding:0px;">
     <table class="ticket_info" border="0" cellspacing="" cellpadding="4" width="100%">
@@ -129,10 +103,11 @@ $(function() {
     
     <a data-toggle="modal" data-target="#add-user-modal" class="green button action-button add-user"><i class="icon-plus"></i> Add User</a>
     
-
+    <?php if ($adduserallow != 0 ) { ?>
     <a data-toggle="modal" data-target="#import-modal" class="button action-button add-user">
         <i class="icon-cloud-upload icon-large"></i>
     Import</a>
+    <?php } ?>
     
 
     <?php if ($deleteuserallow != 0 ) { ?>
