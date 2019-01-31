@@ -614,17 +614,23 @@ class user_controller extends CI_Controller {
                 $username1 = addslashes($this->input->post('userid'));
                 $userpass = addslashes($this->input->post('passwd'));
                 $username = $this->db->query("SELECT username FROM osticket.ost_staff_test WHERE username = '$username1' OR email = '$username1'")->row('username');
-               $staffid = $this->db->query("SELECT staff_guid FROM osticket.ost_staff_test WHERE username = '$username' AND passwd = '$userpass'")->row('staff_guid');
+                $staffid = $this->db->query("SELECT staff_guid FROM osticket.ost_staff_test WHERE username = '$username' AND passwd = '$userpass'")->row('staff_guid');
                 $pw_expire = $this->db->query("SELECT passwdreset FROM osticket.ost_staff_test WHERE username = '$username' AND passwd = '$userpass'")->row('passwdreset');
                 $staffemail = $this->db->query("SELECT email FROM osticket.ost_staff_test WHERE username = '$username' AND passwd = '$userpass'")->row('email');
                 $staffdept = $this->db->query("SELECT dept_guid FROM osticket.ost_staff_test WHERE username = '$username' AND passwd = '$userpass'")->row('dept_guid');
                 $change_passwd = $this->db->query("SELECT change_passwd FROM osticket.ost_staff_test WHERE username = '$username' AND passwd = '$userpass'")->row('change_passwd');
+                $isactive = $this->db->query("SELECT isactive FROM osticket.ost_staff_test WHERE username = '$username' AND passwd = '$userpass'")->row('isactive');
                 $auto_refresh_rate = $this->db->query("SELECT auto_refresh_rate FROM osticket.ost_staff_test WHERE username = '$username' AND passwd = '$userpass'")->row('auto_refresh_rate');
                 $default_signature_type = $this->db->query("SELECT default_signature_type FROM osticket.ost_staff_test WHERE username = '$username' AND passwd = '$userpass'")->row('default_signature_type');
 
                 $result  = $this->User_model->super_login_data($username, $userpass);
 
-                if($result > 0)
+                if ($isactive == '0') {
+                    echo "<script> alert('Your account is deactive, please contact admin of the site.');</script>";
+                    echo "<script> document.location='" . base_url() . "/index.php/user_controller/superlogin' </script>";
+                }
+
+                else if($result > 0)
                 {
 
                     if(isset($_SESSION['loginsecond']))
