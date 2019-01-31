@@ -1445,7 +1445,7 @@ class staff_user_controller extends CI_Controller {
             $domain = addslashes($this->input->post('domain'));
             $user = $this->db->query("SELECT * FROM ost_user_test");
 
-            $this->db->query("UPDATE ost_user_test SET user_primary = '0', user_updated_at = now() WHERE user_org_guid = $org_guid");
+            $this->db->query("UPDATE ost_user_test SET user_primary = '0', user_updated_at = now() WHERE user_org_guid = '$org_guid'");
 
             if ($contacts != "") {
                 foreach($contacts as $contact)
@@ -1455,7 +1455,7 @@ class staff_user_controller extends CI_Controller {
 
                 for($i=0; $i<count($contacts); $i++)
                 {
-                    $this->db->query("UPDATE ost_user_test SET user_primary = '1' WHERE user_guid = $contacts[$i]");
+                    $this->db->query("UPDATE ost_user_test SET user_primary = '1' WHERE user_guid = '$contacts[$i]'");
                 }
             }
 
