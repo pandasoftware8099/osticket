@@ -1,5 +1,5 @@
 <div id="content">
-    <form method="get" action="<?php echo site_url('admin_emails_controller/emails_templates_edit');?>?id=<?php echo $_REQUEST['id'];?>">
+    <form method="get" action="<?php echo site_url('admin_emails_controller/emails_templates_edit');?>?id=<?php echo $_REQUEST['code_name'];?>">
 <h2>
     <div class="col-lg-6">
         <span>Email Template Set</span>
@@ -11,17 +11,17 @@
         <select id="tpl_options" name="id" style="width:250px;">
             <optgroup label="Ticket End-User Email Templates">
                 <?php foreach ($ticket_end_user_templates->result() as $ticket_end_user) { ?>
-                <option value="<?php echo $ticket_end_user->email_tpl_guid;?>" <?php echo $ticket_end_user->email_tpl_guid == $_REQUEST['id']?"selected":"";?>><?php echo $ticket_end_user->title;?></option>
+                <option value="<?php echo $ticket_end_user->email_tpl_guid;?>" <?php echo $ticket_end_user->email_tpl_guid == $_REQUEST['code_name']?"selected":"";?>><?php echo $ticket_end_user->title;?></option>
                 <?php } ?>
             </optgroup>
             <optgroup label="Ticket Agent Email Templates">
                 <?php foreach ($ticket_agent_templates->result() as $ticket_agent) { ?>
-                <option value="<?php echo $ticket_agent->email_tpl_guid;?>" <?php echo $ticket_agent->email_tpl_guid == $_REQUEST['id']?"selected":"";?>><?php echo $ticket_agent->title;?></option>
+                <option value="<?php echo $ticket_agent->email_tpl_guid;?>" <?php echo $ticket_agent->email_tpl_guid == $_REQUEST['code_name']?"selected":"";?>><?php echo $ticket_agent->title;?></option>
                 <?php } ?>
             </optgroup>
             <optgroup label="Task Email Templates">
                 <?php foreach ($task_templates->result() as $task) { ?>
-                <option value="<?php echo $task->email_tpl_guid;?>" <?php echo $task->email_tpl_guid == $_REQUEST['id']?"selected":"";?>><?php echo $task->title;?></option>
+                <option value="<?php echo $task->email_tpl_guid;?>" <?php echo $task->email_tpl_guid == $_REQUEST['code_name']?"selected":"";?>><?php echo $task->title;?></option>
                 <?php } ?>
             </optgroup>
         </select>
@@ -30,7 +30,7 @@
 </h2>
 </form>
 
-<br><br><hr><form action="<?php echo site_url('admin_emails_controller/emails_templates_edit_process');?>?id=<?php echo $_REQUEST['id'];?>" method="post" class="save">
+<br><br><hr><form action="<?php echo site_url('admin_emails_controller/emails_templates_edit_process');?>?id=<?php echo $_REQUEST['code_name'];?>" method="post" class="save">
 <div style="border:1px solid #ccc;background:#f0f0f0;padding:5px 10px;
     margin:10px 0;">
 <h3 style="font-size:12pt;margin:0"><?php echo $email_template_info->row('title');?></h3>
