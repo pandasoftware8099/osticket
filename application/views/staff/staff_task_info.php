@@ -686,8 +686,10 @@ $(function() {
             </label>
           </div>
                   </div><div>
+
                 <select class="form-control" name="departmentid" id="departmentid" data-placeholder="Select">
                   <option value="">— Select —</option>
+                  <option value="<?php echo $default_depart->row('department_guid');?>"><?php echo $default_depart->row('name');?></option>
                   <?php foreach ($department->result() as $department) { ?>
                     <option value="<?php echo $department->department_guid;?>" <?php echo $department->department_guid == $task->row('taskdept')?"selected":""; ?>><?php echo $department->name;?></option>
                   <?php } ?>
