@@ -153,6 +153,12 @@ div.dataTables_wrapper div.dataTables_paginate ul.pagination {
 display: none;
 
 }
+    
+select {
+  font-family: 'FontAwesome', 'Second Font name'
+}
+    
+
 </style>
 
 </head>
