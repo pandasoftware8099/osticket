@@ -21,12 +21,3 @@
 </form>
         </div>
     </div>
-    <div id="footer">
-        <p>Copyright © 2019 Panda Ticketing System - All rights reserved.</p>
-    </div>
-<div id="overlay" style="opacity: 0.3; top: 0px; left: 0px;"></div>
-<div id="loading" style="top: 251.333px; left: 599.5px;">
-    <h4>Please Wait!</h4>
-    <p>Please wait... it will take a second!</p>
-</div>
-</body>
