@@ -32,7 +32,7 @@
             <?php foreach ($result->result() as $value) { ?>         
             <span class="action-button pull-right" title="Edit"><a data-placement="bottom" data-toggle="tooltip" href="<?php echo site_url('staff_ticket_controller/ticketinfoedit');?>?id=<?php echo $value->ticket_guid;?>&uid=" ><i class="icon-edit"></i></a></span>
            
-            <a class="action-button pull-right" href="<?php echo site_url('staff_ticket_controller/printpreviewstaff');?>?id=<?php echo $value->ticket_guid;?>" id="ticket-print" href="tickets.php?id=13&amp;a=print" title="Print"><i class="icon-print"></i></a>
+            <a class="action-button pull-right" href="<?php echo site_url('staff_ticket_controller/printpreviewstaff');?>?id=<?php echo $value->ticket_guid;?>" id="ticket-print" title="Print"><i class="icon-print"></i></a>
     <?php } ?>
 
                         
@@ -622,7 +622,7 @@ function myFunction() {
                                           <option value="">— Select an Agent —</option>
                               <optgroup label="Agents (<?php echo $staff->num_rows();?>)">
                               <?php foreach ($staff->result() as $taskstaff) { ?>
-                                <option value="a<?php echo $taskstaff->staff_guid;?>"><?php echo $taskstaff->firstname;?> <?php echo $taskstaff->lastname;?></option>
+                                <option value="a<?php echo $taskstaff->staff_guid;?>"><?php echo $taskstaff->firstname;?> <?php echo $taskstaff->lastname;?> <?php if ($taskstaff->onvacation == 1) { ?> <small>(<i>Vacation</i>)</small> <?php } ?></option>
                               <?php } ?> 
                               </optgroup>
 
@@ -956,7 +956,7 @@ $(function() {
                         <option value="">— Select —</option>
                         <optgroup label="Agents (<?php echo $staff->num_rows();?>)">
                           <?php foreach ($staff->result() as $stafff) { ?>
-                          <option value="a<?php echo $stafff->staff_guid;?>"><?php echo $stafff->firstname;?> <?php echo $stafff->lastname;?></option>
+                          <option value="a<?php echo $stafff->staff_guid;?>"><?php echo $stafff->firstname;?> <?php echo $stafff->lastname;?> <?php if ($stafff->onvacation == 1) { ?> <small>(<i>Vacation</i>)</small> <?php } ?></option>
                           <?php } ?> 
                         </optgroup>    
                             
@@ -1110,7 +1110,7 @@ $(function() {
                                             <option value="">— Select an Agent —</option>
                                             <optgroup label="Agents (<?php echo $staff->num_rows();?>)">
                                                 <?php foreach ($staff->result() as $ticketstaff) { ?>
-                                                    <option value="a<?php echo $ticketstaff->staff_guid;?>" <?php echo $ticketstaff->staff_guid == $openclose->assigned_to?"selected":"";?>><?php echo $ticketstaff->firstname;?> <?php echo $ticketstaff->lastname;?></option>
+                                                    <option value="a<?php echo $ticketstaff->staff_guid;?>" <?php echo $ticketstaff->staff_guid == $openclose->assigned_to?"selected":"";?>><?php echo $ticketstaff->firstname;?> <?php echo $ticketstaff->lastname;?> <?php if ($ticketstaff->onvacation == 1) { ?> <small>(<i>Vacation</i>)</small> <?php } ?></option>
                                                 <?php } ?> 
                                             </optgroup>
 

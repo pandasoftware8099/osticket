@@ -97,7 +97,7 @@
                         <option value="">— Select —</option>
                         <optgroup label="Agents (<?php echo $staff->num_rows();?>)">
                           <?php foreach ($staff->result() as $stafff) { ?>
-                          <option value="a<?php echo $stafff->staff_guid;?>"><?php echo $stafff->firstname;?> <?php echo $stafff->lastname;?></option>
+                          <option value="a<?php echo $stafff->staff_guid;?>"><?php echo $stafff->firstname;?> <?php echo $stafff->lastname;?> <?php if ($stafff->onvacation == 1) { ?> <small>(<i>Vacation</i>)</small> <?php } ?></option>
                           <?php } ?> 
                         </optgroup>    
                             
@@ -410,7 +410,7 @@ $(function() {
                                           <option value="">— Select an Agent —</option>
                               <optgroup label="Agents (<?php echo $this->db->query("SELECT COUNT(*) as agent FROM ost_staff_test")->row('agent');?>)">
                               <?php foreach ($staff->result() as $staff) { ?>
-                              <option value="a<?php echo $staff->staff_guid;?>"><?php echo $staff->firstname;?> <?php echo $staff->lastname;?></option>
+                              <option value="a<?php echo $staff->staff_guid;?>"><?php echo $staff->firstname;?> <?php echo $staff->lastname;?> <?php if ($staff->onvacation == 1) { ?> <small>(<i>Vacation</i>)</small> <?php } ?></option>
                               <?php } ?> 
                               </optgroup>    
                               <optgroup label="Team (<?php echo $this->db->query("SELECT COUNT(*) as team FROM ost_team_test")->row('team');?>)">         
