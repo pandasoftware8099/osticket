@@ -35,7 +35,7 @@ class user_controller extends CI_Controller {
             {
                 $this->load->view('header');
                 $this->load->view('user/login.php',$data);
-                /*$this->load->view('footer');*/
+                $this->load->view('footer');
             }    
 
     }
@@ -67,7 +67,7 @@ class user_controller extends CI_Controller {
         {
             $this->load->view('header');
             $this->load->view('user/register', $data);
-            /*$this->load->view('footer');*/
+            $this->load->view('footer');
         }
     }
 
@@ -181,7 +181,7 @@ class user_controller extends CI_Controller {
         {
             $this->load->view('header');
             $this->load->view('user/email_confirmation', $data);
-            /*$this->load->view('footer');*/
+            $this->load->view('footer');
         }
     }
 
@@ -269,7 +269,7 @@ class user_controller extends CI_Controller {
             {
                 $this->load->view('header');
                 $this->load->view('user/edit', $data);
-                /*$this->load->view('footer');*/
+                $this->load->view('footer');
             }    
 
     }
@@ -735,7 +735,7 @@ class user_controller extends CI_Controller {
             {
                 $this->load->view('header');
                 $this->load->view('user/user_pwreset');
-                /*$this->load->view('footer');*/
+                $this->load->view('footer');
             }
         }
         else
@@ -1100,7 +1100,7 @@ class user_controller extends CI_Controller {
             {
                 $this->load->view('header');
                 $this->load->view('user/user_reset_forgot_pw',$data);
-                /*$this->load->view('footer');*/
+                $this->load->view('footer');
             }    
 
     }

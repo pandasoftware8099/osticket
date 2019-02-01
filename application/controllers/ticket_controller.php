@@ -91,7 +91,7 @@ class Ticket_controller extends CI_Controller {
             {
                 $this->load->view('header');
                 $this->load->view('viewt/ticket_main',$data);
-                /*$this->load->view('footer');*/
+                $this->load->view('footer');
             }    
         }
 
@@ -154,7 +154,7 @@ class Ticket_controller extends CI_Controller {
             {
                 $this->load->view('header');
                 $this->load->view('viewt/ticket_info' ,$data);
-                /*$this->load->view('footer');*/
+                $this->load->view('footer');
             }
 
         }
@@ -539,7 +539,7 @@ class Ticket_controller extends CI_Controller {
             {
                 $this->load->view('header');
                 $this->load->view('viewt/ticket_edit', $data);
-                    /*$this->load->view('footer');*/
+                $this->load->view('footer');
             }    
         }
 
