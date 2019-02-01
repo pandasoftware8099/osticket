@@ -154,10 +154,6 @@ display: none;
 
 }
     
-select {
-  font-family: 'FontAwesome', 'Second Font name'
-}
-    
 
 </style>
 
