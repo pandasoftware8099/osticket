@@ -1,4 +1,11 @@
-
+<style type="text/css">
+    
+    
+select {
+  font-family: 'FontAwesome', 'Second Font name'
+}
+    
+</style>
 
 <div id="content">
 

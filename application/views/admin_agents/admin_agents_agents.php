@@ -88,7 +88,7 @@
                   </td>
                   <td><?php if ($value->isactive == 1){ ?>
 
-                      Active
+                      Active <?php if ($value->onvacation == 1) { ?> <small>(<i>vacation</i>)</small> <?php } ?>
 
                       <?php } else if ($value->isactive == 0) { ?>
 

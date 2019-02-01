@@ -1,7 +1,7 @@
 
 <div>
     <div id="footer" style="margin-bottom:10px;">
-        Copyright © 2006-2018&nbsp;Panda Ticketing System&nbsp;All Rights Reserved.
+        Copyright © 2006-<?php echo date("Y"); ?>&nbsp;Panda Ticketing System&nbsp;All Rights Reserved.
     </div>
     <div>
         <!-- Do not remove <img src="autocron.php" alt="" width="1" height="1" border="0" /> or your auto cron will cease to function -->

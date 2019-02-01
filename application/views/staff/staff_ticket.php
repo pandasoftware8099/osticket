@@ -253,7 +253,7 @@
                                           <option value="">— Select an Agent —</option>
                               <optgroup label="Agents (<?php echo $staff->num_rows() ?>)">
                               <?php foreach ($staff->result() as $staff) { ?>
-                              <option value="a<?php echo $staff->staff_guid;?>"><?php echo $staff->firstname;?> <?php echo $staff->lastname;?></option>
+                              <option value="a<?php echo $staff->staff_guid;?>"><?php echo $staff->firstname;?> <?php echo $staff->lastname;?> <?php if ($staff->onvacation == 1) { ?> <small>(<i>vacation</i>)</small> <?php } ?></option>
                               <?php } ?> 
                               </optgroup>    
                               <optgroup label="Team (<?php echo $team->num_rows() ?>)">         

@@ -48,7 +48,7 @@ class Guide_controller extends CI_Controller {
             {
                 $this->load->view('header');
                 $this->load->view('guide/guide_main', $data);
-                /*$this->load->view('footer');*/
+                $this->load->view('footer');
             }    
         }
 
@@ -79,7 +79,7 @@ class Guide_controller extends CI_Controller {
             {
                 $this->load->view('header');
                 $this->load->view('guide/guide_main', $data);
-                /*$this->load->view('footer');*/
+                $this->load->view('footer');
             } 
 
 
@@ -106,6 +106,7 @@ class Guide_controller extends CI_Controller {
                     );
                 $this->load->view('header');  
                 $this->load->view('guide/guide_search', $data); 
+                $this->load->view('footer');
             }
 
             else       
@@ -124,6 +125,7 @@ class Guide_controller extends CI_Controller {
                     );
                 $this->load->view('header');  
                 $this->load->view('guide/guide_search', $data); 
+                $this->load->view('footer');
 
         }
 
@@ -158,7 +160,7 @@ class Guide_controller extends CI_Controller {
             {
                 $this->load->view('header');
                 $this->load->view('guide/guide_category', $data);
-                /*$this->load->view('footer');*/
+                $this->load->view('footer');
             }    
         }
 
@@ -190,7 +192,7 @@ class Guide_controller extends CI_Controller {
             {
                 $this->load->view('header');
                 $this->load->view('guide/guide_category', $data);
-                /*$this->load->view('footer');*/
+                $this->load->view('footer');
             }    
         }
 
@@ -228,7 +230,7 @@ class Guide_controller extends CI_Controller {
             {
                 $this->load->view('header');
                 $this->load->view('guide/guide_info', $data);
-                /*$this->load->view('footer');*/
+                $this->load->view('footer');
             }    
         }
 
@@ -262,115 +264,10 @@ class Guide_controller extends CI_Controller {
             {
                 $this->load->view('header');
                 $this->load->view('guide/guide_info', $data);
-                /*$this->load->view('footer');*/
+                $this->load->view('footer');
             }
 
     }
-
-    }
-
-    public function agent()
-    {   
-
-        $restrict_kb = $this->db->query("SELECT value FROM ost_config_test WHERE id='115'")->row('value');
-
-        if ($restrict_kb == '1') {
-
-        if($this->session->userdata('loginuser') == true && $this->session->userdata('username') != '')
-        {
-         
-         $browser_id = $_SERVER["HTTP_USER_AGENT"];
-        if(strpos($browser_id,"Windows CE") || strpos($browser_id,"Windows NT 5.1") )
-            {
-
-                /*$this->load->view('WinCe/header');
-                $this->load->view('WinCe/po/po_main',$data);*/
-                
-            }
-        else
-            {
-                $this->load->view('header');
-                $this->load->view('guide/guide_agent');
-                /*$this->load->view('footer');*/
-            }    
-        }
-
-        else       
-        {
-           redirect('user_controller/login');
-        }
-
-        } else{
-
-
-         
-         $browser_id = $_SERVER["HTTP_USER_AGENT"];
-        if(strpos($browser_id,"Windows CE") || strpos($browser_id,"Windows NT 5.1") )
-            {
-
-                /*$this->load->view('WinCe/header');
-                $this->load->view('WinCe/po/po_main',$data);*/
-                
-            }
-        else
-            {
-                $this->load->view('header');
-                $this->load->view('guide/guide_agent');
-                /*$this->load->view('footer');*/
-            }    
-
-        }
-
-    }
-
-    public function agent_login()
-    {      
-        $restrict_kb = $this->db->query("SELECT value FROM ost_config_test WHERE id='115'")->row('value');
-
-        if ($restrict_kb == '1') {
-
-        if($this->session->userdata('loginuser') == true && $this->session->userdata('username') != '')
-        {
-         
-         $browser_id = $_SERVER["HTTP_USER_AGENT"];
-        if(strpos($browser_id,"Windows CE") || strpos($browser_id,"Windows NT 5.1") )
-            {
-
-                /*$this->load->view('WinCe/header');
-                $this->load->view('WinCe/po/po_main',$data);*/
-                
-            }
-        else
-            {
-                $this->load->view('header');
-                $this->load->view('guide/guide_agent_login');
-                /*$this->load->view('footer');*/
-            }    
-        }
-
-        else       
-        {
-           redirect('user_controller/login');
-        }
-        } else{
-
-
-         
-         $browser_id = $_SERVER["HTTP_USER_AGENT"];
-        if(strpos($browser_id,"Windows CE") || strpos($browser_id,"Windows NT 5.1") )
-            {
-
-                /*$this->load->view('WinCe/header');
-                $this->load->view('WinCe/po/po_main',$data);*/
-                
-            }
-        else
-            {
-                $this->load->view('header');
-                $this->load->view('guide/guide_agent_login');
-                /*$this->load->view('footer');*/
-            }    
-        }
 
     }
 

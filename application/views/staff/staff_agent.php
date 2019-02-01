@@ -25,7 +25,7 @@
 
                     <tr id="23">
 
-                <td><?php echo $value->firstname;?> <?php echo $value->lastname;?></td>
+                <td><?php echo $value->firstname;?> <?php echo $value->lastname;?> <?php if ($value->onvacation == 1) { ?> <small>(<i>Vacation</i>)</small> <?php } ?></td>
                 <td><?php echo $value->name;?></td>
                 <td><?php echo $value->email;?></td>
                 <td><?php echo $value->phone;?></td>

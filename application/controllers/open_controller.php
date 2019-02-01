@@ -43,7 +43,7 @@ class Open_controller extends CI_Controller {
             {
                 $this->load->view('header');
                 $this->load->view('opent/open_main' ,$data);
-                /*$this->load->view('footer');*/
+                $this->load->view('footer');
             }    
 
         }
@@ -211,7 +211,7 @@ class Open_controller extends CI_Controller {
             {
                 $this->load->view('header');
                 $this->load->view('opent/ticket_thankyou' ,$data);
-                /*$this->load->view('footer');*/
+                $this->load->view('footer');
             }    
 
         }
