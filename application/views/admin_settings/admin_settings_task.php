@@ -17,7 +17,7 @@
             <em>Global default task settings and options.</em>
         </div>
         <div class="form-group" style="overflow:auto;">
-        <label class="col-lg-4 control-label" style="padding-top:0px">Default Task Number Format<br/> (Range : 2 - 12)<span class="error">*</span> :</label>
+        <label class="col-lg-4 control-label" style="padding-top:0px"><i class="icon-question-sign" onmouseenter="MouseOver(event,'tip_box');" onmouseleave="MouseOut('tip_box')"></i> Default Task Number Format<br/> (Range : 2 - 12)<span class="error">*</span> :</label>
         <div class="col-lg-6">
             <input type="number" name="ticket_number_format" id="ticket_number_format" class="form-control no-spin" min="2" max="12" value="<?php echo $ticket_number_format->row('value');?>" required>
             <div class="error"></div>
@@ -28,7 +28,7 @@
     </div>
     
     <div class="form-group" style="overflow:auto;">
-        <label class="col-lg-4 control-label"> Default Task Number Sequence :</label>
+        <label class="col-lg-4 control-label"><i class="icon-question-sign" onmouseenter="MouseOver(event,'tip_box1');" onmouseleave="MouseOut('tip_box1')"></i> Default Task Number Sequence :</label>
         <div class="col-lg-6">
             <select name="ticket_sequence_guid" class="form-control" id="ticket_sequence_guid">
                 <option value="0" <?php if($ticket_seq=='0'){echo 'selected';}?>>— Random —</option>
@@ -48,7 +48,7 @@
 <div class="hiddens tab_content" id="alerts" data-tip-namespace="settings.alerts" style="display: none;">
     <table class="form_table settings_table" width="100%" border="0" cellspacing="0" cellpadding="2">
     <tbody>
-        <tr><th><em></i> <b>New Task Alert</b> :
+        <tr><th><em><i class="icon-question-sign" onmouseenter="MouseOver(event,'tip_box2');" onmouseleave="MouseOut('tip_box2')"></i><b>  New Task Alert</b> :
             </em></th></tr>
         <tr>
             <td><em><b>Status:</b></em> &nbsp;
@@ -73,7 +73,7 @@
                 <input type="checkbox" name="task_alert_dept_members" <?php echo $task_alert_dept_members == 1?"checked":"";?> value="1">
                 Department Members            </td>
         </tr>
-        <tr><th><em><b>New Message Alert</b> :
+        <tr><th><em><i class="icon-question-sign" onmouseenter="MouseOver(event,'tip_box3');" onmouseleave="MouseOut('tip_box3')"></i><b>  New Message Alert</b> :
             </em></th></tr>
         <tr>
             <td><em><b>Status:</b></em> &nbsp;
@@ -96,7 +96,7 @@
               <input type="checkbox" name="task_activity_alert_dept_manager" <?php echo $task_activity_alert_dept_manager == 1?"checked":"";?> value="1">
               Department Manager            </td>
         </tr>
-        <tr><th><em><b>Task Assignment Alert</b> :
+        <tr><th><em><i class="icon-question-sign" onmouseenter="MouseOver(event,'tip_box4');" onmouseleave="MouseOut('tip_box4')"></i><b>  Task Assignment Alert</b> :
             </em></th></tr>
         <tr>
             <td><em><b>Status: </b></em> &nbsp;
@@ -117,7 +117,7 @@
               <input type="checkbox" name="task_assignment_alert_team_members" <?php echo $task_assignment_alert_team_members == 1?"checked":"";?> value="1">
                 Team Members            </td>
         </tr>
-        <tr><th><em><b>Task Transfer Alert</b> :
+        <tr><th><em><i class="icon-question-sign" onmouseenter="MouseOver(event,'tip_box5');" onmouseleave="MouseOut('tip_box5')"></i><b>  Task Transfer Alert</b> :
             </em></th></tr>
         <tr>
             <td><em><b>Status:</b></em> &nbsp;
@@ -142,7 +142,7 @@
               <input type="checkbox" name="task_transfer_alert_dept_members" <?php echo $task_transfer_alert_dept_members == 1?"checked":"";?> value="1">
                 Department Members            </td>
         </tr>
-        <tr><th><em><b>Overdue Task Alert</b> :
+        <tr><th><em><i class="icon-question-sign" onmouseenter="MouseOver(event,'tip_box6');" onmouseleave="MouseOut('tip_box6')"></i><b>  Overdue Task Alert</b> :
             </em></th></tr>
         <tr>
             <td><em><b>Status:</b></em> &nbsp;
@@ -170,7 +170,60 @@
     <input class="button" type="reset" name="reset" value="Reset Changes">
 </p>
 </form>
+
+<div class="tip_box" id="tip_box" style="display:none;">
+    <div class="tip_content"><a href="#" class="tip_close"><i class="icon-remove-circle"></i></a><img src="./images/tip_arrow.png" class="tip_arrow"><h1><i class="icon-info-sign faded"> </i>Task Number Format</h1>This setting is used to generate task numbers. Use hash signs (`#`) where digits are to be placed. Any other text in the number format will be preserved. <br><br> For example, for six-digit numbers, use <code>######</code>.
+    </div>
+</div>
+
+<div class="tip_box" id="tip_box1" style="display:none;">
+    <div class="tip_content"><a href="#" class="tip_close"><i class="icon-remove-circle"></i></a><img src="./images/tip_arrow.png" class="tip_arrow"><h1><i class="icon-info-sign faded"> </i>Task Number Sequence</h1>Choose a sequence from which to derive new task numbers. The system has a incrementing sequence and a random sequence by default. You may create as many sequences as you wish.
+    </div>
+</div>
+
+<div class="tip_box" id="tip_box2" style="display:none;">
+    <div class="tip_content"><a href="#" class="tip_close"><i class="icon-remove-circle"></i></a><img src="./images/tip_arrow.png" class="tip_arrow"><h1><i class="icon-info-sign faded"> </i>New Task Alert</h1><p> Alert sent out to Agents when a new task is created. </p><p class="info-banner"> <i class="icon-info-sign"></i> This alert is not sent out if the task is auto-assigned. </p>
+    </div>
+</div>
+
+<div class="tip_box" id="tip_box3" style="display:none;">
+    <div class="tip_content"><a href="#" class="tip_close"><i class="icon-remove-circle"></i></a><img src="./images/tip_arrow.png" class="tip_arrow"><h1><i class="icon-info-sign faded"> </i>New Activity Alert</h1>Alert sent out to Agents when a new message is appended to an existing task.
+    </div>
+</div>
+
+<div class="tip_box" id="tip_box4" style="display:none;">
+    <div class="tip_content"><a href="#" class="tip_close"><i class="icon-remove-circle"></i></a><img src="./images/tip_arrow.png" class="tip_arrow"><h1><i class="icon-info-sign faded"> </i>Task Assignment Alert</h1>Alert sent out to Agents on task assignment.
+    </div>
+</div>
+
+<div class="tip_box" id="tip_box5" style="display:none;">
+    <div class="tip_content"><a href="#" class="tip_close"><i class="icon-remove-circle"></i></a><img src="./images/tip_arrow.png" class="tip_arrow"><h1><i class="icon-info-sign faded"> </i>Task Transfer Alert</h1>Alert sent out to Agents on task transfer between Departments.
+    </div>
+</div>
+
+<div class="tip_box" id="tip_box6" style="display:none;">
+    <div class="tip_content"><a href="#" class="tip_close"><i class="icon-remove-circle"></i></a><img src="./images/tip_arrow.png" class="tip_arrow"><h1><i class="icon-info-sign faded"> </i>Overdue Task Alert</h1>Alert sent out to Agents when a task becomes overdue based on SLA or Due Date.
+    </div>
+</div>
+
 <script type="text/javascript">
+function MouseOver(e,divid) {
+    var left  = e.clientX  + "px";
+    var top  = e.clientY  + "px";
+
+    var div = document.getElementById(divid);
+
+    div.style.display = 'block';
+    div.style.left = left;
+    div.style.top = top;
+    $("#" + divid).stop();    
+}
+
+function MouseOut(divid) {
+    document.getElementById(divid).style.display = 'none';
+    $("#" + divid).stop();
+}
+
 function random_number(digit)
     {   
         number_digit = digit.value;

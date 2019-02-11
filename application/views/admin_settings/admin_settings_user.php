@@ -15,7 +15,7 @@
             <em><b>General Settings</b></em>
         </div>
         <div class="form-group">
-            <label class="col-lg-4 control-label"><i class="help-tip icon-question-sign" href="#registration_method"></i> Registration Method :</label>
+            <label class="col-lg-4 control-label"> Registration Method :</label>
             <div class="col-lg-8">
                 <select name="client_registration" class="form-control">
                 <option value="1"  <?php if($client_registration->value=='1')
@@ -54,13 +54,13 @@
             </div>
         </div>
         <div class="form-group">
-            <label class="col-lg-4 control-label"><i class="help-tip icon-question-sign" href="#client_session_timeout"></i> User Session Timeout :</label>
+            <label class="col-lg-4 control-label"><i class="icon-question-sign" onmouseenter="MouseOver(event,'tip_box1');" onmouseleave="MouseOut('tip_box1')"></i> User Session Timeout :</label>
             <div class="col-lg-8">
                 <input type="text" name="client_session_timeout" size="6" value="<?php echo $client_session_timeout->value?>">
             </div>
         </div>
         <div class="form-group">
-            <label class="col-lg-4 control-label"><i class="help-tip icon-question-sign" href="#allow_auth_tokens"></i> Authentication Token :</label>
+            <label class="col-lg-4 control-label"><i class="icon-question-sign" onmouseenter="MouseOver(event,'tip_box2');" onmouseleave="MouseOut('tip_box2')"></i> Authentication Token :</label>
             <div class="col-lg-8">
                 <input type="hidden" name="allow_auth_tokens" value="0">
                 <input type="checkbox" name="allow_auth_tokens" value="1" 
@@ -179,24 +179,34 @@
     <div class="clear"></div>
 </div>
 
-<script type="text/javascript" src="/helpdesk/js/jquery.pjax.js?9ae093d"></script>
-<script type="text/javascript" src="/helpdesk/scp/js/bootstrap-typeahead.js?9ae093d"></script>
-<script type="text/javascript" src="/helpdesk/scp/js/scp.js?9ae093d"></script>
-<script type="text/javascript" src="/helpdesk/js/jquery-ui-1.10.3.custom.min.js?9ae093d"></script>
-<script type="text/javascript" src="/helpdesk/js/filedrop.field.js?9ae093d"></script>
-<script type="text/javascript" src="/helpdesk/js/select2.min.js?9ae093d"></script>
-<script type="text/javascript" src="/helpdesk/scp/js/tips.js?9ae093d"></script>
-<script type="text/javascript" src="/helpdesk/js/redactor.min.js?9ae093d"></script>
-<script type="text/javascript" src="/helpdesk/js/redactor-osticket.js?9ae093d"></script>
-<script type="text/javascript" src="/helpdesk/js/redactor-plugins.js?9ae093d"></script>
-<script type="text/javascript" src="/helpdesk/scp/js/jquery.translatable.js?9ae093d"></script>
-<script type="text/javascript" src="/helpdesk/scp/js/jquery.dropdown.js?9ae093d"></script>
-<script type="text/javascript" src="/helpdesk/scp/js/bootstrap-tooltip.js?9ae093d"></script>
-<script type="text/javascript" src="/helpdesk/js/fabric.min.js?9ae093d"></script>
-<link type="text/css" rel="stylesheet" href="/helpdesk/scp/css/tooltip.css?9ae093d">
-<script type="text/javascript">
-    getConfig().resolve({"lock_time":3600,"html_thread":true,"date_format":"Y-MM-dd","lang":"en_US","short_lang":"en","has_rtl":false,"lang_flag":"us","primary_lang_flag":"us","primary_language":"en-US","secondary_languages":[],"page_size":25});
-</script>
 
+<div class="tip_box" id="tip_box1" style="display:none;">
+    <div class="tip_content"><a href="#" class="tip_close"><i class="icon-remove-circle"></i></a><img src="./images/tip_arrow.png" class="tip_arrow"><h1><i class="icon-info-sign faded"> </i>User Session Timeout</h1>Choose the maximum idle time (in minutes) before a User is required to log in again. <br><br> If you would like to disable <span class="doc-desc-title">User Session Timeouts,</span> enter 0.
+    </div>
+</div>
+
+<div class="tip_box" id="tip_box2" style="display:none;">
+    <div class="tip_content"><a href="#" class="tip_close"><i class="icon-remove-circle"></i></a><img src="./images/tip_arrow.png" class="tip_arrow"><h1><i class="icon-info-sign faded"> </i>Enable Authentication Tokens</h1>Enable this option to allow use of authentication tokens to auto-login users on ticket link click.
+    </div>
+</div>
 
 </body></html>
+
+<script type="text/javascript">
+    function MouseOver(e,divid) {
+        var left  = e.clientX  + "px";
+        var top  = e.clientY  + "px";
+        // alert('test');
+        var div = document.getElementById(divid);
+
+        div.style.display = 'block';
+        div.style.left = left;
+        div.style.top = top;
+
+        // $('#'+divid).css('display', 'block');
+    }
+
+    function MouseOut(divid) {
+        document.getElementById(divid).style.display = 'none';
+    }
+</script>

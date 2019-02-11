@@ -3,7 +3,7 @@
  <input type="hidden" name="__CSRFToken__" value="be9cb08215f7fd058a6fce5651abce8e3371b62d"> <input type="hidden" name="do" value="">
  <h2>Test Outgoing Email</h2>
  <div class="section-break" style="margin-bottom:10px;">
-    <em><i class="help-tip icon-question-sign" href="#test_outgoing_email"></i> Use the following form to test whether your <strong>Outgoing Email</strong> settings are properly established.</em>
+    <em><i class="icon-question-sign"  onmouseenter="MouseOver(event,'tip_box');" onmouseleave="MouseOut('tip_box')"></i> Use the following form to test whether your <strong>Outgoing Email</strong> settings are properly established.</em>
 </div>
 <div class="form-group">
     <label class="col-lg-2 control-label"><span class="error">*</span>From :</label>
@@ -53,3 +53,28 @@
 </p>
 <input type="hidden" name="draft_id"></form>
 </div>
+
+<div class="tip_box" id="tip_box" style="display:none;">
+    <div class="tip_content"><a href="#" class="tip_close"><i class="icon-remove-circle"></i></a><img src="./images/tip_arrow.png" class="tip_arrow"><h1><i class="icon-info-sign faded"> </i>Test Outgoing Email</h1>The email’s delivery depends on your server settings (php.ini) and/or SMTP configuration.
+    </div>
+</div>
+
+<script type="text/javascript">
+    function MouseOver(e,divid) {
+        var left  = e.clientX  + "px";
+        var top  = e.clientY  + "px";
+
+        var div = document.getElementById(divid);
+
+        div.style.display = 'block';
+        div.style.left = left;
+        div.style.top = top;
+        $("#" + divid).stop();    
+    }
+
+    function MouseOut(divid) {
+        document.getElementById(divid).style.display = 'none';
+        $("#" + divid).stop();
+    }
+
+</script>
