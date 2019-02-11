@@ -20,7 +20,7 @@
                 <em><b>General Settings</b></em>
             </div>
             <div class="form-group" style="overflow:auto;">
-                <label class="col-lg-3 control-label"><i class="help-tip icon-question-sign" href="#staff_guidentity_masking"></i> Agent Identity Masking :</label>
+                <label class="col-lg-3 control-label"><i class="icon-question-sign" onmouseenter="MouseOver(event,'tip_box');" onmouseleave="MouseOut('tip_box')"></i> Agent Identity Masking :</label>
                 <div class="col-lg-9 test" >
                     <input type="hidden" name="hide_staff_name" value="0">
                     <input type="checkbox" name="hide_staff_name" value="1" <?php if($hide_staff_name->value == '1'){
@@ -29,7 +29,7 @@
                             Hide agent's name on responses.  (Will Show Department Name instead)</div>
             </div>
             <div class="form-group" style="overflow:auto;">
-                <label class="col-lg-3 control-label" style="font-size:13px;"><i class="help-tip icon-question-sign" href="#password_expiration_policy"></i> Password Expiration Policy :</label>
+                <label class="col-lg-3 control-label"><i class="icon-question-sign" onmouseenter="MouseOver(event,'tip_box1');" onmouseleave="MouseOut('tip_box1')"></i>   Password Expiration Policy : </label>
                 <div class="col-lg-9 test">
                     <select name="passwd_reset_period" class="form-control">
                         <option value="100" <?php if($pw_expire_period == ''){ echo 'selected'; }?>> --No Expiration-- </option> 
@@ -45,7 +45,7 @@
                 </div>
             </div>
             <div class="form-group" style="overflow:auto;">
-                <label class="col-lg-3 control-label"><i class="help-tip icon-question-sign" href="#allow_password_resets"></i> Allow Password Resets :</label>
+                <label class="col-lg-3 control-label"><i class="icon-question-sign" onmouseenter="MouseOver(event,'tip_box2');" onmouseleave="MouseOut('tip_box2')"></i> Allow Password Resets :</label>
                 <div class="col-lg-9 test">
                     <input type="hidden" name="allow_pw_reset" value="0">
                     <input type="checkbox" name="allow_pw_reset" value="1" <?php if($pw_reset_status->value == '1'){
@@ -54,7 +54,7 @@
                 </div>
             </div>
             <div class="form-group" style="overflow:auto;">
-                <label class="col-lg-3 control-label"><i class="help-tip icon-question-sign" href="#reset_token_expiration"></i> Reset Token Expiration :</label>
+                <label class="col-lg-3 control-label"><i class="icon-question-sign" onmouseenter="MouseOver(event,'tip_box3');" onmouseleave="MouseOut('tip_box3')"></i> Reset Token Expiration :</label>
                 <div class="col-lg-9 test">
                     <input type="number" name="pw_reset_window" size="3" value="<?php echo $pw_reset_window->value?>"><em>minutes</em>&nbsp;<font class="error"></font>
                 </div>
@@ -83,7 +83,7 @@
                 </div>
             </div>
             <div class="form-group" style="overflow:auto;">
-                <label class="col-lg-3 control-label"><i class="help-tip icon-question-sign" href="#staff_session_timeout"></i> Agent Session Timeout :</label>
+                <label class="col-lg-3 control-label"><i class="icon-question-sign" onmouseenter="MouseOver(event,'tip_box4');" onmouseleave="MouseOut('tip_box4')"></i> Agent Session Timeout :</label>
                 <div class="col-lg-9 test">
                     <input type="text" name="staff_session_timeout" size="3" value="<?php echo $staff_sess_timeout->value?>">
                         minutes <em>(0 to disable)</em>.
@@ -165,3 +165,47 @@
     </div><!-- /.modal-dialog -->
 </div>
 <?php } ?>
+
+<div class="tip_box" id="tip_box" style="display:none;">
+    <div class="tip_content"><a href="#" class="tip_close"><i class="icon-remove-circle"></i></a><img src="./images/tip_arrow.png" class="tip_arrow"><h1><i class="icon-info-sign faded"> </i>Staff Identity Masking</h1>If enabled, this will hide the Agent’s name from the Client during any communication.
+    </div>
+</div>
+
+<div class="tip_box" id="tip_box1" style="display:none;">
+    <div class="tip_content"><a href="#" class="tip_close"><i class="icon-remove-circle"></i></a><img src="./images/tip_arrow.png" class="tip_arrow"><h1><i class="icon-info-sign faded"> </i>Password Expiration Policy</h1>Choose how often Agents will be required to change their password. If disabled (i.e., <span class="doc-desc-opt">No Expiration</span>), passwords will not expire.
+    </div>
+</div>
+
+<div class="tip_box" id="tip_box2" style="display:none;">
+    <div class="tip_content"><a href="#" class="tip_close"><i class="icon-remove-circle"></i></a><img src="./images/tip_arrow.png" class="tip_arrow"><h1><i class="icon-info-sign faded"> </i>Allow Password Resets</h1>Enable this feature if you would like to display the <span class="doc-desc-title">Forgot My Password</span> link on the <span class="doc-desc-title">Staff Log-In Page</span> after a failed log in attempt.
+    </div>
+</div>
+
+<div class="tip_box" id="tip_box3" style="display:none;">
+    <div class="tip_content"><a href="#" class="tip_close"><i class="icon-remove-circle"></i></a><img src="./images/tip_arrow.png" class="tip_arrow"><h1><i class="icon-info-sign faded"> </i>Password Reset Window</h1>Choose the duration (in minutes) for which the <span class="doc-desc-title"> Password Reset Tokens</span> will be valid. When an Agent requests a <span class="doc-desc-title">Password Reset</span>, they are emailed a token that will permit the reset to take place.
+    </div>
+</div>
+
+<div class="tip_box" id="tip_box4" style="display:none;">
+    <div class="tip_content"><a href="#" class="tip_close"><i class="icon-remove-circle"></i></a><img src="./images/tip_arrow.png" class="tip_arrow"><h1><i class="icon-info-sign faded"> </i>Agent Session Timeout</h1>Choose the maximum idle time (in minutes) before an Agent is required to log in again. <br><br> If you would like to disable <span class="doc-desc-title">Agent Session Timeouts</span>, enter 0.
+    </div>
+</div>
+
+<script type="text/javascript">
+    function MouseOver(e,divid) {
+        var left  = e.clientX  + "px";
+        var top  = e.clientY  + "px";
+        // alert('test');
+        var div = document.getElementById(divid);
+
+        div.style.display = 'block';
+        div.style.left = left;
+        div.style.top = top;
+
+        // $('#'+divid).css('display', 'block');
+    }
+
+    function MouseOut(divid) {
+        document.getElementById(divid).style.display = 'none';
+    }
+</script>

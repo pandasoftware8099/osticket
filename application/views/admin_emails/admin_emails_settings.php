@@ -6,7 +6,7 @@
     <em>Note that some of the global settings can be overridden at department/email level.</em>
 </div>
 <div class="form-group">
-    <label class="col-lg-4 control-label"><i class="help-tip icon-question-sign" href="#default_email_templates"></i> Default Template Set <font class="error">*</font> :</label>
+    <label class="col-lg-4 control-label"><i class="icon-question-sign" onmouseenter="MouseOver(event,'tip_box');" onmouseleave="MouseOut('tip_box')"></i> Default Template Set <font class="error">*</font> :</label>
     <div class="col-lg-8">
         <select name="default_template_id" class="form-control" required>
             <option value="">— Select Default Email Template Set —</option>
@@ -20,7 +20,7 @@
     </div>
 </div>
 <div class="form-group">
-    <label class="col-lg-4 control-label"><i class="help-tip icon-question-sign" href="#default_system_email"></i> Default System Email <font class="error">*</font> :</label>
+    <label class="col-lg-4 control-label"><i class="icon-question-sign" onmouseenter="MouseOver(event,'tip_box1');" onmouseleave="MouseOut('tip_box1')"></i> Default System Email <font class="error">*</font> :</label>
     <div class="col-lg-8">
         <select name="default_email_guid" class="form-control" required>
             <option value="0" disabled="">Select One</option>
@@ -36,7 +36,7 @@
     </div>
 </div>
 <div class="form-group">
-    <label class="col-lg-4 control-label"><i class="help-tip icon-question-sign" href="#default_alert_email"></i> Default Alert Email <font class="error">*</font> :</label>
+    <label class="col-lg-4 control-label"><i class="icon-question-sign" onmouseenter="MouseOver(event,'tip_box2');" onmouseleave="MouseOut('tip_box2')"></i> Default Alert Email <font class="error">*</font> :</label>
     <div class="col-lg-8">
         <select name="alert_email_guid" class="form-control" required>
             <option value="<?php echo $default_email?>" selected="selected">Use Default System Email (above)</option>
@@ -49,13 +49,13 @@
     </div>
 </div>
 <div class="form-group">
-    <label class="col-lg-4 control-label"><i class="help-tip icon-question-sign" href="#admins_email_address"></i> Admin's Email Address <font class="error">*</font> :</label>
+    <label class="col-lg-4 control-label"><i class="icon-question-sign" onmouseenter="MouseOver(event,'tip_box3');" onmouseleave="MouseOut('tip_box3')"></i> Admin's Email Address <font class="error">*</font> :</label>
     <div class="col-lg-8">
         <input type="text" size="40" name="admin_email" class="form-control" value="<?php echo $admin_email?>" required>
                     &nbsp;<font class="error"></font>
     </div>
 </div>
-<div class="form-group">
+<!-- <div class="form-group">
     <label class="col-lg-4 control-label"><i class="help-tip icon-question-sign" href="#verify_email_addrs"></i> Verify Email Addresses :</label>
     <div class="col-lg-8">
         <input type="hidden" name="verify_email_addrs" value=0>
@@ -63,7 +63,7 @@
                                                             echo 'checked';}?>>
                 Verify email address domain    </div>
 </div>
-<!-- <div class="section-break" style="margin-bottom:10px;">
+<div class="section-break" style="margin-bottom:10px;">
     <em><strong>Incoming Emails:</strong>&nbsp;</em>
 </div>
 <div class="form-group">
@@ -102,7 +102,7 @@
     <em><strong>Outgoing Email</strong>: Default email only applies to outgoing emails without SMTP setting.</em>
 </div>
 <div class="form-group">
-    <label class="col-lg-4 control-label"><i class="help-tip icon-question-sign" href="#default_mta"></i> Default MTA :</label>
+    <label class="col-lg-4 control-label"><i class="icon-question-sign"  onmouseenter="MouseOver(event,'tip_box4');" onmouseleave="MouseOut('tip_box4')"></i> Default MTA :</label>
     <div class="col-lg-8">
         <select name="default_smtp_id">
             <option value="0" selected="selected">None: Use PHP mail function</option>
@@ -113,7 +113,7 @@
     </div>
 </div>
 <div class="form-group">
-    <label class="col-lg-4 control-label"><i class="help-tip icon-question-sign" href="#ticket_response_files"></i> Attachments :</label>
+    <label class="col-lg-4 control-label"><i class="icon-question-sign"  onmouseenter="MouseOver(event,'tip_box5');" onmouseleave="MouseOut('tip_box5')"></i> Attachments :</label>
     <div class="col-lg-8">
         <input type="hidden" name="email_attachments" value="0">
         <input type="checkbox" name="email_attachments" value="1" <?php if($email_attach==1){
@@ -127,3 +127,69 @@
 </form>
 </div>
 </div>
+
+<div id="tip_box" class="tip_box" style="display:none;">
+    <div class="tip_content">
+        <a href="#" class="tip_close"><i class="icon-remove-circle"></i></a><img src="./images/tip_arrow.png" class="tip_arrow">
+        <h1><i class="icon-info-sign faded"> </i>Default Email Template Set</h1>
+        Select <span class="doc-desc-title">Email Template Set</span> used to send <span class="doc-desc-title">Auto-Responses</span> and <span class="doc-desc-title">Alerts</span> for various actions that can take place during a  Ticket’s lifetime. <br><br> Departments can be assigned a specific Email Template Set.
+    </div>
+</div>
+
+<div id="tip_box1" class="tip_box" style="display:none;">
+    <div class="tip_content"><a href="#" class="tip_close"><i class="icon-remove-circle"></i></a><img src="./images/tip_arrow.png" class="tip_arrow"><h1><i class="icon-info-sign faded"> </i>Default Outgoing Email</h1>Choose an email address from which outgoing emails are sent. <br><br> <span class="doc-desc-title">Department</span> can set its own <span class="doc-desc-title">email address</span> which will override what is set here.
+    </div>
+</div>
+
+<div id="tip_box2" class="tip_box" style="display:none;">
+    <div class="tip_content"><a href="#" class="tip_close"><i class="icon-remove-circle"></i></a><img src="./images/tip_arrow.png" class="tip_arrow"><h1><i class="icon-info-sign faded"> </i>Default Alert Email</h1>Choose an email address from which <span class="doc-desc-title">Alerts &amp; Notices</span> are sent to Agents.
+    </div>
+</div>
+
+<div class="tip_box" id="tip_box3" style="display:none;">
+    <div class="tip_content"><a href="#" class="tip_close"><i class="icon-remove-circle"></i></a><img src="./images/tip_arrow.png" class="tip_arrow"><h1><i class="icon-info-sign faded"> </i>Admin’s Email Address</h1>Enter an adminstrator's email address to which <span class="doc-desc-title">System Errors</span> and <span class="doc-desc-title">New Ticket Alerts</span> (if enabled) are sent.
+    </div>
+</div>
+
+<div class="tip_box" id="tip_box4" style="display:none;">
+    <div class="tip_content"><a href="#" class="tip_close"><i class="icon-remove-circle"></i></a><img src="./images/tip_arrow.png" class="tip_arrow"><h1><i class="icon-info-sign faded"> </i>Default MTA</h1><span class="doc-desc-title">Default MTA</span> takes care of email delivery process for outgoing emails without SMTP setting.
+    </div>
+</div>
+
+<div class="tip_box"  id="tip_box5" style="display:none;">
+    <div class="tip_content"><a href="#" class="tip_close"><i class="icon-remove-circle"></i></a><img src="./images/tip_arrow.png" class="tip_arrow"><h1><i class="icon-info-sign faded"> </i>Ticket Response Files</h1>If enabled, any attachments an Agent may attach to a ticket response will be also included in the email to the User.
+    </div>
+</div>
+
+<script type="text/javascript">
+    function MouseOver(e,divid) {
+        var left  = e.clientX  + "px";
+        var top  = e.clientY  + "px";
+
+        var div = document.getElementById(divid);
+
+        div.style.display = 'block';
+        div.style.left = left;
+        div.style.top = top;
+        $("#" + divid).stop();    
+    }
+
+    function MouseOut(divid) {
+        document.getElementById(divid).style.display = 'none';
+        $("#" + divid).stop();
+    }
+
+    // $(document).ready(function() {
+    //     var $img = $("#tip_box");
+    //     $img.hide();
+    //     $('#tipbox').mouseenter(function(e) {
+    //         $img.stop(1, 1).fadeIn();
+    //         $img.offset({
+    //              top: e.pageY - $img.outerHeight(),
+    //            left: e.pageX - ($img.outerWidth()/2)
+    //         });
+    //     }).mouseleave(function() {
+    //         $img.stop(1,1).fadeOut();
+    //     });
+    // });
+</script>

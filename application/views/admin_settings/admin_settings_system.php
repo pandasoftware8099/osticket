@@ -6,7 +6,7 @@
     <em><b>General Settings</b></em>
 </div>
 <div class="form-group" style="overflow:auto;margin-bottom:10px;">
-    <label class="col-lg-3 control-label" style="padding-top:0px;"> Helpdesk Status :</label>
+    <label class="col-lg-3 control-label" style="padding-top:0px;"><i class="icon-question-sign" onmouseenter="MouseOver(event,'tip_box');" onmouseleave="MouseOut('tip_box')"></i> Helpdesk Status :</label>
     <div class="col-lg-9">
         <span>
             <label>
@@ -20,8 +20,7 @@
     </div>
 </div>
 <div class="form-group" style="overflow:auto;margin-bottom:0px;">
-    <label class="col-lg-3 control-label">
-        Helpdesk URL <font class="error">*</font> : 
+    <label class="col-lg-3 control-label"><i class="icon-question-sign" onmouseenter="MouseOver(event,'tip_box1');" onmouseleave="MouseOut('tip_box1')"></i>  Helpdesk URL <font class="error">*</font> : 
     </label>
     <div class="col-lg-9">
         <input type="text" class="form-control" size="40" name="helpdesk_url" value="<?php echo $helpdesk_url->row('value');?>">
@@ -29,7 +28,7 @@
     </div>
 </div>
 <div class="form-group" style="overflow:auto;margin-bottom:0px;">
-    <label class="col-lg-3 control-label">
+    <label class="col-lg-3 control-label"><i class="icon-question-sign" onmouseenter="MouseOver(event,'tip_box2');" onmouseleave="MouseOut('tip_box2')"></i>
         Helpdesk Name/Title <font class="error">*</font> :
     </label>
     <div class="col-lg-9">
@@ -39,7 +38,7 @@
 </div>
 
 <div class="form-group" style="overflow:auto;margin-bottom:0px;">
-    <label class="col-lg-3 control-label">
+    <label class="col-lg-3 control-label"><i class="icon-question-sign" onmouseenter="MouseOver(event,'tip_box3');" onmouseleave="MouseOut('tip_box3')"></i>
         Default Department <font class="error">*</font> :
     </label>
     <div class="col-lg-9">
@@ -55,7 +54,7 @@
 </div>
 
 <div class="form-group" style="overflow:auto;margin-bottom:0px;">
-    <label class="col-lg-3 control-label" style="padding-top:0px">
+    <label class="col-lg-3 control-label" style="padding-top:0px"><i class="icon-question-sign" onmouseenter="MouseOver(event,'tip_box4');" onmouseleave="MouseOut('tip_box4')"></i>
         Collision Avoidance Duration <font class="error">*</font> :
     </label>
     <div class="col-lg-8">
@@ -68,7 +67,7 @@
 </div>
 
 <div class="form-group" style="overflow:auto;">
-    <label class="col-lg-3 control-label"> Default Page Size :</label>
+    <label class="col-lg-3 control-label"><i class="icon-question-sign" onmouseenter="MouseOver(event,'tip_box5');" onmouseleave="MouseOut('tip_box5')"></i> Default Page Size :</label>
     <div class="col-lg-9">
         <select name="max_page_size" class="form-control">
             <?php for ($i=5;$i<=50;$i+=5) { ?>
@@ -79,7 +78,7 @@
 </div>
 
 <div class="form-group" style="overflow:auto;margin-bottom:0px;">
-    <label class="col-lg-3 control-label"> Default Log Level :</label>
+    <label class="col-lg-3 control-label"><i class="icon-question-sign" onmouseenter="MouseOver(event,'tip_box6');" onmouseleave="MouseOut('tip_box6')"></i> Default Log Level :</label>
     <div class="col-lg-9">
         <select name="log_level" class="form-control">
             <option value="0">None (Disable Logger)</option>
@@ -91,7 +90,7 @@
     </div>
 </div>
 <div class="form-group" style="overflow:auto;">
-    <label class="col-lg-3 control-label"> Purge Logs :</label>
+    <label class="col-lg-3 control-label"><i class="icon-question-sign" onmouseenter="MouseOver(event,'tip_box7');" onmouseleave="MouseOut('tip_box7')"></i> Purge Logs :</label>
     <div class="col-lg-9">
         <select name="log_graceperiod" class="form-control">
             <option value="0" selected="">Never Purge Logs</option>
@@ -123,7 +122,7 @@
     </div>
 </div>
 <div class="form-group" style="overflow:auto;">
-    <label class="col-lg-3 control-label" style="padding-top: 0px"> Show Avatars :</label>
+    <label class="col-lg-3 control-label" style="padding-top: 0px"><i class="icon-question-sign" onmouseenter="MouseOver(event,'tip_box8');" onmouseleave="MouseOut('tip_box8')"></i> Show Avatars :</label>
     <div class="col-lg-9">
         <input type="hidden" name="enable_avatars" value="0">
         <input type="checkbox" name="enable_avatars" value="1" <?php echo $enable_avatars->row('value') == 1?"checked":"";?>>
@@ -245,6 +244,51 @@
     <!-- /.modal-dialog -->
 </div>
 <!-- add new department popup modal -->
+
+<div class="tip_box" id="tip_box" style="display:none;">
+    <div class="tip_content"><a href="#" class="tip_close"><i class="icon-remove-circle"></i></a><img src="./images/tip_arrow.png" class="tip_arrow"><h1><i class="icon-info-sign faded"> </i>Helpdesk Status</h1>If the status is changed to <span class="doc-desc-opt">Offline</span>, the client interface will be disabled.  This does not however affect any normal Agent interaction with the Agent Panel.
+    </div>
+</div>
+
+<div class="tip_box" id="tip_box1" style="display:none;">
+    <div class="tip_content"><a href="#" class="tip_close"><i class="icon-remove-circle"></i></a><img src="./images/tip_arrow.png" class="tip_arrow"><h1><i class="icon-info-sign faded"> </i>Helpdesk URL</h1>This URL is the base of your osTicket installation. It is used in email communication to direct end-users back to your helpdesk.
+    </div>
+</div>
+
+<div class="tip_box" id="tip_box2" style="display:none;">
+    <div class="tip_content"><a href="#" class="tip_close"><i class="icon-remove-circle"></i></a><img src="./images/tip_arrow.png" class="tip_arrow"><h1><i class="icon-info-sign faded"> </i>Helpdesk Name/Title</h1>This is the title that appears in the browser tab. If your help desk page is bookmarked, this will be the title/name of the site page.
+    </div>
+</div>
+
+<div class="tip_box" id="tip_box3" style="display:none;">
+    <div class="tip_content"><a href="#" class="tip_close"><i class="icon-remove-circle"></i></a><img src="./images/tip_arrow.png" class="tip_arrow"><h1><i class="icon-info-sign faded"> </i>Default Department</h1>Choose a default <span class="doc-desc-title">department</span> for tickets that are not automatically routed to a department. <br><br> Ticket can be routed base on help topic, incoming email and ticket filter settings.
+    </div>
+</div>
+
+<div class="tip_box" id="tip_box4" style="display:none;">
+    <div class="tip_content"><a href="#" class="tip_close"><i class="icon-remove-circle"></i></a><img src="./images/tip_arrow.png" class="tip_arrow"><h1><i class="icon-info-sign faded"> </i>Agent Collision Avoidance</h1>Enter the maximum length of time an Agent is allowed to hold a lock on a ticket or task without any activity. <br><br> Enter <span class="doc-desc-opt">0</span> to disable the lockout feature.
+    </div>
+</div>
+
+<div class="tip_box" id="tip_box5" style="display:none;">
+    <div class="tip_content"><a href="#" class="tip_close"><i class="icon-remove-circle"></i></a><img src="./images/tip_arrow.png" class="tip_arrow"><h1><i class="icon-info-sign faded"> </i>Default Page Size</h1>Choose the number of items shown per page in the Ticket Queues in the Staff Panel. Each Agent can also customize this number for their own account under <span class="doc-desc-title">My Preferences</span>.
+    </div>
+</div>
+
+<div class="tip_box" id="tip_box6" style="display:none;">
+    <div class="tip_content"><a href="#" class="tip_close"><i class="icon-remove-circle"></i></a><img src="./images/tip_arrow.png" class="tip_arrow"><h1><i class="icon-info-sign faded"> </i>Default Log Level</h1>Determine the minimum level of issues which will be recorded in the <span class="doc-desc-title">system log</span>. <span class="doc-desc-opt">Debug</span> represents the least severity, and <span class="doc-desc-opt">Error</span> represents the greatest severity. For example, if you want to see all issues in the <span class="doc-desc-title">System Logs</span>, choose <span class="doc-desc-opt">Debug</span>.
+    </div>
+</div>
+
+<div class="tip_box" id="tip_box7" style="display:none;">
+    <div class="tip_content"><a href="#" class="tip_close"><i class="icon-remove-circle"></i></a><img src="./images/tip_arrow.png" class="tip_arrow"><h1><i class="icon-info-sign faded"> </i>Purge Logs</h1>Determine how long you would like to keep <span class="doc-desc-title">System Logs</span> before they are deleted.
+    </div>
+</div>
+
+<div class="tip_box" id="tip_box8" style="display:none;">
+    <div class="tip_content"><a href="#" class="tip_close"><i class="icon-remove-circle"></i></a><img src="./images/tip_arrow.png" class="tip_arrow"><h1><i class="icon-info-sign faded"> </i>Enable Avatars on Thread View</h1>Enable this to show <span class="doc-desc-title">Avatars</span> on thread correspondence. <br><br> The <span class="doc-desc-title">Avatar Source</span> can be set in Agents' and Users' settings pages.
+    </div>
+</div>
   
 <script type="text/javascript">
 $(function() {
@@ -272,6 +316,23 @@ $(function() {
         }
     });
 });
+
+function MouseOver(e,divid) {
+        var left  = e.clientX  + "px";
+        var top  = e.clientY  + "px";
+
+        var div = document.getElementById(divid);
+
+        div.style.display = 'block';
+        div.style.left = left;
+        div.style.top = top;
+        $("#" + divid).stop();    
+    }
+
+    function MouseOut(divid) {
+        document.getElementById(divid).style.display = 'none';
+        $("#" + divid).stop();
+    }
 </script>
 </div>
 </div>

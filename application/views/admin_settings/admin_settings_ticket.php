@@ -17,7 +17,7 @@
         <em>System-wide default ticket settings and options.</em>
     </div>
     <div class="form-group" style="overflow:auto;">
-        <label class="col-lg-4 control-label" style="padding-top:0px">Default Ticket Number Format<br/> (Range : 2 - 12)<span class="error">*</span> :</label>
+        <label class="col-lg-4 control-label" style="padding-top:0px"><i class="icon-question-sign" onmouseenter="MouseOver(event,'tip_box');" onmouseleave="MouseOut('tip_box')"></i>Default Ticket Number Format<br/> (Range : 2 - 12)<span class="error">*</span> :</label>
         <div class="col-lg-6">
             <input type="number" name="ticket_number_format" id="ticket_number_format" class="form-control no-spin" min="2" max="12" value="<?php echo $ticket_number_format->row('value');?>" required>
             <div class="error"></div>
@@ -28,7 +28,7 @@
     </div>
     
     <div class="form-group" style="overflow:auto;">
-        <label class="col-lg-4 control-label"> Default Ticket Number Sequence :</label>
+        <label class="col-lg-4 control-label"><i class="icon-question-sign" onmouseenter="MouseOver(event,'tip_box1');" onmouseleave="MouseOut('tip_box1')"></i> Default Ticket Number Sequence :</label>
         <div class="col-lg-6">
             <select name="ticket_sequence_guid" class="form-control" id="ticket_sequence_guid">
                 <option value="0" <?php if($ticket_seq=='0'){echo 'selected';}?>>— Random —</option>
@@ -45,7 +45,7 @@
         </div>
     </div>
     <div class="form-group" style="overflow:auto;margin-bottom:0px;">
-        <label class="col-lg-4 control-label"><!-- <i class="help-tip icon-question-sign" href="#default_ticket_status"></i> --> Default Status <span class="error">*</span> :
+        <label class="col-lg-4 control-label"><i class="icon-question-sign" onmouseenter="MouseOver(event,'tip_box2');" onmouseleave="MouseOut('tip_box2')"></i> Default Status <span class="error">*</span> :
         </label>
         <div class="col-lg-8">
             <span>
@@ -59,7 +59,7 @@
         </div>
     </div>
     <div class="form-group" style="overflow:auto;margin-bottom:0px;">
-        <label class="col-lg-4 control-label"><!-- <i class="help-tip icon-question-sign" href="#default_priority"></i> --> Default Priority :</label>
+        <label class="col-lg-4 control-label"><i class="icon-question-sign" onmouseenter="MouseOver(event,'tip_box3');" onmouseleave="MouseOut('tip_box3')"></i> Default Priority :</label>
         <div class="col-lg-8">
             <select name="default_priority" class="form-control">
                 <?php foreach ($default_priority->result() as $value) { ?>
@@ -70,7 +70,7 @@
         </div>
     </div>
     <div class="form-group" style="overflow:auto;margin-bottom:0px;">
-        <label class="col-lg-4 control-label"><!-- <i class="help-tip icon-question-sign" href="#default_sla"></i> --> Default SLA <span class="error">*</span> :</label>
+        <label class="col-lg-4 control-label"><i class="icon-question-sign" onmouseenter="MouseOver(event,'tip_box4');" onmouseleave="MouseOut('tip_box4')"></i> Default SLA <span class="error">*</span> :</label>
         <div class="col-lg-8">
             <span>
                 <select name="default_sla" class="form-control">
@@ -84,7 +84,7 @@
         </div>
     </div>
     <div class="form-group" style="overflow:auto;">
-        <label class="col-lg-4 control-label">Default Help Topic :</label>
+        <label class="col-lg-4 control-label">  Default Help Topic :</label>
         <div class="col-lg-8">
             <select name="default_help_topic" class="form-control">
                 <option value="0">— None —</option>
@@ -109,7 +109,7 @@
     </div> -->
 
     <div class="form-group" style="overflow:auto;">
-        <label class="col-lg-4 control-label" style="padding-top:0px"><!-- <i class="help-tip icon-question-sign" href="#maximum_open_tickets"></i> --> Maximum <b>Open</b> Tickets <span class="error">*</span> :</label>
+        <label class="col-lg-4 control-label" style="padding-top:0px"><i class="icon-question-sign" onmouseenter="MouseOver(event,'tip_box6');" onmouseleave="MouseOut('tip_box6')"></i> Maximum <b>Open</b> Tickets <span class="error">*</span> :</label>
         <div class="col-lg-8">
             <input type="text" name="max_open_tickets" size="4" value="<?php echo $max_open_tickets->value?>">
                 per end user                <span class="error"></span>
@@ -126,15 +126,14 @@
         </div>
     </div> -->
     <div class="form-group" style="overflow:auto;">
-        <label class="col-lg-4 control-label" style="padding-top:0px"><!-- <i class="help-tip icon-question-sign" href="#claim_tickets"></i> --> Claim on Response :</label>
+        <label class="col-lg-4 control-label" style="padding-top:0px"><i class="icon-question-sign" onmouseenter="MouseOver(event,'tip_box7');" onmouseleave="MouseOut('tip_box7')"></i> Claim on Response :</label>
         <div class="col-lg-8">
             <input type="hidden" name="auto_claim_tickets" value="0">
             <input type="checkbox" name="auto_claim_tickets" value="1" <?php echo $auto_claim_tickets->row('value') == 1?"checked":"";?>> Enable
         </div>
     </div>
     <div class="form-group" style="overflow:auto;">
-        <label class="col-lg-4 control-label" style="padding-top:0px">
-           <!--  <i class="help-tip icon-question-sign" href="#assigned_tickets"></i> --> Assigned Tickets :
+        <label class="col-lg-4 control-label" style="padding-top:0px"><i class="icon-question-sign" onmouseenter="MouseOver(event,'tip_box8');" onmouseleave="MouseOut('tip_box8')"></i> Assigned Tickets :
         </label>
         <div class="col-lg-8">
             <input type="hidden" name="show_assigned_tickets" value="0">
@@ -142,7 +141,7 @@
                 Exclude assigned tickets from open queue.        </div>
     </div>
     <div class="form-group">
-        <label class="col-lg-4 control-label" style="padding-top:0px"><!-- <i class="help-tip icon-question-sign" href="#answered_tickets"></i> --> Answered Tickets :</label>
+        <label class="col-lg-4 control-label" style="padding-top:0px"><i class="icon-question-sign" onmouseenter="MouseOver(event,'tip_box9');" onmouseleave="MouseOut('tip_box9')"></i> Answered Tickets :</label>
         <div class="col-lg-8">
             <input type="hidden" name="show_answered_tickets" value="0">
             <input type="checkbox" name="show_answered_tickets" value="1" <?php echo $show_answered_tickets->row('value') == 1?"checked":"";?>>
@@ -154,7 +153,7 @@
     <em>Global setting - can be disabled at department or email level.</em>
 </div>
 <div class="form-group" style="overflow:auto;margin-bottom:0px;">
-    <label class="col-lg-3 control-label" style="padding-top:1px"> New Ticket :</label>
+    <label class="col-lg-3 control-label" style="padding-top:1px"><i class="icon-question-sign" onmouseenter="MouseOver(event,'tip_box0');" onmouseleave="MouseOut('tip_box0')"></i> New Ticket :</label>
     <div class="col-lg-9">
         <input type="hidden" name="ticket_autoresponder" value="0">
         <input type="checkbox" name="ticket_autoresponder" value="1" <?php echo $ticket_autoresponder == 1?"checked":"";?>>
@@ -162,7 +161,7 @@
     </div>
 </div>
 <br><div class="form-group" style="overflow:auto;margin-bottom:0px;">
-    <label class="col-lg-3 control-label" style="padding-top:1px"> New Ticket by Agent :</label>
+    <label class="col-lg-3 control-label" style="padding-top:1px"><i class="icon-question-sign" onmouseenter="MouseOver(event,'tip_box01');" onmouseleave="MouseOut('tip_box01')"></i> New Ticket by Agent :</label>
     <div class="col-lg-9">
         <input type="hidden" name="ticket_notice_active" value="0">
         <input type="checkbox" name="ticket_notice_active" value="1" <?php echo $ticket_notice_active == 1?"checked":"";?>>
@@ -170,7 +169,7 @@
     </div>
 </div>
 <br><div class="form-group" style="overflow:auto;margin-bottom:0px;">
-    <label class="col-lg-3 control-label" style="padding-top:1px"> New Message :</label>
+    <label class="col-lg-3 control-label" style="padding-top:1px"><i class="icon-question-sign" onmouseenter="MouseOver(event,'tip_box02');" onmouseleave="MouseOut('tip_box02')"></i> New Message :</label>
     <div class="col-lg-9">
         <input type="hidden" name="message_autoresponder" value="0">
         <input type="checkbox" name="message_autoresponder" value="1" <?php echo $message_autoresponder == 1?"checked":"";?>>
@@ -186,7 +185,7 @@
     </div>
 </div> -->
 <br><div class="form-group" style="overflow:auto;margin-bottom:0px;">
-    <label class="col-lg-3 control-label" style="padding-top:1px"> Overlimit Notice :</label>
+    <label class="col-lg-3 control-label" style="padding-top:1px"><i class="icon-question-sign" onmouseenter="MouseOver(event,'tip_box03');" onmouseleave="MouseOut('tip_box03')"></i> Overlimit Notice :</label>
     <div class="col-lg-8">
         <input type="hidden" name="overlimit_notice_active" value="0">
         <input type="checkbox" name="overlimit_notice_active" value="1" <?php echo $overlimit_notice_active == 1?"checked":"";?>>
@@ -196,7 +195,7 @@
 <div class="hiddens tab_content" id="alerts" data-tip-namespace="settings.alerts" style="display: none;">
     <table class="form_table settings_table" width="100%" border="0" cellspacing="0" cellpadding="2">
     <tbody>
-        <tr><th><em></i> <b>New Ticket Alert</b> :
+        <tr><th><em><i class="icon-question-sign" onmouseover="MouseOver(event,'tip_box04');" onmouseout="MouseOut('tip_box04')"></i> <b>New Ticket Alert</b> :
             </em></th></tr>
         <tr>
             <td><em><b>Status:</b></em> &nbsp;
@@ -226,7 +225,7 @@
                 <input type="checkbox" name="ticket_alert_acct_manager" <?php echo $ticket_alert_acct_manager == 1?"checked":"";?> value="1">
                 Organization Account Manager/Team Leader</td>
         </tr>
-        <tr><th><em><b>New Message Alert</b> :
+        <tr><th><em><b><i class="icon-question-sign" onmouseover="MouseOver(event,'tip_box05');" onmouseout="MouseOut('tip_box05')"></i>  New Message Alert</b> :
             </em></th></tr>
         <tr>
             <td><em><b>Status:</b></em> &nbsp;
@@ -254,7 +253,7 @@
                 <input type="checkbox" name="message_alert_acct_manager" <?php echo $message_alert_acct_manager == 1?"checked":"";?> value="1">
                 Organization Account Manager/Team Leader</td>
         </tr>
-        <tr><th><em><b>New Internal Activity Alert</b> :
+        <tr><th><em><i class="icon-question-sign" onmouseover="MouseOver(event,'tip_box06');" onmouseout="MouseOut('tip_box06')"></i><b>  New Internal Activity Alert</b> :
             </em></th></tr>
         <tr>
             <td><em><b>Status:</b></em> &nbsp;
@@ -278,7 +277,7 @@
               <input type="checkbox" name="note_alert_dept_manager" <?php echo $note_alert_dept_manager == 1?"checked":"";?> value="1">
                 Department Manager            </td>
         </tr>
-        <tr><th><em><b>Ticket Assignment Alert</b> :
+        <tr><th><em><i class="icon-question-sign" onmouseover="MouseOver(event,'tip_box07');" onmouseout="MouseOut('tip_box07')"></i><b>  Ticket Assignment Alert</b> :
             </em></th></tr>
         <tr>
             <td><em><b>Status: </b></em> &nbsp;
@@ -299,7 +298,7 @@
               <input type="checkbox" name="assigned_alert_team_members" <?php echo $assigned_alert_team_members == 1?"checked":"";?> value="1">
                 Team Members            </td>
         </tr>
-        <tr><th><em><b>Ticket Transfer Alert</b> :
+        <tr><th><em><i class="icon-question-sign" onmouseover="MouseOver(event,'tip_box08');" onmouseout="MouseOut('tip_box08')"></i><b>  Ticket Transfer Alert</b> :
             </em></th></tr>
         <tr>
             <td><em><b>Status:</b></em> &nbsp;
@@ -324,7 +323,7 @@
               <input type="checkbox" name="transfer_alert_dept_members" <?php echo $transfer_alert_dept_members == 1?"checked":"";?> value="1">
                 Department Members            </td>
         </tr>
-        <tr><th><em><b>Overdue Ticket Alert</b> :
+        <tr><th><em><i class="icon-question-sign" onmouseover="MouseOver(event,'tip_box09');" onmouseout="MouseOut('tip_box09')"></i><b>  Overdue Ticket Alert</b> :
             </em></th></tr>
         <tr>
             <td><em><b>Status:</b></em> &nbsp;
@@ -344,24 +343,6 @@
             <td>
               <input type="checkbox" name="overdue_alert_dept_members" <?php echo $overdue_alert_dept_members == 1?"checked":"";?> value="1"> Department Members            </td>
         </tr>
-        <tr><th>
-            <em><b>System Alerts</b>: </em></th></tr>
-        <tr>
-            <td>
-              <input type="checkbox" name="send_sys_errors" checked="checked" disabled="disabled">
-                System Errors              <em>(enabled by default)</em>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <input type="checkbox" name="send_sql_errors">
-                SQL errors            </td>
-        </tr>
-        <tr>
-            <td>
-              <input type="checkbox" name="send_login_errors">
-                Excessive failed login attempts            </td>
-        </tr>
     </tbody>
 </table>
 </div>
@@ -372,8 +353,118 @@
 </p>
 </form>
 
+<div class="tip_box" id="tip_box" style="display:none;">
+    <div class="tip_content"><a href="#" class="tip_close"><i class="icon-remove-circle"></i></a><img src="./images/tip_arrow.png" class="tip_arrow"><h1><i class="icon-info-sign faded"> </i>Ticket Number Format</h1>This setting is used to generate ticket numbers. Use hash signs (`#`) where digits are to be placed. Any other text in the number format will be preserved. <span class="doc-desc-title">Help Topics</span> can define custom number formats. <br><br> For example, for six-digit numbers, use <code>######</code>.
+    </div>
+</div>
+
+<div class="tip_box" id="tip_box1" style="display:none;">
+    <div class="tip_content"><a href="#" class="tip_close"><i class="icon-remove-circle"></i></a><img src="./images/tip_arrow.png" class="tip_arrow"><h1><i class="icon-info-sign faded"> </i>Ticket Number Sequence</h1>Choose a sequence from which to derive new ticket numbers. The system has a incrementing sequence and a random sequence by default. You may create as many sequences as you wish. Use various sequences in the <span class="doc-desc-title">Ticket Number Format</span> configuration for help topics.
+    </div>
+</div>
+
+<div class="tip_box" id="tip_box2" style="display:none;">
+    <div class="tip_content"><a href="#" class="tip_close"><i class="icon-remove-circle"></i></a><img src="./images/tip_arrow.png" class="tip_arrow"><h1><i class="icon-info-sign faded"> </i>Default Status for new Tickets</h1>Choose a status as the default for new tickets. This can be defined for each help topic, if desired. It can also be overridden by a ticket filter.
+    </div>
+</div>
+
+<div class="tip_box" id="tip_box3" style="display:none;">
+    <div class="tip_content"><a href="#" class="tip_close"><i class="icon-remove-circle"></i></a><img src="./images/tip_arrow.png" class="tip_arrow"><h1><i class="icon-info-sign faded"> </i>Default Priority</h1>Choose a default <span class="doc-desc-title">priority</span> for tickets not assigned a priority automatically. <br><br> Priority can be assigned via the help topic, routed department, or ticket filter settings.
+    </div>
+</div>
+
+<div class="tip_box" id="tip_box4" style="display:none;">
+    <div class="tip_content"><a href="#" class="tip_close"><i class="icon-remove-circle"></i></a><img src="./images/tip_arrow.png" class="tip_arrow"><h1><i class="icon-info-sign faded"> </i>Default SLA</h1>Choose the default Service Level Agreement to manage how long a ticket can remain Open before it is rendered Overdue.
+    </div>
+</div>
+
+<div class="tip_box" id="tip_box6" style="display:none;">
+    <div class="tip_content"><a href="#" class="tip_close"><i class="icon-remove-circle"></i></a><img src="./images/tip_arrow.png" class="tip_arrow"><h1><i class="icon-info-sign faded"> </i>Maximum Open Tickets</h1>Enter the maximum <em>number</em> of tickets a User is permitted to have <strong>open</strong> in your help desk. <br><br> Enter <span class="doc-desc-opt">0 </span> if you prefer to disable this limitation.
+    </div>
+</div>
+
+<div class="tip_box" id="tip_box7" style="display:none;">
+    <div class="tip_content"><a href="#" class="tip_close"><i class="icon-remove-circle"></i></a><img src="./images/tip_arrow.png" class="tip_arrow"><h1><i class="icon-info-sign faded"> </i>Claim Tickets on Response</h1>Enable this to auto-assign unassigned tickets to the responding Agent. <br><br> Reopened tickets are always assigned to the last respondent.
+    </div>
+</div>
+
+<div class="tip_box" id="tip_box8" style="display:none;">
+    <div class="tip_content"><a href="#" class="tip_close"><i class="icon-remove-circle"></i></a><img src="./images/tip_arrow.png" class="tip_arrow"><h1><i class="icon-info-sign faded"> </i>Assigned Tickets</h1>Enable this feature to exclude assigned tickets from the <span class="doc-desc-title">Open Tickets Queue</span>.
+    </div>
+</div>
+<div class="tip_box" id="tip_box9" style="display:none;">
+    <div class="tip_content"><a href="#" class="tip_close"><i class="icon-remove-circle"></i></a><img src="./images/tip_arrow.png" class="tip_arrow"><h1><i class="icon-info-sign faded"> </i>Answered Tickets</h1>Enable this feature to show answered tickets in the <span class="doc-desc-title">Answered Tickets Queue</span>. Otherwise, it will be included in the <span class="doc-desc-title">Open Tickets Queue</span>.
+    </div>
+</div>
+
+<div class="tip_box" id="tip_box0" style="display:none;">
+    <div class="tip_content"><a href="#" class="tip_close"><i class="icon-remove-circle"></i></a><img src="./images/tip_arrow.png" class="tip_arrow"><h1><i class="icon-info-sign faded"> </i>New Ticket</h1>Enable this if you want an autoresponse to be sent to the User on new ticket.
+    </div>
+</div>
+
+<div class="tip_box" id="tip_box01" style="display:none;">
+    <div class="tip_content"><a href="#" class="tip_close"><i class="icon-remove-circle"></i></a><img src="./images/tip_arrow.png" class="tip_arrow"><h1><i class="icon-info-sign faded"> </i>New Ticket by Staff</h1>Notice sent when an Agent creates a ticket on behalf of the User. <em>Agent can override this when creating new tickets.</em>
+    </div>
+</div>
+
+<div class="tip_box" id="tip_box02" style="display:none;">
+    <div class="tip_content"><a href="#" class="tip_close"><i class="icon-remove-circle"></i></a><img src="./images/tip_arrow.png" class="tip_arrow"><h1><i class="icon-info-sign faded"> </i>New Message Confirmation</h1>Confirmation notice sent when a new message is appended to an existing ticket.
+    </div>
+</div>
+
+<div class="tip_box" id="tip_box03" style="display:none;">
+    <div class="tip_content"><a href="#" class="tip_close"><i class="icon-remove-circle"></i></a><img src="./images/tip_arrow.png" class="tip_arrow"><h1><i class="icon-info-sign faded"> </i>Overlimit Notice</h1>Ticket denied notice sent to User on <span class="doc-desc-title">Maximum Open Tickets</span> violation.
+    </div>
+</div>
+
+<div class="tip_box" id="tip_box04" style="display:none;">
+    <div class="tip_content"><a href="#" class="tip_close"><i class="icon-remove-circle"></i></a><img src="./images/tip_arrow.png" class="tip_arrow"><h1><i class="icon-info-sign faded"> </i>New Ticket Alert</h1><p> Alert sent out to Agents when a new ticket is created. </p><p class="info-banner"> <i class="icon-info-sign"></i> This alert is not sent out if the ticket is auto-assigned via a Ticket Filter or Help Topic. </p>
+    </div>
+</div>
+
+<div class="tip_box" id="tip_box05" style="display:none;">
+    <div class="tip_content"><a href="#" class="tip_close"><i class="icon-remove-circle"></i></a><img src="./images/tip_arrow.png" class="tip_arrow"><h1><i class="icon-info-sign faded"> </i>New Message Alert</h1>Alert sent out to Agents when a new message from the User is appended to an existing ticket.
+    </div>
+</div>
+
+<div class="tip_box" id="tip_box06" style="display:none;">
+    <div class="tip_content"><a href="#" class="tip_close"><i class="icon-remove-circle"></i></a><img src="./images/tip_arrow.png" class="tip_arrow"><h1><i class="icon-info-sign faded"> </i>New Internal Activity Alert</h1>Alert sent out to Agents when internal activity such as an internal note or an agent reply is appended to a ticket.
+    </div>
+</div>
+
+<div class="tip_box" id="tip_box07" style="display:none;">
+    <div class="tip_content"><a href="#" class="tip_close"><i class="icon-remove-circle"></i></a><img src="./images/tip_arrow.png" class="tip_arrow"><h1><i class="icon-info-sign faded"> </i>Ticket Assignment Alert</h1>Alert sent out to Agents on ticket assignment.
+    </div>
+</div>
+
+<div class="tip_box" id="tip_box08" style="display:none;">
+    <div class="tip_content"><a href="#" class="tip_close"><i class="icon-remove-circle"></i></a><img src="./images/tip_arrow.png" class="tip_arrow"><h1><i class="icon-info-sign faded"> </i>Ticket Transfer Alert</h1>Alert sent out to Agents on ticket transfer between Departments.
+    </div>
+</div>
+
+<div class="tip_box" id="tip_box09" style="display:none;">
+    <div class="tip_content"><a href="#" class="tip_close"><i class="icon-remove-circle"></i></a><img src="./images/tip_arrow.png" class="tip_arrow"><h1><i class="icon-info-sign faded"> </i>Overdue Ticket Alert</h1>Alert sent out to Agents when a ticket becomes overdue based on SLA or Due Date.
+    </div>
+</div>
 
 <script type="text/javascript">
+    function MouseOver(e,divid) {
+        var left  = e.clientX  + "px";
+        var top  = e.clientY  + "px";
+        // alert('test');
+        var div = document.getElementById(divid);
+
+        div.style.display = 'block';
+        div.style.left = left;
+        div.style.top = top;
+
+        // $('#'+divid).css('display', 'block');
+    }
+
+    function MouseOut(divid) {
+        document.getElementById(divid).style.display = 'none';
+    }
+
     function random_number(digit)
     {   
         number_digit = digit.value;
