@@ -416,26 +416,32 @@ class user_controller extends CI_Controller {
             'block_period' => $client_login_timeout,
         );
 
-          if(isset($_SESSION['block_period2']) && $current_time < $_SESSION['block_period2'])
+        if(isset($_SESSION['block_period2']) && $current_time < $_SESSION['block_period2'])
         {
            
-                $_SESSION['blocked2'] = 'on';
-                $browser_id = $_SERVER["HTTP_USER_AGENT"];
-                if(strpos($browser_id,"Windows CE") || strpos($browser_id,"Windows NT 5.1") )
-                    {
+            $_SESSION['blocked2'] = 'on';
+            $browser_id = $_SERVER["HTTP_USER_AGENT"];
+            if(strpos($browser_id,"Windows CE") || strpos($browser_id,"Windows NT 5.1") )
+                {
 
-                        $this->load->view('WinCe/header');
-                        $this->load->view('WinCe/index',$data);
+                    $this->load->view('WinCe/header');
+                    $this->load->view('WinCe/index',$data);
+                
+                }   
+                
+            else
+                {
                     
-                    }   
-                    
-                else
-                    {
-                        echo "<script> alert('Access Blocked for certain period for excessive logging in');</script>";
-                        $this->load->view('header');
-                        $this->load->view('user/login', $data);
-                        //$this->load->view('footer');
-                    }
+                    echo "<script> alert('Access Blocked for certain period for excessive logging in');</script>";
+
+                    $ipadd = $_SERVER['REMOTE_ADDR'];
+                    $username = addslashes($this->input->post('luser'));
+                    $log = "Excessive login attempts by a user. Username: ".$username." IP: ".$ipadd." Time: ".date('Y-m-d H:i:s')." Attempts: ".$_SESSION['loginsecond2'];
+                    $this->db->query("INSERT INTO ost_syslog_test (log_guid, log_type, title, log, ip_address, created) VALUES (REPLACE(UPPER(UUID()),'-',''), 'Error', 'Excessive login attempts (user)', '$log', '$ipadd', NOW())");
+                    $this->load->view('header');
+                    $this->load->view('user/login', $data);
+                    //$this->load->view('footer');
+                }
             }
             else
             {
@@ -520,6 +526,7 @@ class user_controller extends CI_Controller {
                     {
                         $_SESSION['loginsecond2'] ='1';
                     }
+
                     $client_max_login = $this->db->query("SELECT value FROM osticket.ost_config_test WHERE id='18'")->row('value');
                      $client_login_timeout = $this->db->query("SELECT value FROM osticket.ost_config_test WHERE id='19'")->row('value');
 
@@ -527,6 +534,10 @@ class user_controller extends CI_Controller {
                         $_SESSION['block_period2'] = date("Y-m-d H:i:s",strtotime(date("Y-m-d H:i:s")." +$client_login_timeout minutes"));
                     }
 
+                    $ipadd = $_SERVER['REMOTE_ADDR'];
+                    $username = addslashes($this->input->post('luser'));
+                    $log = "Username: ".$username." IP: ".$ipadd." Time: ".date('Y-m-d H:i:s')." Attempts: ".$_SESSION['loginsecond2'];
+                    $this->db->query("INSERT INTO ost_syslog_test (log_guid, log_type, title, log, ip_address, created) VALUES (REPLACE(UPPER(UUID()),'-',''), 'Warning', 'Failed login attempts (user)', '$log', '$ipadd', NOW())");
                     echo "<script> alert('Incorrect username or password');</script>";
                     $this->load->database();
 
@@ -579,6 +590,10 @@ class user_controller extends CI_Controller {
             else
             {
                 echo "<script> alert('Access Blocked for certain period for excessive logging in');</script>";
+                $ipadd = $_SERVER['REMOTE_ADDR'];
+                $username = addslashes($this->input->post('userid'));
+                $log = "Excessive login attempts by an Agent. Username: ".$username." IP: ".$ipadd." Time: ".date('Y-m-d H:i:s')." Attempts: ".$_SESSION['loginsecond2'];
+                $this->db->query("INSERT INTO ost_syslog_test (log_guid, log_type, title, log, ip_address, created) VALUES (REPLACE(UPPER(UUID()),'-',''), 'Warning', 'Excessive login attempts (agent)', '$log', '$ipadd', NOW())");
                /* $this->load->view('header');*/
                 $this->load->view('user/superlogin', $data);
                 //$this->load->view('footer');
@@ -694,6 +709,10 @@ class user_controller extends CI_Controller {
                         $_SESSION['block_period'] = date("Y-m-d H:i:s",strtotime(date("Y-m-d H:i:s")." +$staff_login_timeout minutes"));
                     }
 
+                    $ipadd = $_SERVER['REMOTE_ADDR'];
+                    $username = addslashes($this->input->post('userid'));
+                    $log = "Username: ".$username." IP: ".$ipadd." Time: ".date('Y-m-d H:i:s')." Attempts: ".$_SESSION['loginsecond2'];
+                    $this->db->query("INSERT INTO ost_syslog_test (log_guid, log_type, title, log, ip_address, created) VALUES (REPLACE(UPPER(UUID()),'-',''), 'Warning', 'Failed agent login attempts', '$log', '$ipadd', NOW())");
                     echo "<script> alert('Incorrect username or password');</script>";
                     $this->load->database();
 
