@@ -13,7 +13,7 @@
 <div class="clear"></div>
 <div style="margin-bottom:20px; padding-top:5px;">
     <div class="pull-left flush-left">
-        <h2><i class="help-tip icon-question-sign" href="#ticket_activity"></i>
+        <h2>
 <?php if ($_REQUEST['a'] == 'y' ) { ?>
     All 
 <?php } else if ($_REQUEST['a'] == 'n') { ?>
@@ -250,7 +250,7 @@ var myChart = new Chart(ctx, {
 
 
 <hr>
-<h2>Statistics&nbsp;<i class="help-tip icon-question-sign" href="#statistics"></i></h2>
+<h2>Statistics&nbsp;<i class="icon-question-sign" onmouseenter="MouseOver(event,'tip_box1');" onmouseleave="MouseOut('tip_box1')"></i> </h2>
 <p>Statistics of tickets organized by department, help topic, and agent.</p>
 
 <div class="tab">
@@ -420,6 +420,28 @@ var tableToExcel = (function() {
     window.location.href = uri + base64(format(template, ctx))
   }
 })()
+
+ function MouseOver(e,divid) {
+        var left  = e.clientX  + "px";
+        var top  = e.clientY  + "px";
+        // alert('test');
+        var div = document.getElementById(divid);
+
+        div.style.display = 'block';
+        div.style.left = left;
+        div.style.top = top;
+
+        // $('#'+divid).css('display', 'block');
+    }
+
+    function MouseOut(divid) {
+        document.getElementById(divid).style.display = 'none';
+    }
 </script>
 </div>
+</div>
+
+<div class="tip_box" id="tip_box1" style="display:none;">
+    <div class="tip_content"><a href="#" class="tip_close"><i class="icon-remove-circle"></i></a><img src="./images/tip_arrow.png" class="tip_arrow"><h1><i class="icon-info-sign faded"> </i>Statistics</h1>Navigate to the subject of interest by clicking on the appropriate tab in order to view the specific sample of data. Within the table, the circles represent the size of the nominal data. Therefore, the larger the number in a particular cell, the larger the adjacent circle will be.
+    </div>
 </div>

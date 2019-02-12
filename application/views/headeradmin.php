@@ -261,7 +261,7 @@ display: none;
         <ul class="nav navbar-nav">
             <li class="<?php echo $dashboard ?>  dropdown"><a href="#" helpdesk="" scp="" logs.php="" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Dashboard <span class="caret"></span></a>
             <ul class="dropdown-menu">
-                <li><a class="logs" href="/helpdesk/scp/logs.php" title="" id="nav0">System Logs</a></li>
+                <li><a class="logs" href="<?php echo site_url('admin_dashboard_controller/agents_syslog')?>" title="" id="nav0">System Logs</a></li>
                 <li><a class="preferences" href="<?php echo site_url('admin_dashboard_controller/agents_dashboard')?>" title="" id="nav1">Information</a></li>
             </ul>
             </li>

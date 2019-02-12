@@ -68,6 +68,60 @@ class admin_dashboard_controller extends CI_Controller {
 
     }
 
+    public function agents_syslog()
+    {      
+        if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
+        {   
+          $data['syslog'] = $this->db->query("SELECT * FROM ost_syslog_test ORDER BY created DESC");
+          $data['max_page_size'] = $this->db->query("SELECT value FROM ost_config_test WHERE id = '21'")->row('value');
+
+
+        $browser_id = $_SERVER["HTTP_USER_AGENT"];
+        if(strpos($browser_id,"Windows CE") || strpos($browser_id,"Windows NT 5.1") )
+            {
+
+                /*$this->load->view('WinCe/header');
+                $this->load->view('WinCe/po/po_main',$data);*/
+                
+            }
+        else
+            {
+                $this->load->view('headeradmin');
+                $this->load->view('admin_dashboard/admin_dashboard_syslogs',$data);
+                $this->load->view('footeradmin');
+            }    
+        }
+
+        else       
+        {
+           redirect('user_controller/superlogin');
+        }
+
+    }
+
+    public function delete_syslog()
+    {      
+        if($this->session->userdata('loginstaff') == true && $this->session->userdata('staffname') != '')
+        {   
+          $check = $this->input->post('ids[]');
+
+          foreach($check as $value)
+          {
+            $this->db->query("DELETE FROM ost_syslog_test WHERE log_guid = '$value'");
+          }
+
+
+        echo "<script> alert('Record Successfully deleted');</script>";
+
+        echo "<script> document.location='" . base_url() . "/index.php/admin_dashboard_controller/agents_syslog' </script>";
+        }
+        else       
+        {
+           redirect('user_controller/superlogin');
+        }
+
+    }
+
 
  
 

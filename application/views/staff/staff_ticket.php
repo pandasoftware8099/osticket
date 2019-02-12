@@ -92,7 +92,7 @@
             <tr id="14">
               
               <td align="center" class="nohover">
-                <input class="ckb" type="checkbox" name="tids[]" value="<?php echo $value->ticket_guid;?>"">
+                <input class="ckb" type="checkbox" name="tids[]" value="<?php echo $value->ticket_guid;?>">
               </td>
               
               <td nowrap="">
