@@ -16,7 +16,7 @@ class user_controller extends CI_Controller {
         $this->load->database();
         $this->load->library('form_validation');
     }
-
+    //test
     public function login()
     {
         $data = array(
