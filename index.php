@@ -2,6 +2,7 @@
 
 //first
 //maintainece mode12
+//second
 $servername = "localhost";
 $username = "root";
 $password = "";
