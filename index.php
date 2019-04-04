@@ -1,5 +1,6 @@
 <?php
 
+//first
 //maintainece mode12
 $servername = "localhost";
 $username = "root";
