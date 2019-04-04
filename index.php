@@ -1,6 +1,6 @@
 <?php
 
-//maintainece mode12345
+//maintainece mode1
 $servername = "localhost";
 $username = "root";
 $password = "";
