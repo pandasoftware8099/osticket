@@ -1,5 +1,5 @@
 <?php
-//maintainece mode
+//maintainece mode123
 $servername = "localhost";
 $username = "root";
 $password = "";
